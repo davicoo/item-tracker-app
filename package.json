@@ -1,0 +1,27 @@
+{
+    "name": "item-tracker",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+      "dev": "vite",
+      "build": "vue-tsc --noEmit && vite build",
+      "preview": "vite preview",
+      "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    },
+    "dependencies": {
+      "vue": "^3.3.4"
+    },
+    "devDependencies": {
+      "@types/node": "^18.16.19",
+      "@vitejs/plugin-vue": "^4.2.3",
+      "@vue/tsconfig": "^0.4.0",
+      "autoprefixer": "^10.4.14",
+      "eslint": "^8.44.0",
+      "eslint-plugin-vue": "^9.15.1",
+      "postcss": "^8.4.25",
+      "tailwindcss": "^3.3.2",
+      "typescript": "~5.1.6",
+      "vite": "^4.4.2",
+      "vue-tsc": "^1.8.4"
+    }
+  }
