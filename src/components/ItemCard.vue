@@ -1,23 +1,20 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <img 
-      :src="item.imageUrl || '/placeholder.jpg'" 
+      :src="item.image" 
       :alt="item.name"
-      class="w-full h-48 object-cover rounded mb-3"
+      class="w-full h-48 object-cover"
     />
-    <h3 class="text-lg font-semibold mb-1">{{ item.name }}</h3>
-    <p class="text-gray-700 text-sm mb-3">{{ item.details }}</p>
-    
-    <div class="flex items-center justify-between">
-      <span :class="[statusColor, 'text-white text-xs px-2 py-1 rounded-full']">
-        {{ statusText }}
-      </span>
+    <div class="p-4">
+      <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
+      <p class="text-gray-600 text-sm mb-3">{{ item.details }}</p>
       
-      <div class="flex space-x-2">
+      <div class="mb-3">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
         <select
           :value="item.status"
-          @change="updateStatus($event)"
-          class="text-sm border border-gray-300 rounded px-2 py-1"
+          @change="handleStatusChange"
+          class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
         >
           <option 
             v-for="option in statusOptions" 
@@ -27,10 +24,19 @@
             {{ option.label }}
           </option>
         </select>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <span 
+          class="px-2 py-1 rounded text-xs font-medium"
+          :class="statusColor"
+        >
+          {{ statusLabel }}
+        </span>
         
         <button
-          @click="$emit('delete', item.id)"
-          class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
+          @click="handleDelete"
+          class="text-red-500 hover:text-red-700 text-sm font-medium"
         >
           Delete
         </button>
@@ -40,7 +46,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
+import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -54,38 +61,44 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete'],
   setup(props, { emit }) {
-    // Get status badge color
-    const statusColor = computed(() => {
-      switch(props.item.status) {
-        case 'not_sold': return 'bg-blue-500';
-        case 'sold': return 'bg-yellow-500';
-        case 'sold_paid': return 'bg-green-500';
-        default: return 'bg-gray-500';
-      }
-    });
-    
-    // Get status display text
-    const statusText = computed(() => {
-      switch(props.item.status) {
-        case 'not_sold': return 'Not Sold';
-        case 'sold': return 'Sold';
-        case 'sold_paid': return 'Sold & Paid';
-        default: return 'Unknown';
-      }
-    });
-    
-    // Update status handler
-    const updateStatus = (event: Event) => {
+    const handleStatusChange = (event: Event) => {
       const target = event.target as HTMLSelectElement;
       emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
     };
     
+    const handleDelete = () => {
+      emit('delete', props.item.id);
+    };
+    
+    const statusLabel = computed(() => {
+      const option = statusOptions.find(opt => opt.value === props.item.status);
+      return option?.label || 'Unknown';
+    });
+    
+    const statusColor = computed(() => {
+      switch (props.item.status) {
+        case 'not_sold':
+          return 'bg-red-100 text-red-800';
+        case 'sold':
+          return 'bg-yellow-100 text-yellow-800';
+        case 'sold_paid':
+          return 'bg-green-100 text-green-800';
+        default:
+          return 'bg-gray-100 text-gray-800';
+      }
+    });
+    
     return {
       statusOptions,
-      statusColor,
-      statusText,
-      updateStatus
+      handleStatusChange,
+      handleDelete,
+      statusLabel,
+      statusColor
     };
   }
 });
 </script>
+
+<style scoped>
+/* Add any component-specific styles here */
+</style>

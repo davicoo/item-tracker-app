@@ -84,7 +84,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from 'vue';
+import { defineComponent, ref, type PropType, computed } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -154,9 +154,9 @@ export default defineComponent({
       newItem,
       previewUrl,
       statusOptions,
-      isFormValid,
       handleFileChange,
-      handleSubmit
+      handleSubmit,
+      isFormValid
     };
   }
 });

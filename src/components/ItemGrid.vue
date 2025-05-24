@@ -1,17 +1,18 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <ItemCard 
-      v-for="item in items" 
-      :key="item.id" 
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <ItemCard
+      v-for="item in items"
+      :key="item.id"
       :item="item"
-      @update-status="updateStatus"
+      @update-status="updateItemStatus"
       @delete="deleteItem"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent } from 'vue';
+import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import ItemCard from './ItemCard.vue';
 
@@ -28,18 +29,24 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete-item'],
   setup(props, { emit }) {
-    const updateStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
+    // Update item status
+    const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
       emit('update-status', id, status);
     };
     
+    // Delete item
     const deleteItem = (id: string) => {
       emit('delete-item', id);
     };
     
     return {
-      updateStatus,
+      updateItemStatus,
       deleteItem
     };
   }
 });
 </script>
+
+<style scoped>
+/* Add any component-specific styles here */
+</style>

@@ -25,14 +25,14 @@ export interface Item {
     {
       id: "1",
       name: "Vintage Camera",
-      imageUrl: "/placeholder-image-1.jpg",
+      imageUrl: "/images/placeholder-image-1.jpg",
       details: "A vintage film camera from the 1970s in excellent condition.",
       status: "not_sold"
     },
     {
       id: "2",
       name: "Antique Chair",
-      imageUrl: "/placeholder-image-2.jpg",
+      imageUrl: "/images/placeholder-image-1.jpg",
       details: "Hand-carved wooden chair from the early 1900s.",
       status: "sold"
     }
