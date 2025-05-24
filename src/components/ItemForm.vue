@@ -1,130 +1,169 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
-    <div>
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-2">
-          Item Name
-        </label>
-        <input
-          type="text"
-          v-model="newItem.name"
-          class="w-full px-3 py-2 border border-gray-300 rounded"
-          required
-        />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-2">
-          Item Image
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          @change="handleFileChange"
-          class="w-full px-3 py-2 border border-gray-300 rounded"
-          required
-        />
-        <div v-if="previewUrl" class="mt-2">
-          <img 
-            :src="previewUrl" 
-            alt="Preview" 
-            class="h-40 object-cover rounded"
+    
+    <!-- ImageKit Context wraps the components that need it -->
+    <IKContext
+      :publicKey="imageKitConfig.publicKey"
+      :urlEndpoint="imageKitConfig.urlEndpoint"
+      :transformationPosition="imageKitConfig.transformationPosition"
+    >
+      <div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">
+            Item Name
+          </label>
+          <input
+            v-model="newItem.name"
+            type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded"
+            required
           />
         </div>
-      </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-2">
-          Item Details
-        </label>
-        <textarea
-          v-model="newItem.details"
-          class="w-full px-3 py-2 border border-gray-300 rounded"
-          rows="3"
-          required
-        ></textarea>
-      </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">
+            Item Image
+          </label>
+          
+          <!-- ImageKit Upload Component -->
+          <IKUpload
+            :fileName="`item-${Date.now()}`"
+            :onError="onUploadError"
+            :onSuccess="onUploadSuccess"
+            :onUploadStart="onUploadStart"
+            useUniqueFileName="true"
+            class="w-full px-3 py-2 border border-gray-300 rounded"
+          />
+          
+          <!-- Upload status -->
+          <div v-if="isUploading" class="mt-2 text-blue-600">
+            Uploading image...
+          </div>
+          
+          <!-- Upload error -->
+          <div v-if="uploadError" class="mt-2 text-red-600">
+            {{ uploadError }}
+          </div>
+          
+          <!-- Preview using ImageKit -->
+          <div v-if="newItem.imageUrl" class="mt-2">
+            <IKImage 
+              :path="newItem.imageUrl"
+              :transformation="[{ height: '160', width: '240' }]"
+              alt="Preview"
+              class="rounded"
+            />
+          </div>
+        </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700 font-medium mb-2">
-          Status
-        </label>
-        <select
-          v-model="newItem.status"
-          class="w-full px-3 py-2 border border-gray-300 rounded"
-        >
-          <option 
-            v-for="option in statusOptions" 
-            :key="option.value" 
-            :value="option.value"
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">
+            Item Details
+          </label>
+          <textarea
+            v-model="newItem.details"
+            class="w-full px-3 py-2 border border-gray-300 rounded"
+            rows="3"
+            required
+          ></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">
+            Status
+          </label>
+          <select
+            v-model="newItem.status"
+            class="w-full px-3 py-2 border border-gray-300 rounded"
           >
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
+            <option 
+              v-for="option in statusOptions" 
+              :key="option.value" 
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
 
-      <div class="flex space-x-2">
-        <button
-          @click="handleSubmit"
-          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium"
-          :disabled="!isFormValid"
-        >
-          Save Item
-        </button>
-        <button
-          @click="$emit('cancel')"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
-        >
-          Cancel
-        </button>
+        <div class="flex space-x-2">
+          <button
+            @click="handleSubmit"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+            :disabled="!isFormValid"
+          >
+            {{ isUploading ? 'Uploading...' : 'Save Item' }}
+          </button>
+          <button
+            @click="$emit('cancel')"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-    </div>
+    </IKContext>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType, computed } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
+import { IKContext, IKImage, IKUpload } from 'imagekitio-vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
-
 export default defineComponent({
   name: 'ItemForm',
+  components: {
+    IKContext,
+    IKImage,
+    IKUpload
+  },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
-    const newItem = ref<Omit<Item, 'id'>>({
+    // ImageKit configuration
+    const imageKitConfig = {
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Replace with your public key
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Replace with your URL endpoint
+      transformationPosition: "path"
+    };
+
+    const newItem = ref<Omit<Item, 'id' | 'dateAdded'>>({
       name: '',
       imageUrl: '',
       details: '',
       status: 'not_sold'
     });
     
-    const previewUrl = ref<string>('');
+    const isUploading = ref<boolean>(false);
+    const uploadError = ref<string>('');
     
-    // Handle file selection
-    const handleFileChange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files && target.files[0]) {
-        const file = target.files[0];
-        
-        // Create preview URL
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-          if (typeof fileReader.result === 'string') {
-            previewUrl.value = fileReader.result;
-            newItem.value.imageUrl = fileReader.result;
-          }
-        };
-        fileReader.readAsDataURL(file);
-      }
+    // ImageKit upload handlers
+    const onUploadStart = () => {
+      isUploading.value = true;
+      uploadError.value = '';
+    };
+    
+    const onUploadSuccess = (res: any) => {
+      isUploading.value = false;
+      // Store the file path from ImageKit response
+      newItem.value.imageUrl = res.filePath;
+      console.log('Upload successful:', res);
+    };
+    
+    const onUploadError = (err: any) => {
+      isUploading.value = false;
+      uploadError.value = 'Failed to upload image. Please try again.';
+      console.error('Upload error:', err);
     };
     
     // Check if form is valid
     const isFormValid = computed(() => {
       return newItem.value.name.trim() !== '' && 
              newItem.value.imageUrl !== '' && 
-             newItem.value.details.trim() !== '';
+             newItem.value.details.trim() !== '' &&
+             !isUploading.value;
     });
     
     // Handle form submission
@@ -134,7 +173,8 @@ export default defineComponent({
       // Create new item with unique ID
       const itemToAdd: Item = {
         ...newItem.value,
-        id: Date.now().toString()
+        id: Date.now().toString(),
+        dateAdded: new Date().toISOString()
       };
       
       // Emit event with new item
@@ -147,14 +187,18 @@ export default defineComponent({
         details: '',
         status: 'not_sold'
       };
-      previewUrl.value = '';
+      uploadError.value = '';
     };
     
     return {
+      imageKitConfig,
       newItem,
-      previewUrl,
+      isUploading,
+      uploadError,
       statusOptions,
-      handleFileChange,
+      onUploadStart,
+      onUploadSuccess,
+      onUploadError,
       handleSubmit,
       isFormValid
     };

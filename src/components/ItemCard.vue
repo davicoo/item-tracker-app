@@ -1,10 +1,27 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <img 
-      :src="item.image" 
-      :alt="item.name"
-      class="w-full h-48 object-cover"
-    />
+    <!-- ImageKit Context for displaying images -->
+    <IKContext
+      :publicKey="imageKitConfig.publicKey"
+      :urlEndpoint="imageKitConfig.urlEndpoint"
+      :transformationPosition="imageKitConfig.transformationPosition"
+    >
+      <!-- Use ImageKit Image component or fallback to regular img -->
+      <IKImage 
+        v-if="item.imageUrl.startsWith('/')"
+        :path="item.imageUrl"
+        :transformation="[{ height: '192', width: '400', crop: 'maintain_ratio' }]"
+        :alt="item.name"
+        class="w-full h-48 object-cover"
+      />
+      <img 
+        v-else
+        :src="item.imageUrl"
+        :alt="item.name"
+        class="w-full h-48 object-cover"
+      />
+    </IKContext>
+    
     <div class="p-4">
       <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
       <p class="text-gray-600 text-sm mb-3">{{ item.details }}</p>
@@ -47,12 +64,17 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
+import { IKContext, IKImage } from 'imagekitio-vue';
 import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemCard',
+  components: {
+    IKContext,
+    IKImage
+  },
   props: {
     item: {
       type: Object as PropType<Item>,
@@ -61,6 +83,13 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete'],
   setup(props, { emit }) {
+    // ImageKit configuration (same as in ItemForm)
+    const imageKitConfig = {
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=",
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
+      transformationPosition: "path"
+    };
+
     const handleStatusChange = (event: Event) => {
       const target = event.target as HTMLSelectElement;
       emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
@@ -89,6 +118,7 @@ export default defineComponent({
     });
     
     return {
+      imageKitConfig,
       statusOptions,
       handleStatusChange,
       handleDelete,
