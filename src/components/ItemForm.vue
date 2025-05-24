@@ -124,8 +124,8 @@ export default defineComponent({
   setup(props, { emit }) {
     // ImageKit configuration
     const imageKitConfig = {
-      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Replace with your public key
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Replace with your URL endpoint
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Your public key
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Your URL endpoint
       transformationPosition: "path"
     };
 
