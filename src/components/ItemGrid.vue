@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+import type { Item } from '../types/item';
 import ItemCard from './ItemCard.vue';
-import { Item } from '../types/item';
 
 export default defineComponent({
   name: 'ItemGrid',

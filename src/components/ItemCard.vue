@@ -41,7 +41,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
-import { Item, statusOptions } from '../types/item';
+import type { Item } from '../types/item';
+import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemCard',
