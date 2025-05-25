@@ -1,12 +1,12 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-    <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
+    <h2 class="text-xl font-semibled mb-4">Add New Item</h2>
     
-    <!-- ImageKit Context - Use PUBLIC key -->
     <IKContext
       publicKey="public_8RxT918PPFr+aU5aqwgMZx/waIU="
       urlEndpoint="https://ik.imagekit.io/mydwcapp"
       transformationPosition="path"
+      authenticationEndpoint="https://myinvtory.netlify.app/.netlify/functions/auth"
     >
       <div>
         <div class="mb-4">
@@ -26,14 +26,13 @@
             Item Image
           </label>
           
-          <!-- ImageKit Upload Component -->
           <IKUpload
             :fileName="`item-${Date.now()}`"
             :onError="onUploadError"
             :onSuccess="onUploadSuccess"
             :onUploadStart="onUploadStart"
             useUniqueFileName="true"
-            class="w-full px-3 py-2 border border-gray-300 rounded"
+            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           
           <!-- Upload status -->
@@ -41,12 +40,11 @@
             Uploading image...
           </div>
           
-          <!-- Upload error -->
           <div v-if="uploadError" class="mt-2 text-red-600">
             {{ uploadError }}
           </div>
           
-          <!-- Preview using ImageKit -->
+          <!-- Preview -->
           <div v-if="newItem.imageUrl" class="mt-2">
             <IKImage 
               :path="newItem.imageUrl"
@@ -122,13 +120,6 @@ export default defineComponent({
   },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
-    // ImageKit configuration - Use PUBLIC key
-    const imageKitConfig = {
-      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Changed from private to public
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
-      transformationPosition: "path"
-    };
-
     const newItem = ref<Omit<Item, 'id' | 'dateAdded'>>({
       name: '',
       imageUrl: '',
@@ -139,7 +130,6 @@ export default defineComponent({
     const isUploading = ref<boolean>(false);
     const uploadError = ref<string>('');
     
-    // ImageKit upload handlers with better error handling
     const onUploadStart = () => {
       console.log('Upload started...');
       isUploading.value = true;
@@ -149,35 +139,15 @@ export default defineComponent({
     const onUploadSuccess = (res: any) => {
       console.log('Upload successful:', res);
       isUploading.value = false;
-      
-      // Check if the response has the expected structure
-      if (res && res.filePath) {
-        newItem.value.imageUrl = res.filePath;
-      } else if (res && res.url) {
-        newItem.value.imageUrl = res.url;
-      } else {
-        console.error('Unexpected response structure:', res);
-        uploadError.value = 'Upload succeeded but response format is unexpected.';
-      }
+      newItem.value.imageUrl = res.filePath;
     };
     
     const onUploadError = (err: any) => {
-      console.error('Upload error details:', err);
+      console.error('Upload error:', err);
       isUploading.value = false;
-      
-      // Provide more specific error messages
-      if (err.message) {
-        uploadError.value = `Upload failed: ${err.message}`;
-      } else if (err.toString().includes('401')) {
-        uploadError.value = 'Authentication failed. Check your ImageKit credentials.';
-      } else if (err.toString().includes('403')) {
-        uploadError.value = 'Upload not allowed. Enable unsigned uploads in ImageKit dashboard.';
-      } else {
-        uploadError.value = 'Failed to upload image. Please try again.';
-      }
+      uploadError.value = `Upload failed: ${err.message || err.toString()}`;
     };
     
-    // Check if form is valid
     const isFormValid = computed(() => {
       return newItem.value.name.trim() !== '' && 
              newItem.value.imageUrl !== '' && 
@@ -185,18 +155,15 @@ export default defineComponent({
              !isUploading.value;
     });
     
-    // Handle form submission
     const handleSubmit = () => {
       if (!isFormValid.value) return;
       
-      // Create new item with unique ID
       const itemToAdd: Item = {
         ...newItem.value,
         id: Date.now().toString(),
         dateAdded: new Date().toISOString()
       };
       
-      // Emit event with new item
       emit('item-added', itemToAdd);
       
       // Reset form
@@ -210,7 +177,6 @@ export default defineComponent({
     };
     
     return {
-      imageKitConfig,
       newItem,
       isUploading,
       uploadError,
