@@ -9,9 +9,9 @@
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
     "dependencies": {
+        "@imagekit/vue": "^4.0.0",
         "cloudinary-core": "^2.13.1",
         "imagekit": "^4.1.3",
-        "imagekitio-vue": "^4.0.0",
         "vue": "^3.3.4"
     },
     "devDependencies": {

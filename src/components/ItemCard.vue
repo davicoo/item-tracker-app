@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { IKImage } from 'imagekitio-vue'; // Remove IKContext since it's global
+import { IKImage } from '@imagekit/vue'; // Changed from 'imagekitio-vue'
 import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';

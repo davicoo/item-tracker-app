@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import './assets/main.css'
-import ImageKit from 'imagekitio-vue'
+import ImageKit from '@imagekit/vue'
 
 const app = createApp(App)
 
