@@ -81,7 +81,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update-status', 'delete'],
+  emits: ['update-status', 'delete-item'], // Change 'delete' to 'delete-item'
   setup(props, { emit }) {
     // ImageKit configuration (same as in ItemForm)
     const imageKitConfig = {
@@ -96,7 +96,7 @@ export default defineComponent({
     };
     
     const handleDelete = () => {
-      emit('delete', props.item.id);
+      emit('delete-item', props.item.id); // Change 'delete' to 'delete-item'
     };
     
     const statusLabel = computed(() => {

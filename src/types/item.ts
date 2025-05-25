@@ -2,10 +2,10 @@
 export interface Item {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string;  // Make sure this is 'imageUrl', not 'image'
   details: string;
   status: "not_sold" | "sold" | "sold_paid";
-  dateAdded: string; // Add this missing property
+  dateAdded: string;
 }
 
 // Status option definition
