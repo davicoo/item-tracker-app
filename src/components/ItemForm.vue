@@ -2,9 +2,9 @@
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
     
-    <!-- ImageKit Context goes here -->
+    <!-- ImageKit Context - Use PUBLIC key -->
     <IKContext
-      publicKey="private_qTO9s1aV6K2FSALd597boRa2RN0="
+      publicKey="public_BLo55sPu94p4/MUy7mHgfDdvOg8="
       urlEndpoint="https://ik.imagekit.io/mydwcapp"
       transformationPosition="path"
     >
@@ -122,10 +122,10 @@ export default defineComponent({
   },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
-    // ImageKit configuration
+    // ImageKit configuration - Use PUBLIC key
     const imageKitConfig = {
-      publicKey: "private_qTO9s1aV6K2FSALd597boRa2RN0=", // Verify this is correct
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Verify this is correct
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Changed from private to public
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
       transformationPosition: "path"
     };
 
