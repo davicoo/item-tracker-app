@@ -83,10 +83,10 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete-item'],
   setup(props, { emit }) {
-    // ImageKit configuration
+    // ImageKit configuration - make sure this is defined first
     const imageKitConfig = {
-      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=",
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Replace with your actual key
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Replace with your actual endpoint
       transformationPosition: "path"
     };
 
@@ -117,6 +117,7 @@ export default defineComponent({
       }
     });
     
+    // Make sure to return imageKitConfig
     return {
       imageKitConfig,
       statusOptions,
