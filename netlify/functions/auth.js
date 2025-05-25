@@ -1,3 +1,5 @@
+const ImageKit = require('imagekit');
+
 exports.handler = async (event, context) => {
   // Add CORS headers for preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -13,40 +15,16 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const crypto = require('crypto');
-    const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
-    
-    if (!privateKey) {
-      return {
-        statusCode: 500,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ error: 'Private key not configured' })
-      };
-    }
+    const imagekit = new ImageKit({
+      publicKey: "public_8RxT918PPFr+aU5aqwgMZx/waIU=",
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp"
+    });
 
-    // Generate authentication parameters according to ImageKit docs
-    const token = crypto.randomBytes(20).toString('hex');
-    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    const expire = currentTimeInSeconds + 3600; // 1 hour from now
+    // Use ImageKit's built-in method to generate auth parameters
+    const authenticationParameters = imagekit.getAuthenticationParameters();
     
-    // CRITICAL FIX: ImageKit expects signature = HMAC-SHA1(token + expire)
-    // The authString should be: token + expire (as strings concatenated)
-    const authString = token + expire.toString();
-    const signature = crypto.createHmac('sha1', privateKey).update(authString).digest('hex');
-    
-    console.log('Token:', token);
-    console.log('Expire:', expire);
-    console.log('Auth string (token + expire):', authString);
-    console.log('Private key length:', privateKey.length);
-    console.log('Generated signature:', signature);
-    
-    const response = {
-      token: token,
-      expire: expire,
-      signature: signature
-    };
-    
-    console.log('Final auth response:', response);
+    console.log('ImageKit SDK generated params:', authenticationParameters);
     
     return {
       statusCode: 200,
@@ -55,7 +33,7 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(response)
+      body: JSON.stringify(authenticationParameters)
     };
 
   } catch (error) {
@@ -63,7 +41,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ error: 'Internal server error', details: error.message })
     };
   }
 };

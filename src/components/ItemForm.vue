@@ -27,10 +27,12 @@
         <label class="block text-gray-700 font-medium mb-2">Item Image</label>
         
         <!-- Replace IKUpload with regular file input -->
-        <input
-          type="file"
-          @change="handleFileUpload"
-          accept="image/*"
+        <IKUpload
+          fileName="item-upload"
+          :onError="onUploadError"
+          :onSuccess="onUploadSuccess"
+          :onUploadStart="onUploadStart"
+          useUniqueFileName="true"
           class="w-full px-3 py-2 border border-gray-300 rounded"
         />
         
@@ -93,13 +95,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage } from 'imagekitio-vue';
+import { IKImage, IKUpload } from 'imagekitio-vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  components: { IKImage },
+  components: { IKImage, IKUpload },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
     const newItem = ref({
@@ -112,80 +114,29 @@ export default defineComponent({
     const isUploading = ref(false);
     const uploadError = ref('');
     
-    // Proper file upload using ImageKit API
-    const handleFileUpload = async (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      const file = target.files?.[0];
-      
-      if (!file) return;
-      
+    const onUploadStart = () => {
+      console.log('Upload started...');
       isUploading.value = true;
       uploadError.value = '';
+    };
+    
+    const onUploadSuccess = (res: any) => {
+      console.log('Upload successful:', res);
+      isUploading.value = false;
       
-      try {
-        console.log('Getting authentication...');
-        
-        // Step 1: Get authentication from your Netlify function
-        const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
-        const authData = await authResponse.json();
-        
-        if (!authResponse.ok) {
-          throw new Error(`Auth failed: ${authData.error || 'Unknown error'}`);
-        }
-        
-        console.log('Auth successful:', authData);
-        
-        // Step 2: Upload to ImageKit with authentication
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('fileName', `item-${Date.now()}`);
-        formData.append('publicKey', 'public_8RxT918PPFr+aU5aqwgMZx/waIU=');
-        formData.append('signature', authData.signature);
-        formData.append('expire', authData.expire.toString());
-        formData.append('token', authData.token);
-        
-        console.log('Uploading to ImageKit...');
-        console.log('FormData contents:');
-        for (const [key, value] of formData.entries()) {
-          if (key === 'file') {
-            console.log(`${key}: File(${file.name}, ${file.size} bytes, ${file.type})`);
-          } else {
-            console.log(`${key}: ${value}`);
-          }
-        }
-        
-        const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-          method: 'POST',
-          body: formData
-        });
-        
-        console.log('Upload response status:', uploadResponse.status);
-        console.log('Upload response headers:', Object.fromEntries(uploadResponse.headers.entries()));
-        
-        const uploadData = await uploadResponse.json();
-        console.log('Upload response data:', uploadData);
-        
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed (${uploadResponse.status}): ${uploadData.message || JSON.stringify(uploadData)}`);
-        }
-        
-        if (uploadData.filePath) {
-          newItem.value.imageUrl = uploadData.filePath;
-          console.log('✅ Image uploaded successfully:', uploadData.filePath);
-        } else if (uploadData.url) {
-          newItem.value.imageUrl = uploadData.url;
-          console.log('✅ Image uploaded successfully (using URL):', uploadData.url);
-        } else {
-          console.error('❌ No file path or URL in response:', uploadData);
-          throw new Error('No file path in response');
-        }
-        
-      } catch (error) {
-        console.error('Upload error:', error);
-        uploadError.value = `Upload failed: ${error.message}`;
-      } finally {
-        isUploading.value = false;
+      if (res.filePath) {
+        newItem.value.imageUrl = res.filePath;
+        console.log('✅ Image uploaded:', res.filePath);
+      } else {
+        console.error('No filePath in response:', res);
+        uploadError.value = 'Upload succeeded but no file path returned';
       }
+    };
+    
+    const onUploadError = (err: any) => {
+      console.error('Upload error:', err);
+      isUploading.value = false;
+      uploadError.value = `Upload failed: ${err.message || err.toString()}`;
     };
     
     const isFormValid = computed(() => {
@@ -223,7 +174,9 @@ export default defineComponent({
       isUploading,
       uploadError,
       statusOptions,
-      handleFileUpload,
+      onUploadStart,
+      onUploadSuccess,
+      onUploadError,
       handleSubmit,
       isFormValid
     };
