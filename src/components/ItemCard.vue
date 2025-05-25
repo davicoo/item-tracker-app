@@ -81,9 +81,9 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update-status', 'delete-item'], // Change 'delete' to 'delete-item'
+  emits: ['update-status', 'delete-item'],
   setup(props, { emit }) {
-    // ImageKit configuration (same as in ItemForm)
+    // ImageKit configuration
     const imageKitConfig = {
       publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=",
       urlEndpoint: "https://ik.imagekit.io/mydwcapp",
@@ -96,7 +96,7 @@ export default defineComponent({
     };
     
     const handleDelete = () => {
-      emit('delete-item', props.item.id); // Change 'delete' to 'delete-item'
+      emit('delete-item', props.item.id);
     };
     
     const statusLabel = computed(() => {
