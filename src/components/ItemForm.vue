@@ -201,15 +201,8 @@ export default defineComponent({
           dateAdded: new Date().toISOString()
         };
         
-        console.log('✅ Preparing to emit item-added:', itemToAdd);
-        try {
-          emit('item-added', itemToAdd);
-          console.log('✅ Emission successful');
-        } catch (emitError) {
-          console.error('❌ Emission failed:', emitError);
-          uploadError.value = 'Error emitting item-added event';
-          return;
-        }
+        console.log('✅ Emitting item-added:', itemToAdd);
+        emit('item-added', itemToAdd);
         
         // Reset form
         newItem.value = {
@@ -227,95 +220,67 @@ export default defineComponent({
     };
     
     // New method to handle file input change
-    const handleFileUpload = async (event: Event) => {
+    const handleFileUpload = (event: Event) => {
       const target = event.target as HTMLInputElement;
-      const file = target.files?.[0];
+      if (!target.files?.length) return;
       
-      if (!file) return;
-    
-      // Validate file type and size
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      const maxSizeInMB = 5;
-      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-    
-      if (!allowedTypes.includes(file.type)) {
-        uploadError.value = `Invalid file type. Allowed types: ${allowedTypes.join(', ')}`;
-        console.error('File type validation failed:', file.type);
+      const file = target.files[0];
+      console.log('Selected file:', file);
+      
+      // Simple client-side validation
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        uploadError.value = 'File size exceeds 2MB';
         return;
       }
-    
-      if (file.size > maxSizeInBytes) {
-        uploadError.value = `File size exceeds ${maxSizeInMB}MB limit.`;
-        console.error('File size validation failed:', file.size);
-        return;
-      }
-    
-      isUploading.value = true;
-      uploadError.value = '';
       
-      try {
-        // Step 1: Get authentication from your Netlify function
-        const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth?' + 
-          new URLSearchParams({
-            token: Math.random().toString(36),
-            // Use seconds, not ms
-            expire: Math.floor(Date.now() / 1000 + 3600).toString()
-          }));
+      // Create a file reader to read the file as a data URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const url = e.target?.result as string;
+        console.log('File preview URL:', url);
         
-        const authData = await authResponse.json();
-        console.log('Auth data:', authData);
-        
-        // Step 2: Upload to ImageKit
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('fileName', `item-${Date.now()}`);
-        formData.append('publicKey', 'public_8RxT918PPFr+aU5aqwgMZx/waIU=');
-        formData.append('signature', authData.signature);
-        formData.append('expire', authData.expire);
-        formData.append('token', authData.token);
-        
-        const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-        if (uploadData && typeof uploadData === 'object' && 'filePath' in uploadData) {
-          newItem.value.imageUrl = uploadData.filePath;
-          console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
-          // Reset file input
-          (event.target as HTMLInputElement).value = '';
-        } else {
-        const uploadData = await uploadResponse.json();
-        console.log('Upload response:', uploadData);
-        
-        if (uploadData && typeof uploadData === 'object' && 'filePath' in uploadData) {
-          newItem.value.imageUrl = uploadData.filePath;
-          console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
-        } else {
-          console.error('❌ Invalid upload response structure:', uploadData);
-          throw new Error('Upload failed: Invalid response structure');
-        }
-        
-      } catch (error) {
-        uploadError.value = 'Failed to upload image';
-        console.error('Upload error:', error);
-      } finally {
-        isUploading.value = false;
+        // For now, just set the imageUrl to the file's data URL
+        newItem.value.imageUrl = url;
+      };
+      reader.readAsDataURL(file);
+      
+      // Simulate upload progress
+      onUploadStart();
+      setTimeout(() => {
+        onUploadSuccess({ filePath: newItem.value.imageUrl });
+      }, 1000);
+    };
+    
+    async function uploadImage(formData: FormData) {
+      const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadData = await uploadResponse.json();
+
+      // Now your if-statement
+      if (
+        uploadData &&
+        typeof uploadData === 'object' &&
+        'filePath' in uploadData
+      ) {
+        newItem.value.imageUrl = uploadData.filePath;
+        console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
       }
+    }
+    
     return {
-      // Reactive properties
       newItem,
       isUploading,
       uploadError,
       statusOptions,
-
-      // Computed properties
-      isFormValid,
-
-      // Methods
       onUploadStart,
       onUploadSuccess,
       onUploadError,
       handleSubmit,
+      isFormValid,
       handleFileUpload
-    };
-      isFormValid
     };
   }
 });
