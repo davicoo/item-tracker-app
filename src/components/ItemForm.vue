@@ -132,12 +132,14 @@ export default defineComponent({
     
     const onUploadStart = () => {
       console.log('Upload started...');
+      console.log('Auth endpoint:', 'https://myinvtory.netlify.app/.netlify/functions/auth');
       isUploading.value = true;
       uploadError.value = '';
     };
     
     const onUploadSuccess = (res: any) => {
       console.log('Upload successful:', res);
+      console.log('File path:', res.filePath);
       isUploading.value = false;
       newItem.value.imageUrl = res.filePath;
     };
