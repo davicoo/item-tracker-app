@@ -230,13 +230,42 @@ export default defineComponent({
       uploadError.value = '';
       
       try {
-        // For now, create a local blob URL for testing
-        const imageUrl = URL.createObjectURL(file);
-        newItem.value.imageUrl = imageUrl;
-        console.log('✅ Image set:', imageUrl);
+        // Step 1: Get authentication from your Netlify function
+        const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth?' + 
+          new URLSearchParams({
+            token: Math.random().toString(36),
+            expire: (Date.now() + 3600000).toString() // 1 hour from now
+          }));
+        
+        const authData = await authResponse.json();
+        console.log('Auth data:', authData);
+        
+        // Step 2: Upload to ImageKit
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fileName', `item-${Date.now()}`);
+        formData.append('publicKey', 'public_8RxT918PPFr+aU5aqwgMZx/waIU=');
+        formData.append('signature', authData.signature);
+        formData.append('expire', authData.expire);
+        formData.append('token', authData.token);
+        
+        const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const uploadData = await uploadResponse.json();
+        console.log('Upload response:', uploadData);
+        
+        if (uploadData.filePath) {
+          newItem.value.imageUrl = uploadData.filePath;
+          console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
+        } else {
+          throw new Error('Upload failed: ' + JSON.stringify(uploadData));
+        }
         
       } catch (error) {
-        uploadError.value = 'Failed to process image';
+        uploadError.value = 'Failed to upload image';
         console.error('Upload error:', error);
       } finally {
         isUploading.value = false;

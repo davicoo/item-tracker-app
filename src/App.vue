@@ -81,10 +81,10 @@ export default defineComponent({
     }, { deep: true });
 
     // Add new item
-    const addItem = (newItem: Item) => {
-      items.value.push(newItem);
-      isFormVisible.value = false;
-    };
+    function addItem(newItem: Item) {
+      items.value.push(newItem);  // Add to array
+      isFormVisible.value = false; 
+    }
 
     // Update item status
     const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
