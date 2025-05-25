@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
+import { defineComponent, ref, onMounted, watch, toRefs } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import type { Item } from './types/item';
@@ -92,8 +92,7 @@ export default defineComponent({
     };
 
     return {
-      items,
-      isFormVisible,
+      ...toRefs({ items, isFormVisible }),
       addItem,
       updateItemStatus,
       deleteItem
