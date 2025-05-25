@@ -24,11 +24,27 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Generate authentication parameters like ImageKit SDK
+    // Generate proper authentication parameters
     const token = crypto.randomBytes(20).toString('hex');
-    const expire = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
+    
+    // CRITICAL FIX: expire must be Unix timestamp in seconds, max 1 hour from now
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+    const expire = currentTimeInSeconds + 3600; // Add 1 hour (3600 seconds)
+    
+    console.log('Current time (seconds):', currentTimeInSeconds);
+    console.log('Expire time (seconds):', expire);
+    console.log('Time until expire (minutes):', (expire - currentTimeInSeconds) / 60);
+    
     const authString = token + expire;
     const signature = crypto.createHmac('sha1', privateKey).update(authString).digest('hex');
+    
+    const response = {
+      token: token,
+      expire: expire,
+      signature: signature
+    };
+    
+    console.log('Auth response:', response);
     
     return {
       statusCode: 200,
@@ -37,11 +53,7 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        token: token,
-        expire: expire,
-        signature: signature
-      })
+      body: JSON.stringify(response)
     };
 
   } catch (error) {

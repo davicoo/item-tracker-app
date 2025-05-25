@@ -145,23 +145,38 @@ export default defineComponent({
         formData.append('token', authData.token);
         
         console.log('Uploading to ImageKit...');
+        console.log('FormData contents:');
+        for (const [key, value] of formData.entries()) {
+          if (key === 'file') {
+            console.log(`${key}: File(${file.name}, ${file.size} bytes, ${file.type})`);
+          } else {
+            console.log(`${key}: ${value}`);
+          }
+        }
         
         const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
           method: 'POST',
           body: formData
         });
         
+        console.log('Upload response status:', uploadResponse.status);
+        console.log('Upload response headers:', Object.fromEntries(uploadResponse.headers.entries()));
+        
         const uploadData = await uploadResponse.json();
-        console.log('Upload response:', uploadData);
+        console.log('Upload response data:', uploadData);
         
         if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${uploadData.message || 'Unknown error'}`);
+          throw new Error(`Upload failed (${uploadResponse.status}): ${uploadData.message || JSON.stringify(uploadData)}`);
         }
         
         if (uploadData.filePath) {
           newItem.value.imageUrl = uploadData.filePath;
           console.log('✅ Image uploaded successfully:', uploadData.filePath);
+        } else if (uploadData.url) {
+          newItem.value.imageUrl = uploadData.url;
+          console.log('✅ Image uploaded successfully (using URL):', uploadData.url);
         } else {
+          console.error('❌ No file path or URL in response:', uploadData);
           throw new Error('No file path in response');
         }
         
