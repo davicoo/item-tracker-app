@@ -24,19 +24,21 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Generate proper authentication parameters
+    // Generate authentication parameters according to ImageKit docs
     const token = crypto.randomBytes(20).toString('hex');
-    
-    // CRITICAL FIX: expire must be Unix timestamp in seconds, max 1 hour from now
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    const expire = currentTimeInSeconds + 3600; // Add 1 hour (3600 seconds)
+    const expire = currentTimeInSeconds + 3600; // 1 hour from now
     
-    console.log('Current time (seconds):', currentTimeInSeconds);
-    console.log('Expire time (seconds):', expire);
-    console.log('Time until expire (minutes):', (expire - currentTimeInSeconds) / 60);
-    
-    const authString = token + expire;
+    // CRITICAL FIX: ImageKit expects signature = HMAC-SHA1(token + expire)
+    // The authString should be: token + expire (as strings concatenated)
+    const authString = token + expire.toString();
     const signature = crypto.createHmac('sha1', privateKey).update(authString).digest('hex');
+    
+    console.log('Token:', token);
+    console.log('Expire:', expire);
+    console.log('Auth string (token + expire):', authString);
+    console.log('Private key length:', privateKey.length);
+    console.log('Generated signature:', signature);
     
     const response = {
       token: token,
@@ -44,7 +46,7 @@ exports.handler = async (event, context) => {
       signature: signature
     };
     
-    console.log('Auth response:', response);
+    console.log('Final auth response:', response);
     
     return {
       statusCode: 200,
