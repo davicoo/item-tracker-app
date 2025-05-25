@@ -31,13 +31,12 @@
           Item Image
         </label>
         
-        <IKUpload
-          fileName="test-upload"
-          :onError="onUploadError"
-          :onSuccess="onUploadSuccess"
-          :onUploadStart="onUploadStart"
-          useUniqueFileName="true"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        <!-- Temporary simple file input -->
+        <input
+          type="file"
+          @change="handleFileUpload"
+          accept="image/*"
+          class="w-full px-3 py-2 border border-gray-300 rounded"
         />
         
         <!-- Upload status -->
@@ -51,13 +50,12 @@
         
         <!-- Preview -->
         <div v-if="newItem.imageUrl" class="mt-2">
-          <IKImage 
-            :path="newItem.imageUrl"
-            :transformation="[{ height: '160', width: '240' }]"
+          <img 
+            :src="newItem.imageUrl"
             alt="Preview"
-            class="rounded"
+            class="w-60 h-40 object-cover rounded"
           />
-          <p class="text-sm text-gray-600 mt-1">Image path: {{ newItem.imageUrl }}</p>
+          <p class="text-sm text-gray-600 mt-1">Image: {{ newItem.imageUrl }}</p>
         </div>
       </div>
 
@@ -113,27 +111,23 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage, IKUpload } from 'imagekitio-vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  components: {
-    IKImage,
-    IKUpload
-  },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
-    const newItem = ref<Omit<Item, 'id' | 'dateAdded'>>({
+    // Initialize with proper reactive values
+    const newItem = ref({
       name: '',
       imageUrl: '',
       details: '',
-      status: 'not_sold'
+      status: 'not_sold' as const
     });
     
-    const isUploading = ref<boolean>(false);
-    const uploadError = ref<string>('');
+    const isUploading = ref(false);
+    const uploadError = ref('');
     
     const onUploadStart = () => {
       console.log('Upload started...');
@@ -144,7 +138,6 @@ export default defineComponent({
     const onUploadSuccess = (res: any) => {
       console.log('Upload successful - full response:', res);
       console.log('Response keys:', Object.keys(res));
-      console.log('Response structure:', JSON.stringify(res, null, 2));
       
       isUploading.value = false;
       
@@ -158,24 +151,9 @@ export default defineComponent({
       } else if (res.name) {
         newItem.value.imageUrl = res.name;
         console.log('✅ Set imageUrl from name:', res.name);
-      } else if (res.fileId) {
-        newItem.value.imageUrl = res.fileId;
-        console.log('✅ Set imageUrl from fileId:', res.fileId);
-      } else if (typeof res === 'string') {
-        newItem.value.imageUrl = res;
-        console.log('✅ Set imageUrl from string response:', res);
       } else {
         console.error('❌ No valid image path found in response:', res);
         uploadError.value = 'Upload succeeded but could not get image path';
-        
-        // Try to extract any string value from the response
-        const possiblePath = Object.values(res).find(val => 
-          typeof val === 'string' && val.length > 0
-        );
-        if (possiblePath) {
-          newItem.value.imageUrl = possiblePath as string;
-          console.log('✅ Found possible path:', possiblePath);
-        }
       }
       
       console.log('Final imageUrl:', newItem.value.imageUrl);
@@ -189,16 +167,16 @@ export default defineComponent({
     
     const isFormValid = computed(() => {
       const valid = !!(
-        newItem.value?.name?.trim() && 
-        newItem.value?.imageUrl?.trim() && 
-        newItem.value?.details?.trim() &&
+        newItem.value.name.trim() && 
+        newItem.value.imageUrl.trim() && 
+        newItem.value.details.trim() &&
         !isUploading.value
       );
       
       console.log('Form validation:', {
-        name: newItem.value?.name?.trim(),
-        imageUrl: newItem.value?.imageUrl?.trim(),
-        details: newItem.value?.details?.trim(),
+        name: newItem.value.name,
+        imageUrl: newItem.value.imageUrl,
+        details: newItem.value.details,
         uploading: isUploading.value,
         valid: valid
       });
@@ -241,6 +219,30 @@ export default defineComponent({
       }
     };
     
+    // New method to handle file input change
+    const handleFileUpload = async (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const file = target.files?.[0];
+      
+      if (!file) return;
+      
+      isUploading.value = true;
+      uploadError.value = '';
+      
+      try {
+        // For now, create a local blob URL for testing
+        const imageUrl = URL.createObjectURL(file);
+        newItem.value.imageUrl = imageUrl;
+        console.log('✅ Image set:', imageUrl);
+        
+      } catch (error) {
+        uploadError.value = 'Failed to process image';
+        console.error('Upload error:', error);
+      } finally {
+        isUploading.value = false;
+      }
+    };
+    
     return {
       newItem,
       isUploading,
@@ -250,6 +252,7 @@ export default defineComponent({
       onUploadSuccess,
       onUploadError,
       handleSubmit,
+      handleFileUpload,
       isFormValid
     };
   }
