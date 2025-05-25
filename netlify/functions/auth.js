@@ -22,9 +22,17 @@ exports.handler = async (event, context) => {
     });
 
     // Use ImageKit's built-in method to generate auth parameters
-    const authenticationParameters = imagekit.getAuthenticationParameters();
+    const { token, expire, signature } = imagekit.getAuthenticationParameters();
     
-    console.log('ImageKit SDK generated params:', authenticationParameters);
+    // IMPORTANT: Also return the publicKey as shown in ImageKit docs
+    const response = {
+      token,
+      expire,
+      signature,
+      publicKey: "public_8RxT918PPFr+aU5aqwgMZx/waIU=" // Add this!
+    };
+    
+    console.log('ImageKit SDK generated params:', response);
     
     return {
       statusCode: 200,
@@ -33,7 +41,7 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(authenticationParameters)
+      body: JSON.stringify(response)
     };
 
   } catch (error) {
