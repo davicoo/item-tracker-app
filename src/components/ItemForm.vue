@@ -2,7 +2,16 @@
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
     
-    <!-- Remove IKContext - it's configured globally now -->
+    <!-- Add debug info -->
+    <div class="mb-4 p-2 bg-gray-100 text-sm">
+      <strong>Debug:</strong> 
+      Name: {{ newItem.name?.length || 0 }} chars, 
+      Image: {{ newItem.imageUrl ? 'Set' : 'Not set' }}, 
+      Details: {{ newItem.details?.length || 0 }} chars,
+      Uploading: {{ isUploading }},
+      Valid: {{ isFormValid }}
+    </div>
+    
     <div>
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">
@@ -13,6 +22,7 @@
           type="text"
           class="w-full px-3 py-2 border border-gray-300 rounded"
           required
+          placeholder="Enter item name"
         />
       </div>
 
@@ -47,10 +57,10 @@
             alt="Preview"
             class="rounded"
           />
+          <p class="text-sm text-gray-600 mt-1">Image path: {{ newItem.imageUrl }}</p>
         </div>
       </div>
 
-      <!-- Rest of your form fields -->
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">
           Item Details
@@ -60,6 +70,7 @@
           class="w-full px-3 py-2 border border-gray-300 rounded"
           rows="3"
           required
+          placeholder="Enter item details"
         ></textarea>
       </div>
 
@@ -102,7 +113,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage, IKUpload } from 'imagekitio-vue'; // Remove IKContext
+import { IKImage, IKUpload } from 'imagekitio-vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -110,7 +121,7 @@ export default defineComponent({
   name: 'ItemForm',
   components: {
     IKImage,
-    IKUpload // Remove IKContext
+    IKUpload
   },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
@@ -137,8 +148,11 @@ export default defineComponent({
       if (res && res.filePath) {
         newItem.value.imageUrl = res.filePath;
         console.log('File path set to:', res.filePath);
+      } else if (res && res.url) {
+        newItem.value.imageUrl = res.url;
+        console.log('File URL set to:', res.url);
       } else {
-        console.error('No filePath in response:', res);
+        console.error('No filePath or url in response:', res);
         uploadError.value = 'Upload succeeded but no file path returned';
       }
     };
@@ -149,32 +163,53 @@ export default defineComponent({
       uploadError.value = `Upload failed: ${err.message || err.toString()}`;
     };
     
+    // Fix the form validation - make it more robust
     const isFormValid = computed(() => {
-      return newItem.value.name.trim() !== '' && 
-             newItem.value.imageUrl !== '' && 
-             newItem.value.details.trim() !== '' &&
-             !isUploading.value;
+      try {
+        return !!(
+          newItem.value?.name?.trim() && 
+          newItem.value?.imageUrl && 
+          newItem.value?.details?.trim() &&
+          !isUploading.value
+        );
+      } catch (error) {
+        console.error('Form validation error:', error);
+        return false;
+      }
     });
     
     const handleSubmit = () => {
-      if (!isFormValid.value) return;
+      console.log('Submit clicked, form valid:', isFormValid.value);
+      console.log('Current item:', newItem.value);
       
-      const itemToAdd: Item = {
-        ...newItem.value,
-        id: Date.now().toString(),
-        dateAdded: new Date().toISOString()
-      };
+      if (!isFormValid.value) {
+        console.log('Form is not valid, not submitting');
+        return;
+      }
       
-      emit('item-added', itemToAdd);
-      
-      // Reset form
-      newItem.value = {
-        name: '',
-        imageUrl: '',
-        details: '',
-        status: 'not_sold'
-      };
-      uploadError.value = '';
+      try {
+        const itemToAdd: Item = {
+          ...newItem.value,
+          id: Date.now().toString(),
+          dateAdded: new Date().toISOString()
+        };
+        
+        console.log('Emitting item-added:', itemToAdd);
+        emit('item-added', itemToAdd);
+        
+        // Reset form
+        newItem.value = {
+          name: '',
+          imageUrl: '',
+          details: '',
+          status: 'not_sold'
+        };
+        uploadError.value = '';
+        
+      } catch (error) {
+        console.error('Submit error:', error);
+        uploadError.value = 'Error submitting form';
+      }
     };
     
     return {
