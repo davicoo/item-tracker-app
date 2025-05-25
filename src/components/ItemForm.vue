@@ -4,7 +4,7 @@
     
     <!-- ImageKit Context goes here -->
     <IKContext
-      publicKey="public_BLo55sPu94p4/MUy7mHgfDdvOg8="
+      publicKey="private_qTO9s1aV6K2FSALd597boRa2RN0="
       urlEndpoint="https://ik.imagekit.io/mydwcapp"
       transformationPosition="path"
     >
@@ -124,8 +124,8 @@ export default defineComponent({
   setup(props, { emit }) {
     // ImageKit configuration
     const imageKitConfig = {
-      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Your public key
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Your URL endpoint
+      publicKey: "private_qTO9s1aV6K2FSALd597boRa2RN0=", // Verify this is correct
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Verify this is correct
       transformationPosition: "path"
     };
 
@@ -139,23 +139,42 @@ export default defineComponent({
     const isUploading = ref<boolean>(false);
     const uploadError = ref<string>('');
     
-    // ImageKit upload handlers
+    // ImageKit upload handlers with better error handling
     const onUploadStart = () => {
+      console.log('Upload started...');
       isUploading.value = true;
       uploadError.value = '';
     };
     
     const onUploadSuccess = (res: any) => {
-      isUploading.value = false;
-      // Store the file path from ImageKit response
-      newItem.value.imageUrl = res.filePath;
       console.log('Upload successful:', res);
+      isUploading.value = false;
+      
+      // Check if the response has the expected structure
+      if (res && res.filePath) {
+        newItem.value.imageUrl = res.filePath;
+      } else if (res && res.url) {
+        newItem.value.imageUrl = res.url;
+      } else {
+        console.error('Unexpected response structure:', res);
+        uploadError.value = 'Upload succeeded but response format is unexpected.';
+      }
     };
     
     const onUploadError = (err: any) => {
+      console.error('Upload error details:', err);
       isUploading.value = false;
-      uploadError.value = 'Failed to upload image. Please try again.';
-      console.error('Upload error:', err);
+      
+      // Provide more specific error messages
+      if (err.message) {
+        uploadError.value = `Upload failed: ${err.message}`;
+      } else if (err.toString().includes('401')) {
+        uploadError.value = 'Authentication failed. Check your ImageKit credentials.';
+      } else if (err.toString().includes('403')) {
+        uploadError.value = 'Upload not allowed. Enable unsigned uploads in ImageKit dashboard.';
+      } else {
+        uploadError.value = 'Failed to upload image. Please try again.';
+      }
     };
     
     // Check if form is valid

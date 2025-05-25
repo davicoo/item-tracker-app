@@ -39,7 +39,7 @@ export default defineComponent({
   setup(props, { emit }) {
     // ImageKit configuration
     const imageKitConfig = {
-      publicKey: "public_8RxT918PPFr+aU5aqwgMZx/waIU=",
+      publicKey: "private_qTO9s1aV6K2FSALd597boRa2RN0=",
       urlEndpoint: "https://ik.imagekit.io/mydwcapp",
       transformationPosition: "path"
     };
