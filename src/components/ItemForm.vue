@@ -201,8 +201,15 @@ export default defineComponent({
           dateAdded: new Date().toISOString()
         };
         
-        console.log('✅ Emitting item-added:', itemToAdd);
-        emit('item-added', itemToAdd);
+        console.log('✅ Preparing to emit item-added:', itemToAdd);
+        try {
+          emit('item-added', itemToAdd);
+          console.log('✅ Emission successful');
+        } catch (emitError) {
+          console.error('❌ Emission failed:', emitError);
+          uploadError.value = 'Error emitting item-added event';
+          return;
+        }
         
         // Reset form
         newItem.value = {
@@ -225,7 +232,24 @@ export default defineComponent({
       const file = target.files?.[0];
       
       if (!file) return;
-      
+    
+      // Validate file type and size
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSizeInMB = 5;
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+    
+      if (!allowedTypes.includes(file.type)) {
+        uploadError.value = `Invalid file type. Allowed types: ${allowedTypes.join(', ')}`;
+        console.error('File type validation failed:', file.type);
+        return;
+      }
+    
+      if (file.size > maxSizeInBytes) {
+        uploadError.value = `File size exceeds ${maxSizeInMB}MB limit.`;
+        console.error('File size validation failed:', file.size);
+        return;
+      }
+    
       isUploading.value = true;
       uploadError.value = '';
       
@@ -234,7 +258,8 @@ export default defineComponent({
         const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth?' + 
           new URLSearchParams({
             token: Math.random().toString(36),
-            expire: (Date.now() + 3600000).toString() // 1 hour from now
+            // Use seconds, not ms
+            expire: Math.floor(Date.now() / 1000 + 3600).toString()
           }));
         
         const authData = await authResponse.json();
@@ -250,18 +275,21 @@ export default defineComponent({
         formData.append('token', authData.token);
         
         const uploadResponse = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-          method: 'POST',
-          body: formData
-        });
-        
+        if (uploadData && typeof uploadData === 'object' && 'filePath' in uploadData) {
+          newItem.value.imageUrl = uploadData.filePath;
+          console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
+          // Reset file input
+          (event.target as HTMLInputElement).value = '';
+        } else {
         const uploadData = await uploadResponse.json();
         console.log('Upload response:', uploadData);
         
-        if (uploadData.filePath) {
+        if (uploadData && typeof uploadData === 'object' && 'filePath' in uploadData) {
           newItem.value.imageUrl = uploadData.filePath;
           console.log('✅ Image uploaded to ImageKit:', uploadData.filePath);
         } else {
-          throw new Error('Upload failed: ' + JSON.stringify(uploadData));
+          console.error('❌ Invalid upload response structure:', uploadData);
+          throw new Error('Upload failed: Invalid response structure');
         }
         
       } catch (error) {
@@ -270,18 +298,23 @@ export default defineComponent({
       } finally {
         isUploading.value = false;
       }
-    };
-    
     return {
+      // Reactive properties
       newItem,
       isUploading,
       uploadError,
       statusOptions,
+
+      // Computed properties
+      isFormValid,
+
+      // Methods
       onUploadStart,
       onUploadSuccess,
       onUploadError,
       handleSubmit,
-      handleFileUpload,
+      handleFileUpload
+    };
       isFormValid
     };
   }
