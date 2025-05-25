@@ -1,24 +1,60 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <ItemCard
-      v-for="item in items"
-      :key="item?.id || Math.random()"
-      :item="item"
-      @update-status="$emit('update-status', $event)"
-      @delete-item="$emit('delete-item', $event)"
-      v-if="item && item.id"
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Image display -->
+    <IKImage 
+      v-if="item.imageUrl"
+      :path="item.imageUrl"
+      :transformation="[{ height: '192', width: '400', crop: 'maintain_ratio' }]"
+      :alt="item.name"
+      class="w-full h-48 object-cover"
     />
-  </div>
-  <!-- Add this for debugging -->
-  <div class="mt-4 p-4 bg-gray-100 rounded">
-    <h3>Debug - Items data:</h3>
-    <pre>{{ JSON.stringify(items, null, 2) }}</pre>
+    <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
+      <span class="text-gray-500">No image</span>
+    </div>
+    
+    <div class="p-4">
+      <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
+      <p class="text-gray-600 text-sm mb-3">{{ item.details }}</p>
+      
+      <div class="mb-3">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+        <select
+          :value="item.status"
+          @change="handleStatusChange"
+          class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+        >
+          <option 
+            v-for="option in statusOptions" 
+            :key="option.value" 
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <span 
+          class="px-2 py-1 rounded text-xs font-medium"
+          :class="statusColor"
+        >
+          {{ statusLabel }}
+        </span>
+        
+        <button
+          @click="handleDelete"
+          class="text-red-500 hover:text-red-700 text-sm font-medium"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { IKContext, IKImage } from 'imagekitio-vue';
+import { IKImage } from 'imagekitio-vue'; // Remove IKContext since it's global
 import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
@@ -26,8 +62,7 @@ import { statusOptions } from '../types/item';
 export default defineComponent({
   name: 'ItemCard',
   components: {
-    IKContext,
-    IKImage
+    IKImage // Remove IKContext
   },
   props: {
     item: {
@@ -37,13 +72,6 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete-item'],
   setup(props, { emit }) {
-    // ImageKit configuration
-    const imageKitConfig = {
-      publicKey: "private_qTO9s1aV6K2FSALd597boRa2RN0=",
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
-      transformationPosition: "path"
-    };
-
     const handleStatusChange = (event: Event) => {
       const target = event.target as HTMLSelectElement;
       emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
@@ -71,9 +99,7 @@ export default defineComponent({
       }
     });
     
-    // IMPORTANT: Make sure imageKitConfig is returned!
     return {
-      imageKitConfig,  // ← This line is crucial!
       statusOptions,
       handleStatusChange,
       handleDelete,
