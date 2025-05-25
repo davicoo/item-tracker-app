@@ -2,13 +2,13 @@
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
     
-    <!-- Add debug info -->
+    <!-- Enhanced debug info -->
     <div class="mb-4 p-2 bg-gray-100 text-sm">
-      <strong>Debug:</strong> 
-      Name: {{ newItem.name?.length || 0 }} chars, 
-      Image: {{ newItem.imageUrl ? 'Set' : 'Not set' }}, 
-      Details: {{ newItem.details?.length || 0 }} chars,
-      Uploading: {{ isUploading }},
+      <strong>Debug:</strong><br>
+      Name: {{ newItem.name?.length || 0 }} chars ({{ newItem.name }})<br>
+      Image: {{ newItem.imageUrl ? 'Set' : 'Not set' }} ({{ newItem.imageUrl }})<br>
+      Details: {{ newItem.details?.length || 0 }} chars ({{ newItem.details }})<br>
+      Uploading: {{ isUploading }}<br>
       Valid: {{ isFormValid }}
     </div>
     
@@ -143,18 +143,42 @@ export default defineComponent({
     
     const onUploadSuccess = (res: any) => {
       console.log('Upload successful - full response:', res);
+      console.log('Response keys:', Object.keys(res));
+      console.log('Response structure:', JSON.stringify(res, null, 2));
+      
       isUploading.value = false;
       
-      if (res && res.filePath) {
+      // Try different possible response properties
+      if (res.filePath) {
         newItem.value.imageUrl = res.filePath;
-        console.log('File path set to:', res.filePath);
-      } else if (res && res.url) {
+        console.log('✅ Set imageUrl from filePath:', res.filePath);
+      } else if (res.url) {
         newItem.value.imageUrl = res.url;
-        console.log('File URL set to:', res.url);
+        console.log('✅ Set imageUrl from url:', res.url);
+      } else if (res.name) {
+        newItem.value.imageUrl = res.name;
+        console.log('✅ Set imageUrl from name:', res.name);
+      } else if (res.fileId) {
+        newItem.value.imageUrl = res.fileId;
+        console.log('✅ Set imageUrl from fileId:', res.fileId);
+      } else if (typeof res === 'string') {
+        newItem.value.imageUrl = res;
+        console.log('✅ Set imageUrl from string response:', res);
       } else {
-        console.error('No filePath or url in response:', res);
-        uploadError.value = 'Upload succeeded but no file path returned';
+        console.error('❌ No valid image path found in response:', res);
+        uploadError.value = 'Upload succeeded but could not get image path';
+        
+        // Try to extract any string value from the response
+        const possiblePath = Object.values(res).find(val => 
+          typeof val === 'string' && val.length > 0
+        );
+        if (possiblePath) {
+          newItem.value.imageUrl = possiblePath as string;
+          console.log('✅ Found possible path:', possiblePath);
+        }
       }
+      
+      console.log('Final imageUrl:', newItem.value.imageUrl);
     };
     
     const onUploadError = (err: any) => {
@@ -163,27 +187,32 @@ export default defineComponent({
       uploadError.value = `Upload failed: ${err.message || err.toString()}`;
     };
     
-    // Fix the form validation - make it more robust
     const isFormValid = computed(() => {
-      try {
-        return !!(
-          newItem.value?.name?.trim() && 
-          newItem.value?.imageUrl && 
-          newItem.value?.details?.trim() &&
-          !isUploading.value
-        );
-      } catch (error) {
-        console.error('Form validation error:', error);
-        return false;
-      }
+      const valid = !!(
+        newItem.value?.name?.trim() && 
+        newItem.value?.imageUrl?.trim() && 
+        newItem.value?.details?.trim() &&
+        !isUploading.value
+      );
+      
+      console.log('Form validation:', {
+        name: newItem.value?.name?.trim(),
+        imageUrl: newItem.value?.imageUrl?.trim(),
+        details: newItem.value?.details?.trim(),
+        uploading: isUploading.value,
+        valid: valid
+      });
+      
+      return valid;
     });
     
     const handleSubmit = () => {
-      console.log('Submit clicked, form valid:', isFormValid.value);
+      console.log('Submit clicked');
+      console.log('Form valid:', isFormValid.value);
       console.log('Current item:', newItem.value);
       
       if (!isFormValid.value) {
-        console.log('Form is not valid, not submitting');
+        console.log('❌ Form is not valid, not submitting');
         return;
       }
       
@@ -194,7 +223,7 @@ export default defineComponent({
           dateAdded: new Date().toISOString()
         };
         
-        console.log('Emitting item-added:', itemToAdd);
+        console.log('✅ Emitting item-added:', itemToAdd);
         emit('item-added', itemToAdd);
         
         // Reset form
