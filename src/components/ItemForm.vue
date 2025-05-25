@@ -2,11 +2,11 @@
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
     
-    <!-- ImageKit Context wraps the components that need it -->
+    <!-- ImageKit Context goes here -->
     <IKContext
-      :publicKey="imageKitConfig.publicKey"
-      :urlEndpoint="imageKitConfig.urlEndpoint"
-      :transformationPosition="imageKitConfig.transformationPosition"
+      publicKey="public_BLo55sPu94p4/MUy7mHgfDdvOg8="
+      urlEndpoint="https://ik.imagekit.io/mydwcapp"
+      transformationPosition="path"
     >
       <div>
         <div class="mb-4">

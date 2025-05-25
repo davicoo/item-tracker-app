@@ -23,17 +23,17 @@
     />
     <!-- Items Grid -->
     <ItemGrid 
+      v-else-if="!isLoading" 
       :items="items" 
       @update-status="updateItemStatus" 
       @delete-item="deleteItem"
     />
-    <!-- Debugging Info -->
-    <div class="mt-4 p-4 bg-gray-100 rounded">
-      <h3 class="font-semibold">Debug - Items data:</h3>
-      <pre class="text-sm text-gray-700">{{ JSON.stringify(items, null, 2) }}</pre>
+    <!-- Loading Spinner -->
+    <div v-else class="text-center p-8">
+      <p class="text-gray-500">Loading items...</p>
     </div>
     <!-- Empty state -->
-    <div v-if="items.length === 0" class="text-center p-8 bg-gray-100 rounded-lg">
+    <div v-if="items.length === 0 && !isLoading" class="text-center p-8 bg-gray-100 rounded-lg">
       <p class="text-gray-500">No items yet. Add your first item!</p>
     </div>
   </div>
@@ -55,15 +55,23 @@ export default defineComponent({
   setup() {
     const items = ref<Item[]>([]);
     const isFormVisible = ref(false);
+    const isLoading = ref(true);
 
     // Load items from localStorage on component mount
     onMounted(() => {
-      const savedItems = localStorage.getItem('itemTrackerItems');
-      if (savedItems) {
-        items.value = JSON.parse(savedItems);
-      } else {
+      try {
+        const savedItems = localStorage.getItem('itemTrackerItems');
+        if (savedItems) {
+          items.value = JSON.parse(savedItems);
+        } else {
+          items.value = defaultItems;
+          localStorage.setItem('itemTrackerItems', JSON.stringify(defaultItems));
+        }
+      } catch (error) {
+        console.error('Error loading items from localStorage:', error);
         items.value = defaultItems;
-        localStorage.setItem('itemTrackerItems', JSON.stringify(defaultItems));
+      } finally {
+        isLoading.value = false;
       }
     });
 
@@ -92,7 +100,7 @@ export default defineComponent({
     };
 
     return {
-      ...toRefs({ items, isFormVisible }),
+      ...toRefs({ items, isFormVisible, isLoading }),
       addItem,
       updateItemStatus,
       deleteItem
