@@ -9,5 +9,8 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  css: {
+    postcss: './postcss.config.js', // If you have PostCSS config
   }
 })
