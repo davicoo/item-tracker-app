@@ -17,20 +17,68 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import ItemCard from './ItemCard.vue';
+import { defineComponent, computed } from 'vue';
+import { IKContext, IKImage } from 'imagekitio-vue';
+import type { PropType } from 'vue';
 import type { Item } from '../types/item';
+import { statusOptions } from '../types/item';
 
 export default defineComponent({
-  name: 'ItemList',
+  name: 'ItemCard',
   components: {
-    ItemCard
+    IKContext,
+    IKImage
   },
   props: {
-    items: {
-      type: Array as () => Item[],
+    item: {
+      type: Object as PropType<Item>,
       required: true
     }
+  },
+  emits: ['update-status', 'delete-item'], // Change 'delete' to 'delete-item'
+  setup(props, { emit }) {
+    // ImageKit configuration (same as in ItemForm)
+    const imageKitConfig = {
+      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=",
+      urlEndpoint: "https://ik.imagekit.io/mydwcapp",
+      transformationPosition: "path"
+    };
+
+    const handleStatusChange = (event: Event) => {
+      const target = event.target as HTMLSelectElement;
+      emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
+    };
+    
+    const handleDelete = () => {
+      emit('delete-item', props.item.id); // Change 'delete' to 'delete-item'
+    };
+    
+    const statusLabel = computed(() => {
+      const option = statusOptions.find(opt => opt.value === props.item.status);
+      return option?.label || 'Unknown';
+    });
+    
+    const statusColor = computed(() => {
+      switch (props.item.status) {
+        case 'not_sold':
+          return 'bg-red-100 text-red-800';
+        case 'sold':
+          return 'bg-yellow-100 text-yellow-800';
+        case 'sold_paid':
+          return 'bg-green-100 text-green-800';
+        default:
+          return 'bg-gray-100 text-gray-800';
+      }
+    });
+    
+    return {
+      imageKitConfig,
+      statusOptions,
+      handleStatusChange,
+      handleDelete,
+      statusLabel,
+      statusColor
+    };
   }
 });
 </script>
