@@ -1,25 +1,31 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- ImageKit Context for displaying images -->
+    <!-- ImageKit Context with hardcoded config -->
     <IKContext
-      :publicKey="imageKitConfig.publicKey"
-      :urlEndpoint="imageKitConfig.urlEndpoint"
-      :transformationPosition="imageKitConfig.transformationPosition"
+      publicKey="public_BLo55sPu94p4/MUy7mHgfDdvOg8="
+      urlEndpoint="https://ik.imagekit.io/mydwcapp"
+      transformationPosition="path"
     >
       <!-- Use ImageKit Image component or fallback to regular img -->
       <IKImage 
-        v-if="item.imageUrl.startsWith('/')"
+        v-if="item.imageUrl && item.imageUrl.startsWith('/')"
         :path="item.imageUrl"
         :transformation="[{ height: '192', width: '400', crop: 'maintain_ratio' }]"
         :alt="item.name"
         class="w-full h-48 object-cover"
       />
       <img 
-        v-else
+        v-else-if="item.imageUrl"
         :src="item.imageUrl"
         :alt="item.name"
         class="w-full h-48 object-cover"
       />
+      <div 
+        v-else
+        class="w-full h-48 bg-gray-200 flex items-center justify-center"
+      >
+        <span class="text-gray-500">No image</span>
+      </div>
     </IKContext>
     
     <div class="p-4">
@@ -83,13 +89,6 @@ export default defineComponent({
   },
   emits: ['update-status', 'delete-item'],
   setup(props, { emit }) {
-    // ImageKit configuration - make sure this is defined first
-    const imageKitConfig = {
-      publicKey: "public_BLo55sPu94p4/MUy7mHgfDdvOg8=", // Replace with your actual key
-      urlEndpoint: "https://ik.imagekit.io/mydwcapp", // Replace with your actual endpoint
-      transformationPosition: "path"
-    };
-
     const handleStatusChange = (event: Event) => {
       const target = event.target as HTMLSelectElement;
       emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
@@ -117,9 +116,7 @@ export default defineComponent({
       }
     });
     
-    // Make sure to return imageKitConfig
     return {
-      imageKitConfig,
       statusOptions,
       handleStatusChange,
       handleDelete,
