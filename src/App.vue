@@ -27,6 +27,11 @@
       @update-status="updateItemStatus" 
       @delete-item="deleteItem"
     />
+    <!-- Debugging Info -->
+    <div class="mt-4 p-4 bg-gray-100 rounded">
+      <h3 class="font-semibold">Debug - Items data:</h3>
+      <pre class="text-sm text-gray-700">{{ JSON.stringify(items, null, 2) }}</pre>
+    </div>
     <!-- Empty state -->
     <div v-if="items.length === 0" class="text-center p-8 bg-gray-100 rounded-lg">
       <p class="text-gray-500">No items yet. Add your first item!</p>

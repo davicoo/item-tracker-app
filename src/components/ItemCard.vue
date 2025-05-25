@@ -1,128 +1,36 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- ImageKit Context with hardcoded config -->
-    <IKContext
-      publicKey="public_BLo55sPu94p4/MUy7mHgfDdvOg8="
-      urlEndpoint="https://ik.imagekit.io/mydwcapp"
-      transformationPosition="path"
-    >
-      <!-- Use ImageKit Image component or fallback to regular img -->
-      <IKImage 
-        v-if="item.imageUrl && item.imageUrl.startsWith('/')"
-        :path="item.imageUrl"
-        :transformation="[{ height: '192', width: '400', crop: 'maintain_ratio' }]"
-        :alt="item.name"
-        class="w-full h-48 object-cover"
-      />
-      <img 
-        v-else-if="item.imageUrl"
-        :src="item.imageUrl"
-        :alt="item.name"
-        class="w-full h-48 object-cover"
-      />
-      <div 
-        v-else
-        class="w-full h-48 bg-gray-200 flex items-center justify-center"
-      >
-        <span class="text-gray-500">No image</span>
-      </div>
-    </IKContext>
-    
-    <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2">{{ item.name }}</h3>
-      <p class="text-gray-600 text-sm mb-3">{{ item.details }}</p>
-      
-      <div class="mb-3">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-        <select
-          :value="item.status"
-          @change="handleStatusChange"
-          class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-        >
-          <option 
-            v-for="option in statusOptions" 
-            :key="option.value" 
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-      
-      <div class="flex justify-between items-center">
-        <span 
-          class="px-2 py-1 rounded text-xs font-medium"
-          :class="statusColor"
-        >
-          {{ statusLabel }}
-        </span>
-        
-        <button
-          @click="handleDelete"
-          class="text-red-500 hover:text-red-700 text-sm font-medium"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <ItemCard
+      v-for="item in items"
+      :key="item?.id || Math.random()"
+      :item="item"
+      @update-status="$emit('update-status', $event)"
+      @delete-item="$emit('delete-item', $event)"
+      v-if="item && item.id"
+    />
+  </div>
+  <!-- Add this for debugging -->
+  <div class="mt-4 p-4 bg-gray-100 rounded">
+    <h3>Debug - Items data:</h3>
+    <pre>{{ JSON.stringify(items, null, 2) }}</pre>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { IKContext, IKImage } from 'imagekitio-vue';
-import type { PropType } from 'vue';
+import { defineComponent } from 'vue';
+import ItemCard from './ItemCard.vue';
 import type { Item } from '../types/item';
-import { statusOptions } from '../types/item';
 
 export default defineComponent({
-  name: 'ItemCard',
+  name: 'ItemList',
   components: {
-    IKContext,
-    IKImage
+    ItemCard
   },
   props: {
-    item: {
-      type: Object as PropType<Item>,
+    items: {
+      type: Array as () => Item[],
       required: true
     }
-  },
-  emits: ['update-status', 'delete-item'],
-  setup(props, { emit }) {
-    const handleStatusChange = (event: Event) => {
-      const target = event.target as HTMLSelectElement;
-      emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
-    };
-    
-    const handleDelete = () => {
-      emit('delete-item', props.item.id);
-    };
-    
-    const statusLabel = computed(() => {
-      const option = statusOptions.find(opt => opt.value === props.item.status);
-      return option?.label || 'Unknown';
-    });
-    
-    const statusColor = computed(() => {
-      switch (props.item.status) {
-        case 'not_sold':
-          return 'bg-red-100 text-red-800';
-        case 'sold':
-          return 'bg-yellow-100 text-yellow-800';
-        case 'sold_paid':
-          return 'bg-green-100 text-green-800';
-        default:
-          return 'bg-gray-100 text-gray-800';
-      }
-    });
-    
-    return {
-      statusOptions,
-      handleStatusChange,
-      handleDelete,
-      statusLabel,
-      statusColor
-    };
   }
 });
 </script>
