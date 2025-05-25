@@ -26,7 +26,7 @@ export const defaultItems: Item[] = [
   {
     id: "1",
     name: "Vintage Camera",
-    imageUrl: "/images/placeholder-image-1.jpg",
+    imageUrl: "https://ik.imagekit.io/mydwcapp/tr:h-192,w-400,c-maintain_ratio/images/placeholder-image-1.jpg",
     details: "A vintage film camera from the 1970s in excellent condition.",
     status: "not_sold",
     dateAdded: new Date().toISOString() // Add dateAdded property
@@ -34,7 +34,7 @@ export const defaultItems: Item[] = [
   {
     id: "2",
     name: "Antique Chair",
-    imageUrl: "/images/placeholder-image-1.jpg",
+    imageUrl: "https://ik.imagekit.io/mydwcapp/tr:h-192,w-400,c-maintain_ratio/images/placeholder-image-1.jpg",
     details: "Hand-carved wooden chair from the early 1900s.",
     status: "sold",
     dateAdded: new Date().toISOString() // Add dateAdded property
