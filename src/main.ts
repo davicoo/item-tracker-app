@@ -1,15 +1,14 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import ImageKitVue from '@imagekit/vue'
 import './assets/main.css'
-import ImageKit from '@imagekit/vue'
 
 const app = createApp(App)
 
-// Use ImageKit as a global plugin
-app.use(ImageKit, {
-  publicKey: "public_8RxT918PPFr+aU5aqwgMZx/waIU=",
-  urlEndpoint: "https://ik.imagekit.io/mydwcapp",
-  authenticationEndpoint: "https://myinvtory.netlify.app/.netlify/functions/auth"
+app.use(ImageKitVue, {
+  publicKey: 'public_8RxT918PPFr+aU5aqwgMZx/waIU=',
+  urlEndpoint: 'https://ik.imagekit.io/mydwcapp',
+  authenticationEndpoint: 'https://myinvtory.netlify.app/.netlify/functions/auth'
 })
 
 app.mount('#app')

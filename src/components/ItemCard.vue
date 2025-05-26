@@ -1,10 +1,13 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <!-- Image display -->
-    <IKImage 
+    <Image 
       v-if="item.imageUrl"
-      :path="item.imageUrl"
-      :transformation="[{ height: '192', width: '400', crop: 'maintain_ratio' }]"
+      url-endpoint="https://ik.imagekit.io/mydwcapp"
+      :src="item.imageUrl"
+      width="400"
+      height="192"
+      transformation="maintain_ratio"
       :alt="item.name"
       class="w-full h-48 object-cover"
     />
@@ -52,60 +55,41 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { IKImage } from '@imagekit/vue'; // ✅ Fixed import
-import type { PropType } from 'vue';
+<script setup lang="ts">
+import { Image } from '@imagekit/vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
+import { computed, defineProps, defineEmits } from 'vue';
 
-export default defineComponent({
-  name: 'ItemCard',
-  components: {
-    IKImage // ✅ Direct named import
-  },
-  props: {
-    item: {
-      type: Object as PropType<Item>,
-      required: true
-    }
-  },
-  emits: ['update-status', 'delete-item'],
-  setup(props, { emit }) {
-    const handleStatusChange = (event: Event) => {
-      const target = event.target as HTMLSelectElement;
-      emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
-    };
-    
-    const handleDelete = () => {
-      emit('delete-item', props.item.id);
-    };
-    
-    const statusLabel = computed(() => {
-      const option = statusOptions.find(opt => opt.value === props.item.status);
-      return option?.label || 'Unknown';
-    });
-    
-    const statusColor = computed(() => {
-      switch (props.item.status) {
-        case 'not_sold':
-          return 'bg-red-100 text-red-800';
-        case 'sold':
-          return 'bg-yellow-100 text-yellow-800';
-        case 'sold_paid':
-          return 'bg-green-100 text-green-800';
-        default:
-          return 'bg-gray-100 text-gray-800';
-      }
-    });
-    
-    return {
-      statusOptions,
-      handleStatusChange,
-      handleDelete,
-      statusLabel,
-      statusColor
-    };
+const props = defineProps<{
+  item: Item;
+}>();
+
+const emit = defineEmits<{
+  (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
+  (e: 'delete-item', id: string): void;
+}>();
+
+const handleStatusChange = (event: Event) => {
+  const target = event.target as HTMLSelectElement;
+  emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
+};
+
+const handleDelete = () => {
+  emit('delete-item', props.item.id);
+};
+
+const statusLabel = computed(() => {
+  const option = statusOptions.find(opt => opt.value === props.item.status);
+  return option?.label || 'Unknown';
+});
+
+const statusColor = computed(() => {
+  switch (props.item.status) {
+    case 'not_sold': return 'bg-red-100 text-red-800';
+    case 'sold': return 'bg-yellow-100 text-yellow-800';
+    case 'sold_paid': return 'bg-green-100 text-green-800';
+    default: return 'bg-gray-100 text-gray-800';
   }
 });
 </script>
