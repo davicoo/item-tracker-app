@@ -42,14 +42,13 @@
       </div>
       
       <!-- Preview uploaded image -->
-      <Image 
-        v-if="newItem.imageUrl"
-        :src="newItem.imageUrl"
-        width="240"
-        height="160"
-        alt="Preview"
-        class="mt-2 rounded"
-      />
+      <div v-if="newItem.imageUrl" class="mt-2">
+        <img 
+          :src="newItem.imageUrl.startsWith('local:') ? newItem.imageUrl.substring(6) : newItem.imageUrl"
+          alt="Preview"
+          class="mt-2 rounded max-w-full max-h-40 object-contain"
+        />
+      </div>
     </div>
 
     <div class="mb-4">
@@ -292,7 +291,8 @@ const handleSubmit = () => {
   
   const itemToAdd: Item = {
     ...newItem.value,
-    id: Date.now().toString()
+    id: Date.now().toString(),
+    dateAdded: new Date().toISOString()  // Add this line
   };
   
   emit('item-added', itemToAdd);

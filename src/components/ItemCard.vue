@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
     <!-- Debug info to see what's happening -->
     <div v-if="!item.imageUrl" class="p-2 bg-red-100 text-xs">
       No image URL available: {{ JSON.stringify(item) }}
     </div>
     
     <!-- Image display with local fallback support -->
-    <div v-if="item.imageUrl" class="h-48 overflow-hidden">
+    <div v-if="item.imageUrl && !imageError" class="h-48 overflow-hidden">
       <img 
         :src="processedImageUrl"
         :alt="item.name"
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -78,7 +78,6 @@ const props = defineProps<{
   item: Item;
 }>();
 
-// FIX: Define the emit with the correct parameter structure
 const emit = defineEmits<{
   (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
   (e: 'delete-item', id: string): void;
@@ -86,6 +85,22 @@ const emit = defineEmits<{
 
 // Add image error handling
 const imageError = ref(false);
+
+const isLocalImage = computed(() => {
+  return props.item.imageUrl?.startsWith('local:');
+});
+
+const processedImageUrl = computed(() => {
+  if (!props.item.imageUrl) return '';
+  
+  if (isLocalImage.value) {
+    // For local images, strip the 'local:' prefix to get the data URL
+    return props.item.imageUrl.substring(6);
+  }
+  
+  // For remote images, use the original URL
+  return props.item.imageUrl;
+});
 
 const handleImageError = () => {
   console.log(`Image failed to load: ${props.item.imageUrl}`);
@@ -116,19 +131,6 @@ const statusColor = computed(() => {
     case 'sold_paid': return 'bg-green-100 text-green-800';
     default: return 'bg-gray-100 text-gray-800';
   }
-});
-
-// Add computed properties for local image handling
-const isLocalImage = computed(() => {
-  return props.item.imageUrl?.startsWith('local:');
-});
-
-const processedImageUrl = computed(() => {
-  if (isLocalImage.value) {
-    // Remove the 'local:' prefix to get the actual data URL
-    return props.item.imageUrl.substring(6);
-  }
-  return props.item.imageUrl;
 });
 </script>
 
