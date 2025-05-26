@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import ImageKitVue from '@imagekit/vue'
+import * as ImageKitVue from '@imagekit/vue'  // Namespace import
 import './assets/main.css'
 
 const app = createApp(App)
