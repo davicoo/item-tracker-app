@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <!-- Debug info to see what's happening -->
     <div v-if="!item.imageUrl" class="p-2 bg-red-100 text-xs">
       No image URL available: {{ JSON.stringify(item) }}
     </div>
     
     <!-- Image display with local fallback support -->
-    <div class="h-48 overflow-hidden">
+    <div v-if="item.imageUrl" class="h-48 overflow-hidden">
       <img 
         :src="imageToDisplay"
         :alt="item.name"
@@ -14,10 +14,16 @@
         @error="handleImageError"
       />
     </div>
+    <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
+      <div class="text-center p-4">
+        <span class="text-gray-500 block">{{ item.name }}</span>
+        <span class="text-gray-400 text-sm">No image available</span>
+      </div>
+    </div>
     
-    <!-- Add a badge for fallback images -->
-    <div v-if="imageError" class="absolute top-2 right-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
-      Image Error
+    <!-- Add a badge for local images -->
+    <div v-if="isLocalImage" class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+      Local Only
     </div>
     
     <!-- Item details -->
@@ -64,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, defineProps, defineEmits } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions, DEFAULT_FALLBACK_IMAGE } from '../types/item';
 
@@ -72,21 +78,14 @@ const props = defineProps<{
   item: Item;
 }>();
 
+// FIX: Define the emit with the correct parameter structure
+const emit = defineEmits<{
+  (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
+  (e: 'delete-item', id: string): void;
+}>();
+
 // Add image error handling
 const imageError = ref(false);
-
-// Use the fallback image when needed
-const imageToDisplay = computed(() => {
-  if (!props.item.imageUrl || imageError.value) {
-    return DEFAULT_FALLBACK_IMAGE;
-  }
-  
-  if (props.item.imageUrl.startsWith('local:')) {
-    return props.item.imageUrl.substring(6);
-  }
-  
-  return props.item.imageUrl;
-});
 
 const handleImageError = () => {
   console.log(`Image failed to load: ${props.item.imageUrl}`);
@@ -117,6 +116,28 @@ const statusColor = computed(() => {
     case 'sold_paid': return 'bg-green-100 text-green-800';
     default: return 'bg-gray-100 text-gray-800';
   }
+});
+
+// Add computed properties for local image handling
+const isLocalImage = computed(() => {
+  return props.item.imageUrl?.startsWith('local:');
+});
+
+const processedImageUrl = computed(() => {
+  if (isLocalImage.value) {
+    // Remove the 'local:' prefix to get the actual data URL
+    return props.item.imageUrl.substring(6);
+  }
+  return props.item.imageUrl;
+});
+
+// Use the fallback image when needed
+const imageToDisplay = computed(() => {
+  if (!props.item.imageUrl || imageError.value) {
+    return DEFAULT_FALLBACK_IMAGE;
+  }
+  
+  return props.item.imageUrl;
 });
 </script>
 
