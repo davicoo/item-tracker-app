@@ -45,14 +45,13 @@
         </div>
         
         <!-- Preview -->
-        <div v-if="newItem.imageUrl" class="mt-2">
-          <IKImage 
-            :path="newItem.imageUrl"
-            :transformation="[{ height: '160', width: '240' }]"
-            alt="Preview"
-            class="rounded"
-          />
-        </div>
+        <IKImage 
+          v-if="newItem.imageUrl"
+          :path="newItem.imageUrl"
+          :transformation="[{ height: '160', width: '240' }]"
+          alt="Preview"
+          class="rounded"
+        />
       </div>
 
       <div class="mb-4">
@@ -95,13 +94,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage, IKUpload } from '@imagekit/vue';  // Add IKUpload import
+// No ImageKit imports needed if using plugin approach
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  components: { IKImage, IKUpload },  // IKUpload is already registered here
+  // No components registration needed if using plugin
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
     const newItem = ref({
