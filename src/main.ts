@@ -5,7 +5,7 @@ import ImageKit from '@imagekit/vue'
 
 const app = createApp(App)
 
-// Use ImageKit as a plugin
+// Use ImageKit as a global plugin
 app.use(ImageKit, {
   publicKey: "public_8RxT918PPFr+aU5aqwgMZx/waIU=",
   urlEndpoint: "https://ik.imagekit.io/mydwcapp",
