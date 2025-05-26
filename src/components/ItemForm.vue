@@ -135,48 +135,71 @@ async function handleUpload() {
   const file = selectedFile.value;
   if (!file) return;
 
-  let creds;
-  try { 
-    creds = await authenticate();
-    console.log('Auth successful:', creds);
-  } catch (e) {
-    console.error('Auth failed', e);
-    uploadError.value = 'Authentication failed: ' + e.message;
-    return;
-  }
-
   try {
     isUploading.value = true;
     uploadError.value = '';
     progress.value = 0;
     
-    console.log('Starting upload...');
+    // Get authentication data
+    const authData = await authenticate();
+    console.log('Auth data:', authData);
     
-    // MATCH THE EXAMPLE EXACTLY - this is the key change!
-    const resp = await upload({
-      ...creds,  // Spread auth credentials directly
-      file,
-      fileName: file.name,
-      onProgress: e => (progress.value = e.loaded / e.total * 100)
+    // Create FormData for direct upload
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileName', file.name); // This is the required field
+    formData.append('publicKey', authData.publicKey);
+    formData.append('signature', authData.signature);
+    formData.append('expire', authData.expire.toString());
+    formData.append('token', authData.token);
+    formData.append('useUniqueFileName', 'true');
+    
+    console.log('Starting direct upload to ImageKit...');
+    
+    // Use XMLHttpRequest for progress monitoring
+    const xhr = new XMLHttpRequest();
+    
+    // Set up progress monitoring
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        progress.value = (event.loaded / event.total) * 100;
+        console.log(`Upload progress: ${Math.round(progress.value)}%`);
+      }
+    };
+    
+    // Create a promise to handle the XHR response
+    const uploadPromise = new Promise((resolve, reject) => {
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            resolve(response);
+          } catch (e) {
+            reject(new Error('Failed to parse response'));
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.responseText}`));
+        }
+      };
+      
+      xhr.onerror = () => reject(new Error('Network error during upload'));
+      xhr.onabort = () => reject(new Error('Upload aborted'));
     });
     
-    console.log('Upload OK', resp);
-    newItem.value.imageUrl = resp.url;
+    // Open and send the request
+    xhr.open('POST', 'https://upload.imagekit.io/api/v1/files/upload');
+    xhr.send(formData);
+    
+    // Wait for the upload to complete
+    const result = await uploadPromise;
+    console.log('Upload successful!', result);
+    
+    // Use the URL from the response
+    newItem.value.imageUrl = result.url;
     
   } catch (err) {
     console.error('Upload error:', err);
-    
-    if (err instanceof ImageKitAbortError) {
-      uploadError.value = 'Upload was aborted';
-    } else if (err instanceof ImageKitInvalidRequestError) {
-      uploadError.value = 'Invalid request: ' + err.message;
-    } else if (err instanceof ImageKitUploadNetworkError) {
-      uploadError.value = 'Network error: ' + err.message;
-    } else if (err instanceof ImageKitServerError) {
-      uploadError.value = 'Server error: ' + err.message;
-    } else {
-      uploadError.value = 'Upload failed: ' + err.message;
-    }
+    uploadError.value = err.message || 'Upload failed';
   } finally {
     isUploading.value = false;
   }
