@@ -6,24 +6,18 @@
     </div>
     
     <!-- Image display with local fallback support -->
-    <div v-if="item.imageUrl && !imageError" class="h-48 overflow-hidden">
+    <div class="h-48 overflow-hidden">
       <img 
-        :src="processedImageUrl"
+        :src="imageToDisplay"
         :alt="item.name"
         class="w-full h-full object-cover"
         @error="handleImageError"
       />
     </div>
-    <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
-      <div class="text-center p-4">
-        <span class="text-gray-500 block">{{ item.name }}</span>
-        <span class="text-gray-400 text-sm">No image available</span>
-      </div>
-    </div>
     
-    <!-- Add a badge for local images -->
-    <div v-if="isLocalImage" class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-      Local Only
+    <!-- Add a badge for fallback images -->
+    <div v-if="imageError" class="absolute top-2 right-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
+      Image Error
     </div>
     
     <!-- Item details -->
@@ -72,33 +66,25 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { Item } from '../types/item';
-import { statusOptions } from '../types/item';
+import { statusOptions, DEFAULT_FALLBACK_IMAGE } from '../types/item';
 
 const props = defineProps<{
   item: Item;
 }>();
 
-const emit = defineEmits<{
-  (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
-  (e: 'delete-item', id: string): void;
-}>();
-
 // Add image error handling
 const imageError = ref(false);
 
-const isLocalImage = computed(() => {
-  return props.item.imageUrl?.startsWith('local:');
-});
-
-const processedImageUrl = computed(() => {
-  if (!props.item.imageUrl) return '';
+// Use the fallback image when needed
+const imageToDisplay = computed(() => {
+  if (!props.item.imageUrl || imageError.value) {
+    return DEFAULT_FALLBACK_IMAGE;
+  }
   
-  if (isLocalImage.value) {
-    // For local images, strip the 'local:' prefix to get the data URL
+  if (props.item.imageUrl.startsWith('local:')) {
     return props.item.imageUrl.substring(6);
   }
   
-  // For remote images, use the original URL
   return props.item.imageUrl;
 });
 
