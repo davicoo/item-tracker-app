@@ -95,13 +95,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage, IKUpload } from 'imagekitio-vue';
+import { IKImage, IKUpload } from '@imagekit/vue';  // Add IKUpload import
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  components: { IKImage, IKUpload },
+  components: { IKImage, IKUpload },  // IKUpload is already registered here
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
     const newItem = ref({
