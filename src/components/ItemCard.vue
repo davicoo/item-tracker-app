@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { IKImage } from 'imagekitio-vue';
+import { IKImage } from '@imagekit/vue';
 import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
