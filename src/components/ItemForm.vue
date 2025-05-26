@@ -126,54 +126,41 @@ const handleFileSelect = (event: Event) => {
 };
 
 async function authenticate() {
-  try {
-    const res = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
-    if (!res.ok) {
-      throw new Error(`Auth failed: ${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    console.log('Auth response:', data);
-    return data;
-  } catch (error) {
-    console.error('Authentication error:', error);
-    throw error;
-  }
+  const res = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
 }
 
 async function handleUpload() {
   const file = selectedFile.value;
   if (!file) return;
 
+  let creds;
+  try { 
+    creds = await authenticate();
+    console.log('Auth successful:', creds);
+  } catch (e) {
+    console.error('Auth failed', e);
+    uploadError.value = 'Authentication failed: ' + e.message;
+    return;
+  }
+
   try {
     isUploading.value = true;
     uploadError.value = '';
     progress.value = 0;
-
-    console.log('Starting upload for file:', file.name, file.type);
-
-    // Get authentication credentials
-    const creds = await authenticate();
-    console.log('Got credentials:', creds);
     
+    console.log('Starting upload...');
+    
+    // MATCH THE EXAMPLE EXACTLY - this is the key change!
     const resp = await upload({
+      ...creds,  // Spread auth credentials directly
       file,
-      fileName: `item-${Date.now()}-${file.name}`,
-      publicKey: creds.publicKey,
-      signature: creds.signature,
-      expire: creds.expire,
-      token: creds.token,
-      // Add these important options
-      useUniqueFileName: true,
-      folder: "/items", // Optional: organize uploads in a folder
-      onProgress: (e) => {
-        progress.value = (e.loaded / e.total) * 100;
-        console.log('Upload progress:', progress.value);
-      }
+      fileName: file.name,
+      onProgress: e => (progress.value = e.loaded / e.total * 100)
     });
     
-    console.log('Upload successful:', resp);
-    
-    // Store the full ImageKit URL
+    console.log('Upload OK', resp);
     newItem.value.imageUrl = resp.url;
     
   } catch (err) {
@@ -182,13 +169,13 @@ async function handleUpload() {
     if (err instanceof ImageKitAbortError) {
       uploadError.value = 'Upload was aborted';
     } else if (err instanceof ImageKitInvalidRequestError) {
-      uploadError.value = 'Invalid file format or request. Please use JPG, PNG, or GIF files.';
+      uploadError.value = 'Invalid request: ' + err.message;
     } else if (err instanceof ImageKitUploadNetworkError) {
-      uploadError.value = 'Network error - please check your connection';
+      uploadError.value = 'Network error: ' + err.message;
     } else if (err instanceof ImageKitServerError) {
-      uploadError.value = 'Server error - please try again later';
+      uploadError.value = 'Server error: ' + err.message;
     } else {
-      uploadError.value = `Upload failed: ${err.message || 'Unknown error'}`;
+      uploadError.value = 'Upload failed: ' + err.message;
     }
   } finally {
     isUploading.value = false;
