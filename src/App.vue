@@ -65,10 +65,11 @@ export default defineComponent({
       localStorage.setItem('itemTrackerItems', JSON.stringify(newItems));
     }, { deep: true });
 
-    function addItem(newItem: Item) {
+    // Fix: Add handleItemAdded method (was missing!)
+    const handleItemAdded = (newItem: Item) => {
       items.value.push(newItem);
       showForm.value = false; 
-    }
+    };
 
     const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
       const item = items.value.find(item => item.id === id);
@@ -83,7 +84,7 @@ export default defineComponent({
 
     return {
       ...toRefs({ items, showForm, isLoading }),
-      addItem,
+      handleItemAdded,  // Add this to return
       updateItemStatus,
       deleteItem
     };
