@@ -94,13 +94,18 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-// No ImageKit imports needed if using plugin approach
+// Use default import for @imagekit/vue v4
+import ImageKitVue from '@imagekit/vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  // No components registration needed if using plugin
+  components: {
+    // Access components from the default export
+    IKImage: ImageKitVue.IKImage,
+    IKUpload: ImageKitVue.IKUpload
+  },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
     const newItem = ref({

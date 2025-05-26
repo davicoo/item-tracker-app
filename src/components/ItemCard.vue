@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { IKImage } from '@imagekit/vue';
+import ImageKitVue from '@imagekit/vue';
 import type { PropType } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
@@ -62,7 +62,8 @@ import { statusOptions } from '../types/item';
 export default defineComponent({
   name: 'ItemCard',
   components: {
-    IKImage // Remove IKContext
+    // Access components from the default export
+    IKImage: ImageKitVue.IKImage
   },
   props: {
     item: {
