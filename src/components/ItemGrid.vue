@@ -1,33 +1,31 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <ItemCard
-      v-for="item in items"
-      :key="item?.id || Math.random()"
+  <div v-if="items.length === 0" class="text-center text-gray-500 py-8">
+    No items added yet. Click "Add New Item" to get started.
+  </div>
+  
+  <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <ItemCard 
+      v-for="item in items" 
+      :key="item.id" 
       :item="item"
-      @update-status="$emit('update-status', $event)"
+      @update-status="$emit('update-status', $event)" 
       @delete-item="$emit('delete-item', $event)"
-      v-if="item && item.id"
     />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import ItemCard from './ItemCard.vue';
 import type { Item } from '../types/item';
 
-export default defineComponent({
-  name: 'ItemList',
-  components: {
-    ItemCard
-  },
-  props: {
-    items: {
-      type: Array as () => Item[],
-      required: true
-    }
-  }
-});
+defineProps<{
+  items: Item[];
+}>();
+
+defineEmits<{
+  (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
+  (e: 'delete-item', id: string): void;
+}>();
 </script>
 
 <style scoped>

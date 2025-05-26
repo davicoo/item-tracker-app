@@ -1,5 +1,4 @@
 <template>
-  <!-- Remove IKContext wrapper - not needed with global plugin -->
   <div class="max-w-4xl mx-auto p-4">
     <h1 class="text-3xl font-bold text-center mb-8">Item Tracker</h1>
     
@@ -18,7 +17,12 @@
       </button>
     </div>
     
+    <div v-if="isLoading" class="text-center py-8">
+      Loading items...
+    </div>
+    
     <ItemGrid 
+      v-else
       :items="items" 
       @update-status="updateItemStatus" 
       @delete-item="deleteItem" 
@@ -26,70 +30,63 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, watch, toRefs } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import type { Item } from './types/item';
 import { defaultItems } from './types/item';
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    ItemForm,
-    ItemGrid
-  },
-  setup() {
-    const items = ref<Item[]>([]);
-    const showForm = ref(false);
-    const isLoading = ref(true);
+// Items state
+const items = ref<Item[]>([]);
+const showForm = ref(false);
+const isLoading = ref(true);
 
-    onMounted(() => {
-      try {
-        const savedItems = localStorage.getItem('itemTrackerItems');
-        if (savedItems) {
-          items.value = JSON.parse(savedItems);
-        } else {
-          items.value = defaultItems;
-          localStorage.setItem('itemTrackerItems', JSON.stringify(defaultItems));
-        }
-      } catch (error) {
-        console.error('Error loading items from localStorage:', error);
-        items.value = defaultItems;
-      } finally {
-        isLoading.value = false;
-      }
-    });
-
-    watch(items, (newItems) => {
-      localStorage.setItem('itemTrackerItems', JSON.stringify(newItems));
-    }, { deep: true });
-
-    // Fix: Add handleItemAdded method (was missing!)
-    const handleItemAdded = (newItem: Item) => {
-      items.value.push(newItem);
-      showForm.value = false; 
-    };
-
-    const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
-      const item = items.value.find(item => item.id === id);
-      if (item) {
-        item.status = status;
-      }
-    };
-
-    const deleteItem = (id: string) => {
-      items.value = items.value.filter(item => item.id !== id);
-    };
-
-    return {
-      ...toRefs({ items, showForm, isLoading }),
-      handleItemAdded,  // Add this to return
-      updateItemStatus,
-      deleteItem
-    };
+// Load items from localStorage on mount
+onMounted(() => {
+  try {
+    const savedItems = localStorage.getItem('itemTrackerItems');
+    if (savedItems) {
+      items.value = JSON.parse(savedItems);
+    } else {
+      items.value = defaultItems;
+      localStorage.setItem('itemTrackerItems', JSON.stringify(defaultItems));
+    }
+  } catch (error) {
+    console.error('Error loading items from localStorage:', error);
+    items.value = defaultItems;
+  } finally {
+    isLoading.value = false;
   }
 });
+
+// Save items to localStorage when they change
+watch(items, (newItems) => {
+  console.log('Saving items to localStorage:', newItems);
+  localStorage.setItem('itemTrackerItems', JSON.stringify(newItems));
+}, { deep: true });
+
+// Handle adding a new item
+const handleItemAdded = (newItem: Item) => {
+  console.log('Adding new item:', newItem);
+  items.value = [...items.value, newItem]; // Create a new array to ensure reactivity
+  showForm.value = false;
+};
+
+// Handle updating an item's status
+const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
+  console.log('Updating item status:', id, status);
+  const item = items.value.find(item => item.id === id);
+  if (item) {
+    item.status = status;
+  }
+};
+
+// Handle deleting an item
+const deleteItem = (id: string) => {
+  console.log('Deleting item:', id);
+  items.value = items.value.filter(item => item.id !== id);
+};
 </script>
 
 <style>
