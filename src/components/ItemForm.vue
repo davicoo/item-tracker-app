@@ -91,13 +91,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { 
-  upload,
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitUploadNetworkError,
-  ImageKitServerError
-} from '@imagekit/vue';
+import { Image } from '@imagekit/vue'; // For displaying images
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -125,12 +119,7 @@ const handleFileSelect = (event: Event) => {
   uploadError.value = '';
 };
 
-async function authenticate() {
-  const res = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
-  if (!res.ok) throw new Error(await res.text());
-  return await res.json();
-}
-
+// Simplified direct upload function
 async function handleUpload() {
   const file = selectedFile.value;
   if (!file) return;
@@ -140,66 +129,47 @@ async function handleUpload() {
     uploadError.value = '';
     progress.value = 0;
     
-    // Get authentication data
-    const authData = await authenticate();
-    console.log('Auth data:', authData);
+    // Simplified: Create a unique filename
+    const uniqueFileName = `item_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     
-    // Create FormData for direct upload
+    // Step 1: Get authentication parameters
+    const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
+    const authData = await authResponse.json();
+    
+    console.log('Got auth data:', authData);
+    
+    // Step 2: Create form data with basic parameters (minimal approach)
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('fileName', file.name); // This is the required field
+    formData.append('fileName', uniqueFileName);
     formData.append('publicKey', authData.publicKey);
     formData.append('signature', authData.signature);
     formData.append('expire', authData.expire.toString());
     formData.append('token', authData.token);
-    formData.append('useUniqueFileName', 'true');
     
-    console.log('Starting direct upload to ImageKit...');
+    console.log('Starting upload with basic parameters');
     
-    // Use XMLHttpRequest for progress monitoring
-    const xhr = new XMLHttpRequest();
-    
-    // Set up progress monitoring
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        progress.value = (event.loaded / event.total) * 100;
-        console.log(`Upload progress: ${Math.round(progress.value)}%`);
-      }
-    };
-    
-    // Create a promise to handle the XHR response
-    const uploadPromise = new Promise((resolve, reject) => {
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const response = JSON.parse(xhr.responseText);
-            resolve(response);
-          } catch (e) {
-            reject(new Error('Failed to parse response'));
-          }
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.responseText}`));
-        }
-      };
-      
-      xhr.onerror = () => reject(new Error('Network error during upload'));
-      xhr.onabort = () => reject(new Error('Upload aborted'));
+    // Step 3: Simple POST request to ImageKit upload endpoint
+    const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+      method: 'POST',
+      body: formData
     });
     
-    // Open and send the request
-    xhr.open('POST', 'https://upload.imagekit.io/api/v1/files/upload');
-    xhr.send(formData);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+    }
     
-    // Wait for the upload to complete
-    const result = await uploadPromise;
-    console.log('Upload successful!', result);
+    const result = await response.json();
+    console.log('Upload success:', result);
     
-    // Use the URL from the response
+    // Step 4: Set the image URL
     newItem.value.imageUrl = result.url;
+    progress.value = 100;
     
-  } catch (err) {
-    console.error('Upload error:', err);
-    uploadError.value = err.message || 'Upload failed';
+  } catch (error) {
+    console.error('Upload error:', error);
+    uploadError.value = error.message || 'Upload failed';
   } finally {
     isUploading.value = false;
   }
