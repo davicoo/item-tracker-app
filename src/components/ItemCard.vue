@@ -7,8 +7,8 @@
       :src="item.imageUrl"
       width="400"
       height="192"
-      transformation="maintain_ratio"
-      :alt="item.name"
+      :transformation="[{ crop: 'maintain_ratio' }]"
+      :alt="item.name || 'Item image'"
       class="w-full h-48 object-cover"
     />
     <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
