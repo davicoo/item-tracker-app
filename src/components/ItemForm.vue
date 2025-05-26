@@ -126,14 +126,18 @@ const handleFileSelect = (event: Event) => {
 };
 
 async function authenticate() {
-  const res = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
-  if (!res.ok) throw new Error(await res.text());
-  return (await res.json()) as {
-    signature: string; 
-    expire: number; 
-    token: string; 
-    publicKey: string
-  };
+  try {
+    const res = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
+    if (!res.ok) {
+      throw new Error(`Auth failed: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    console.log('Auth response:', data);
+    return data;
+  } catch (error) {
+    console.error('Authentication error:', error);
+    throw error;
+  }
 }
 
 async function handleUpload() {
@@ -145,30 +149,46 @@ async function handleUpload() {
     uploadError.value = '';
     progress.value = 0;
 
+    console.log('Starting upload for file:', file.name, file.type);
+
+    // Get authentication credentials
     const creds = await authenticate();
+    console.log('Got credentials:', creds);
     
     const resp = await upload({
-      ...creds,
       file,
       fileName: `item-${Date.now()}-${file.name}`,
-      onProgress: (e) => (progress.value = e.loaded / e.total * 100)
+      publicKey: creds.publicKey,
+      signature: creds.signature,
+      expire: creds.expire,
+      token: creds.token,
+      // Add these important options
+      useUniqueFileName: true,
+      folder: "/items", // Optional: organize uploads in a folder
+      onProgress: (e) => {
+        progress.value = (e.loaded / e.total) * 100;
+        console.log('Upload progress:', progress.value);
+      }
     });
     
     console.log('Upload successful:', resp);
-    newItem.value.imageUrl = resp.url; // Use the full URL for display
+    
+    // Store the full ImageKit URL
+    newItem.value.imageUrl = resp.url;
     
   } catch (err) {
     console.error('Upload error:', err);
+    
     if (err instanceof ImageKitAbortError) {
       uploadError.value = 'Upload was aborted';
     } else if (err instanceof ImageKitInvalidRequestError) {
-      uploadError.value = 'Invalid request - please check file format';
+      uploadError.value = 'Invalid file format or request. Please use JPG, PNG, or GIF files.';
     } else if (err instanceof ImageKitUploadNetworkError) {
       uploadError.value = 'Network error - please check your connection';
     } else if (err instanceof ImageKitServerError) {
       uploadError.value = 'Server error - please try again later';
     } else {
-      uploadError.value = 'Upload failed - please try again';
+      uploadError.value = `Upload failed: ${err.message || 'Unknown error'}`;
     }
   } finally {
     isUploading.value = false;
@@ -178,7 +198,6 @@ async function handleUpload() {
 const isFormValid = computed(() => {
   return !!(
     newItem.value.name.trim() && 
-    newItem.value.imageUrl.trim() && 
     newItem.value.details.trim() &&
     !isUploading.value
   );
@@ -189,8 +208,7 @@ const handleSubmit = () => {
   
   const itemToAdd: Item = {
     ...newItem.value,
-    id: Date.now().toString(),
-    dateAdded: new Date().toISOString()
+    id: Date.now().toString()
   };
   
   emit('item-added', itemToAdd);
