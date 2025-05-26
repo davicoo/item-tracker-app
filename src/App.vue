@@ -73,12 +73,20 @@ const handleItemAdded = (newItem: Item) => {
   showForm.value = false;
 };
 
-// Handle updating an item's status
+// Handle updating an item's status - make sure both parameters are used
 const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
   console.log('Updating item status:', id, status);
-  const item = items.value.find(item => item.id === id);
-  if (item) {
-    item.status = status;
+  
+  // Find the item and update its status
+  const itemIndex = items.value.findIndex(item => item.id === id);
+  if (itemIndex !== -1) {
+    // Create a new array to ensure reactivity
+    const updatedItems = [...items.value];
+    updatedItems[itemIndex] = {
+      ...updatedItems[itemIndex],
+      status: status
+    };
+    items.value = updatedItems;
   }
 };
 

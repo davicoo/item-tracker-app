@@ -8,8 +8,8 @@
       v-for="item in items" 
       :key="item.id" 
       :item="item"
-      @update-status="$emit('update-status', $event)" 
-      @delete-item="$emit('delete-item', $event)"
+      @update-status="(id, status) => $emit('update-status', id, status)" 
+      @delete-item="(id) => $emit('delete-item', id)"
     />
   </div>
 </template>

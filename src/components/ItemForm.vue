@@ -119,7 +119,73 @@ const handleFileSelect = (event: Event) => {
   uploadError.value = '';
 };
 
-// Simplified direct upload function
+// Function to resize an image before upload
+async function resizeImage(file: File, maxWidth: number = 800, maxHeight: number = 600, quality: number = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    // Create a FileReader to read the file
+    const reader = new FileReader();
+    
+    // Set up FileReader onload function
+    reader.onload = function(e) {
+      // Create an image element to load the file data
+      const img = new Image();
+      img.src = e.target?.result as string;
+      
+      // Once the image is loaded, resize it
+      img.onload = function() {
+        // Calculate new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round(height * (maxWidth / width));
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round(width * (maxHeight / height));
+            height = maxHeight;
+          }
+        }
+        
+        // Create a canvas and resize the image
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Convert canvas to blob
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Canvas to Blob conversion failed'));
+            }
+          },
+          file.type,
+          quality
+        );
+      };
+      
+      img.onerror = function() {
+        reject(new Error('Failed to load image'));
+      };
+    };
+    
+    reader.onerror = function() {
+      reject(new Error('Failed to read file'));
+    };
+    
+    // Read the file as a data URL
+    reader.readAsDataURL(file);
+  });
+}
+
+// Modified handleUpload with local fallback
 async function handleUpload() {
   const file = selectedFile.value;
   if (!file) return;
@@ -129,50 +195,88 @@ async function handleUpload() {
     uploadError.value = '';
     progress.value = 0;
     
-    // Simplified: Create a unique filename
-    const uniqueFileName = `item_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    // First resize the image
+    console.log('Resizing image...');
+    progress.value = 10; // Show some progress
     
-    // Step 1: Get authentication parameters
-    const authResponse = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
-    const authData = await authResponse.json();
+    // Check if it's an image type we can resize
+    const isResizableImage = file.type.startsWith('image/');
     
-    console.log('Got auth data:', authData);
+    // Either resize the image or use the original file
+    const fileToUpload = isResizableImage 
+      ? await resizeImage(file, 1200, 800, 0.85) 
+      : file;
+      
+    console.log(`Original size: ${Math.round(file.size/1024)}KB, Resized: ${Math.round(fileToUpload.size/1024)}KB`);
+    progress.value = 20; // Update progress after resizing
     
-    // Step 2: Create form data with basic parameters (minimal approach)
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileName', uniqueFileName);
-    formData.append('publicKey', authData.publicKey);
-    formData.append('signature', authData.signature);
-    formData.append('expire', authData.expire.toString());
-    formData.append('token', authData.token);
-    
-    console.log('Starting upload with basic parameters');
-    
-    // Step 3: Simple POST request to ImageKit upload endpoint
-    const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+    // Then try the cloud upload to ImageKit
+    try {
+      console.log('Attempting cloud upload...');
+      
+      // Get authentication
+      const authResp = await fetch('https://myinvtory.netlify.app/.netlify/functions/auth');
+      const authData = await authResp.json();
+      
+      // Create FormData with the resized image
+      const formData = new FormData();
+      formData.append('file', fileToUpload);
+      formData.append('fileName', `item_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`);
+      formData.append('publicKey', authData.publicKey);
+      formData.append('signature', authData.signature);
+      formData.append('expire', authData.expire.toString());
+      formData.append('token', authData.token);
+      
+      // Upload to ImageKit
+      const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      progress.value = 80; // Almost done
+      
+      if (!response.ok) {
+        throw new Error(`Cloud upload failed: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Cloud upload successful!', result);
+      
+      // Use the returned URL
+      newItem.value.imageUrl = result.url;
+      
+    } catch (cloudError) {
+      console.warn('Cloud upload failed, falling back to local storage:', cloudError);
+      
+      // If cloud upload fails, store the resized image locally
+      // Convert resized blob to data URL
+      const dataUrl = await fileToDataUrl(fileToUpload);
+      
+      // Store locally with a prefix
+      newItem.value.imageUrl = `local:${dataUrl}`;
+      
+      // Show warning
+      uploadError.value = 'Cloud upload failed. Image stored locally only.';
     }
     
-    const result = await response.json();
-    console.log('Upload success:', result);
-    
-    // Step 4: Set the image URL
-    newItem.value.imageUrl = result.url;
     progress.value = 100;
     
-  } catch (error) {
-    console.error('Upload error:', error);
-    uploadError.value = error.message || 'Upload failed';
+  } catch (err) {
+    console.error('All upload methods failed:', err);
+    uploadError.value = `Upload failed: ${err.message}`;
   } finally {
     isUploading.value = false;
   }
+}
+
+// Helper to convert Blob to data URL
+async function fileToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 const isFormValid = computed(() => {

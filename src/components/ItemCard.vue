@@ -5,10 +5,10 @@
       No image URL available: {{ JSON.stringify(item) }}
     </div>
     
-    <!-- Image display with fallback -->
+    <!-- Image display with local fallback support -->
     <div v-if="item.imageUrl" class="h-48 overflow-hidden">
       <img 
-        :src="item.imageUrl"
+        :src="processedImageUrl"
         :alt="item.name"
         class="w-full h-full object-cover"
         @error="handleImageError"
@@ -19,6 +19,11 @@
         <span class="text-gray-500 block">{{ item.name }}</span>
         <span class="text-gray-400 text-sm">No image available</span>
       </div>
+    </div>
+    
+    <!-- Add a badge for local images -->
+    <div v-if="isLocalImage" class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+      Local Only
     </div>
     
     <!-- Item details -->
@@ -73,6 +78,7 @@ const props = defineProps<{
   item: Item;
 }>();
 
+// FIX: Define the emit with the correct parameter structure
 const emit = defineEmits<{
   (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
   (e: 'delete-item', id: string): void;
@@ -86,9 +92,12 @@ const handleImageError = () => {
   imageError.value = true;
 };
 
+// FIX: Update the handleStatusChange function to properly emit both parameters
 const handleStatusChange = (event: Event) => {
   const target = event.target as HTMLSelectElement;
-  emit('update-status', props.item.id, target.value as "not_sold" | "sold" | "sold_paid");
+  const newStatus = target.value as "not_sold" | "sold" | "sold_paid";
+  console.log(`Updating status for item ${props.item.id} to ${newStatus}`);
+  emit('update-status', props.item.id, newStatus);
 };
 
 const handleDelete = () => {
@@ -107,6 +116,19 @@ const statusColor = computed(() => {
     case 'sold_paid': return 'bg-green-100 text-green-800';
     default: return 'bg-gray-100 text-gray-800';
   }
+});
+
+// Add computed properties for local image handling
+const isLocalImage = computed(() => {
+  return props.item.imageUrl?.startsWith('local:');
+});
+
+const processedImageUrl = computed(() => {
+  if (isLocalImage.value) {
+    // Remove the 'local:' prefix to get the actual data URL
+    return props.item.imageUrl.substring(6);
+  }
+  return props.item.imageUrl;
 });
 </script>
 
