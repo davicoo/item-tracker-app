@@ -94,18 +94,11 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-// Use default import for @imagekit/vue v4
-import ImageKitVue from '@imagekit/vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
 export default defineComponent({
   name: 'ItemForm',
-  components: {
-    // Access components from the default export
-    IKImage: ImageKitVue.IKImage,
-    IKUpload: ImageKitVue.IKUpload
-  },
   emits: ['item-added', 'cancel'],
   setup(props, { emit }) {
     const newItem = ref({
