@@ -95,7 +95,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { IKImage, IKUpload } from '@imagekit/vue'; // Changed from 'imagekitio-vue'
+import { IKImage, IKUpload } from 'imagekitio-vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
