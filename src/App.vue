@@ -60,10 +60,16 @@ onMounted(() => {
   }
 });
 
-// Save items to localStorage when they change
+// Save items to localStorage when they change - fix the proxy issue
 watch(items, (newItems) => {
-  console.log('Saving items to localStorage:', newItems);
-  localStorage.setItem('itemTrackerItems', JSON.stringify(newItems));
+  try {
+    // Convert the Proxy objects to plain objects before stringifying
+    const itemsToSave = JSON.parse(JSON.stringify(newItems));
+    console.log('Saving items to localStorage:', itemsToSave);
+    localStorage.setItem('itemTrackerItems', JSON.stringify(itemsToSave));
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+  }
 }, { deep: true });
 
 // Handle adding a new item

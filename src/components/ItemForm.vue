@@ -13,7 +13,9 @@
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Item Image</label>
+      <label class="block text-gray-700 font-medium mb-2">
+        Item Image <span class="text-red-500">*</span>
+      </label>
       
       <!-- Replace IKUpload with regular file input -->
       <input 
@@ -49,6 +51,11 @@
           class="mt-2 rounded max-w-full max-h-40 object-contain"
         />
       </div>
+
+      <!-- Add a message for required image -->
+      <div v-if="!newItem.imageUrl && !isUploading" class="mt-2 text-amber-600 text-sm">
+        An image is required before saving the item.
+      </div>
     </div>
 
     <div class="mb-4">
@@ -76,7 +83,7 @@
         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
         :disabled="!isFormValid"
       >
-        Save Item
+        {{ newItem.imageUrl ? 'Save Item' : 'Please Upload Image First' }}
       </button>
       <button
         @click="$emit('cancel')"
@@ -90,7 +97,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Image } from '@imagekit/vue'; // For displaying images
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 
@@ -278,10 +284,12 @@ async function fileToDataUrl(blob: Blob): Promise<string> {
   });
 }
 
+// Update form validation to require an image
 const isFormValid = computed(() => {
   return !!(
     newItem.value.name.trim() && 
     newItem.value.details.trim() &&
+    newItem.value.imageUrl && // Require an image
     !isUploading.value
   );
 });
