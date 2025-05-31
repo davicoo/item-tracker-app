@@ -128,12 +128,12 @@ const handleSubmit = async () => {
 
   const formData = new FormData();
   formData.append('fields[Name]', newItem.value.name);
-  formData.append('fields[Details]', newItem.value.details);
-  formData.append('fields[Status]', newItem.value.status);
-  formData.append('fields[Location]', newItem.value.location);
-  formData.append('fields[Price]', newItem.value.price);
-  formData.append('fields[Date Added]', new Date().toISOString());
-  formData.append('fields[Image]', selectedFile.value);
+formData.append('fields[Details]', newItem.value.details);
+formData.append('fields[Status]', newItem.value.status);
+formData.append('fields[Location]', newItem.value.location);
+formData.append('fields[Price]', newItem.value.price);
+formData.append('fields[Date Added]', new Date().toISOString());
+formData.append('fields[Image]', selectedFile.value);
 
   try {
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
