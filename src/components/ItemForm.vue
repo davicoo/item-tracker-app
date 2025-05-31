@@ -136,7 +136,7 @@ const handleSubmit = async () => {
   formData.append('fields[Image]', selectedFile.value);
 
   try {
-    const response = await fetch('https://api.airtable.com/v0/appY87rzlquNoiaXX/Artwork%20Inventory', {
+    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       method: 'POST',
       headers: {
         Authorization: 'Bearer patIntcLUw6UAafXq'
