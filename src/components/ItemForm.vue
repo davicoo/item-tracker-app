@@ -13,11 +13,29 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Location</label>
+      <input
+        v-model="newItem.location"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        placeholder="Enter item location"
+      />
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Price</label>
+      <input
+        v-model="newItem.price"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        placeholder="Enter item price"
+      />
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">
         Item Image <span class="text-red-500">*</span>
       </label>
-      
-      <!-- Replace IKUpload with regular file input -->
       <input 
         type="file" 
         ref="fileInput" 
@@ -25,7 +43,6 @@
         accept="image/*"
         class="w-full px-3 py-2 border border-gray-300 rounded"
       />
-      
       <button 
         @click="handleUpload" 
         :disabled="!selectedFile || isUploading"
@@ -33,17 +50,13 @@
       >
         {{ isUploading ? 'Uploading...' : 'Upload Image' }}
       </button>
-      
       <div v-if="isUploading" class="mt-2">
         <progress :value="progress" max="100" class="w-full"></progress>
         <p class="text-blue-600 text-sm">{{ Math.round(progress) }}%</p>
       </div>
-      
       <div v-if="uploadError" class="mt-2 text-red-600">
         {{ uploadError }}
       </div>
-      
-      <!-- Preview uploaded image -->
       <div v-if="newItem.imageUrl" class="mt-2">
         <img 
           :src="newItem.imageUrl.startsWith('local:') ? newItem.imageUrl.substring(6) : newItem.imageUrl"
@@ -51,8 +64,6 @@
           class="mt-2 rounded max-w-full max-h-40 object-contain"
         />
       </div>
-
-      <!-- Add a message for required image -->
       <div v-if="!newItem.imageUrl && !isUploading" class="mt-2 text-amber-600 text-sm">
         An image is required before saving the item.
       </div>
@@ -109,7 +120,9 @@ const newItem = ref({
   name: '',
   imageUrl: '',
   details: '',
-  status: 'not_sold' as const
+  status: 'not_sold' as const,
+  location: '',
+  price: ''
 });
 
 const isUploading = ref(false);
@@ -290,31 +303,63 @@ const isFormValid = computed(() => {
     newItem.value.name.trim() && 
     newItem.value.details.trim() &&
     newItem.value.imageUrl && // Require an image
+    newItem.value.location.trim() &&
+    newItem.value.price.trim() &&
     !isUploading.value
   );
 });
 
-const handleSubmit = () => {
+// UPDATED handleSubmit to also send to SheetDB
+const handleSubmit = async () => {
   if (!isFormValid.value) return;
   
   const itemToAdd: Item = {
     ...newItem.value,
     id: Date.now().toString(),
-    dateAdded: new Date().toISOString()  // Add this line
+    dateAdded: new Date().toISOString()
   };
-  
-  emit('item-added', itemToAdd);
-  
-  // Reset form
-  newItem.value = {
-    name: '',
-    imageUrl: '',
-    details: '',
-    status: 'not_sold'
+
+  // Save to SheetDB
+  const payload = {
+    data: {
+      name: itemToAdd.name,
+      details: itemToAdd.details,
+      status: itemToAdd.status,
+      image_url: itemToAdd.imageUrl,
+      location: itemToAdd.location,
+      price: itemToAdd.price,
+      date_added: itemToAdd.dateAdded,
+      id: itemToAdd.id
+    }
   };
-  selectedFile.value = null;
-  if (fileInput.value) fileInput.value.value = '';
-  uploadError.value = '';
-  progress.value = 0;
+
+  try {
+    const response = await fetch("https://sheetdb.io/api/v1/3gzsx36ht7mlh", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      emit('item-added', itemToAdd);
+      // Reset form
+      newItem.value = {
+        name: '',
+        imageUrl: '',
+        details: '',
+        status: 'not_sold',
+        location: '',
+        price: ''
+      };
+      selectedFile.value = null;
+      if (fileInput.value) fileInput.value.value = '';
+      uploadError.value = '';
+      progress.value = 0;
+    } else {
+      alert('❌ Failed to save item to SheetDB');
+    }
+  } catch (err) {
+    alert('❌ Network error saving to SheetDB');
+  }
 };
 </script>

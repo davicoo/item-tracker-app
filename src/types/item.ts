@@ -2,10 +2,12 @@
 export interface Item {
   id: string;
   name: string;
-  imageUrl: string;  // Make sure this is 'imageUrl', not 'image'
+  imageUrl: string;
   details: string;
   status: "not_sold" | "sold" | "sold_paid";
   dateAdded: string;
+  location: string;
+  price: string;
 }
 
 // Add a base64 fallback image - THIS IS THE MISSING PART
@@ -32,7 +34,9 @@ export const defaultItems: Item[] = [
     imageUrl: "https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg",
     details: "A vintage film camera from the 1970s in excellent condition.",
     status: "not_sold",
-    dateAdded: new Date().toISOString() // Add dateAdded property
+    dateAdded: new Date().toISOString(), // Add dateAdded property
+    location: "New York, NY",
+    price: "199.99"
   },
   {
     id: "2",
@@ -40,6 +44,8 @@ export const defaultItems: Item[] = [
     imageUrl: "https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg?updatedAt=1748135546655",
     details: "Hand-carved wooden chair from the early 1900s.",
     status: "sold",
-    dateAdded: new Date().toISOString() // Add dateAdded property
+    dateAdded: new Date().toISOString(), // Add dateAdded property
+    location: "San Francisco, CA",
+    price: "899.99"
   }
 ];
