@@ -136,10 +136,10 @@ const handleSubmit = async () => {
   formData.append('fields[Image]', selectedFile.value);
 
   try {
-    const response = await fetch('https://api.airtable.com/v0/appY87rzlquNoiaXX/sheet1', {
+    const response = await fetch('https://api.airtable.com/v0/appY87rzlquNoiaXX/Artwork%20Inventory', {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer pat9uAKXVHA84B3dj'
+        Authorization: 'Bearer patIntcLUw6UAafXq'
       },
       body: formData
     });
@@ -156,7 +156,8 @@ const handleSubmit = async () => {
       selectedFile.value = null;
       previewUrl.value = '';
     } else {
-      alert('❌ Failed to save item to Airtable');
+      const error = await response.json();
+      alert('❌ Failed to save item to Airtable: ' + JSON.stringify(error));
     }
   } catch (err) {
     alert('❌ Network error saving to Airtable');
