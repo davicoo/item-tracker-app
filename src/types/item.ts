@@ -27,3 +27,5 @@ export function mapRecordToItem(record: any): Item {
     price: record.fields['Price']
   };
 }
+
+export const DEFAULT_FALLBACK_IMAGE = 'https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg';
