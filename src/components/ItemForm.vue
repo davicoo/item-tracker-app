@@ -126,22 +126,40 @@ function onFileChange(e: Event) {
 const handleSubmit = async () => {
   if (!isFormValid.value || !selectedFile.value) return;
 
-  const formData = new FormData();
-  formData.append('fields[Name]', newItem.value.name);
-formData.append('fields[Details]', newItem.value.details);
-formData.append('fields[Status]', newItem.value.status);
-formData.append('fields[Location]', newItem.value.location);
-formData.append('fields[Price]', newItem.value.price);
-formData.append('fields[Date Added]', new Date().toISOString());
-formData.append('fields[Image]', selectedFile.value);
-
   try {
+    // 1. First, convert the image file to base64
+    const base64Image = await fileToBase64(selectedFile.value);
+    
+    // 2. Create the request body in the format Airtable expects
+    const requestBody = {
+      records: [
+        {
+          fields: {
+            'Name': newItem.value.name,
+            'Details': newItem.value.details,
+            'Status': newItem.value.status,
+            'Location': newItem.value.location,
+            'Price': newItem.value.price,
+            'Date Added': new Date().toISOString(),
+            'Image': [
+              {
+                url: base64Image,
+                filename: selectedFile.value.name
+              }
+            ]
+          }
+        }
+      ]
+    };
+
+    // 3. Send the request to Airtable
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer patIntcLUw6UAafXq'
+        'Authorization': 'Bearer patazXusPtFl038QV',
+        'Content-Type': 'application/json'
       },
-      body: formData
+      body: JSON.stringify(requestBody)
     });
 
     if (response.ok) {
@@ -160,7 +178,18 @@ formData.append('fields[Image]', selectedFile.value);
       alert('❌ Failed to save item to Airtable: ' + JSON.stringify(error));
     }
   } catch (err) {
+    console.error(err);
     alert('❌ Network error saving to Airtable');
   }
 };
+
+// Helper function to convert a file to base64
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+}
 </script>

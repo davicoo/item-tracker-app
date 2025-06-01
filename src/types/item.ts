@@ -53,3 +53,4 @@ export const defaultItems: Item[] = [
     price: "899.99"
   }
 ];
+
