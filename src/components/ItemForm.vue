@@ -156,7 +156,7 @@ const handleSubmit = async () => {
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer patazXusPtFl038QV',
+        'Authorization': 'Bearer patazXusPtFl038QV',  // OLD TOKEN
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
