@@ -39,8 +39,7 @@
 import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
-import type { Item } from './types/item';
-import { defaultItems } from './types/item';
+import { Item, mapRecordToItem, defaultItems } from './types/item';
 
 // Items state
 const items = ref<Item[]>([]);
@@ -48,46 +47,41 @@ const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 
-// Load items from server on mount
-onMounted(async () => {
+// Fetch items from Airtable
+async function fetchItems() {
+  isLoading.value = true;
+  serverError.value = '';
+  
   try {
-    isLoading.value = true;
-    serverError.value = '';
-    
-    // Fetch items from Netlify function
-    const response = await fetch('/.netlify/functions/getItems');
-    
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Use items from server
-    items.value = data;
-    console.log('Loaded items from server:', items.value);
-    
-  } catch (error) {
-    console.error('Error loading items from server:', error);
-    serverError.value = 'Failed to load items from server. Using default items.';
-    
-    // Try to load from localStorage as fallback
-    try {
-      const savedItems = localStorage.getItem('itemTrackerItems');
-      if (savedItems) {
-        items.value = JSON.parse(savedItems);
-        console.log('Loaded items from localStorage fallback');
-      } else {
-        items.value = defaultItems;
-        console.log('Using default items');
+    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
+      headers: {
+        'Authorization': 'Bearer patazXusPtFl038QV' // Use your token
       }
-    } catch (localError) {
-      console.error('Error with localStorage fallback:', localError);
-      items.value = defaultItems;
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      items.value = data.records.map(mapRecordToItem);
+      console.log('Fetched items:', items.value);
+    } else {
+      const error = await response.json();
+      serverError.value = `Error fetching items: ${error.error?.message || 'Unknown error'}`;
+      // Fall back to default items if there's an error
+      items.value = [...defaultItems];
     }
+  } catch (err) {
+    console.error('Error fetching items:', err);
+    serverError.value = 'Network error fetching items';
+    // Fall back to default items if there's an error
+    items.value = [...defaultItems];
   } finally {
     isLoading.value = false;
   }
+}
+
+// Load items from server on mount
+onMounted(() => {
+  fetchItems();
 });
 
 // Save items to server with debouncing
