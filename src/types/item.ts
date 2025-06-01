@@ -53,23 +53,3 @@ export const defaultItems: Item[] = [
     price: "899.99"
   }
 ];
-
-const items = ref<Item[]>([]);
-
-async function fetchItems() {
-  try {
-    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
-      headers: {
-        Authorization: 'Bearer patIntcLUw6UAafXq'
-      }
-    });
-    const data = await response.json();
-    items.value = data.records.map(mapRecordToItem);
-  } catch (error) {
-    console.error('Error fetching items:', error);
-  }
-}
-
-onMounted(() => {
-  fetchItems();
-});
