@@ -29,3 +29,23 @@ export function mapRecordToItem(record: any): Item {
 }
 
 export const DEFAULT_FALLBACK_IMAGE = 'https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg';
+
+const items = ref<Item[]>([]);
+
+async function fetchItems() {
+  try {
+    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
+      headers: {
+        Authorization: 'Bearer patIntcLUw6UAafXq'
+      }
+    });
+    const data = await response.json();
+    items.value = data.records.map(mapRecordToItem);
+  } catch (error) {
+    console.error('Error fetching items:', error);
+  }
+}
+
+onMounted(() => {
+  fetchItems();
+});
