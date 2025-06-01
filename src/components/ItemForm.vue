@@ -127,10 +127,10 @@ const handleSubmit = async () => {
   if (!isFormValid.value || !selectedFile.value) return;
 
   try {
-    // 1. First, convert the image file to base64
+   
     const base64Image = await fileToBase64(selectedFile.value);
     
-    // 2. Create the request body in the format Airtable expects
+  
     const requestBody = {
       records: [
         {
@@ -152,7 +152,6 @@ const handleSubmit = async () => {
       ]
     };
 
-    // 3. Send the request to Airtable
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       method: 'POST',
       headers: {
