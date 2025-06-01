@@ -55,7 +55,7 @@ async function fetchItems() {
   try {
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       headers: {
-        'Authorization': 'Bearer patazXusPtFl038QV' // Use your token
+        'Authorization': 'Bearer patazXusPtFl038QV' // CORRECT CURRENT TOKEN
       }
     });
     
