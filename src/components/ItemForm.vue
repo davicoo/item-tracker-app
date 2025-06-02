@@ -92,6 +92,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { statusOptions } from '../types/item';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client using your Supabase URL and anon key
+const supabaseUrl = 'https://ielukqallxtceqmobmvp.supabase.co';
+const supabaseKey = 'eyjhbgcioijiuzi1niisinr5cci6ikpxvcj9.eyjpc3mioijzdxbhymfzzsisinjlzii6imllbhvrcwfsbhh0y2vxbw9ibxzwiiwicm9szsi6imfub24ilcjpyxqioje3ndg4mza2nzisimv4cci6mja2ndqwnjy3mn0.-e-julbaaidzckdbqazitbdwqshkhywpxrsrkktpfyq'; // Replace with your actual anon key
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const emit = defineEmits(['item-added', 'cancel']);
 
@@ -102,12 +108,12 @@ const newItem = ref({
   location: '',
   price: ''
 });
-const selectedFile = ref<File|null>(null);
+const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>('');
 
 const isFormValid = computed(() => {
   return !!(
-    newItem.value.name.trim() && 
+    newItem.value.name.trim() &&
     newItem.value.details.trim() &&
     selectedFile.value &&
     newItem.value.location.trim() &&
@@ -127,78 +133,43 @@ const handleSubmit = async () => {
   if (!isFormValid.value || !selectedFile.value) return;
 
   try {
-   
-    const base64Image = await fileToBase64(selectedFile.value);
-    
-  
-    const requestBody = {
-      records: [
-        {
-          fields: {
-            'Name': newItem.value.name,
-            'Details': newItem.value.details,
-            'Status': newItem.value.status,
-            'Location': newItem.value.location,
-            'Price': newItem.value.price,
-            'Date Added': new Date().toISOString(),
-            'Image': [
-              {
-                url: base64Image,
-                filename: selectedFile.value.name
-              }
-            ]
-          }
-        }
-      ]
+    const fileExt = selectedFile.value.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const { data: imageData, error: imageError } = await supabase.storage
+      .from('images')
+      .upload(fileName, selectedFile.value);
+
+    if (imageError) throw imageError;
+
+    const imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+
+    const { error: insertError } = await supabase.from('items').insert([
+      {
+        name: newItem.value.name,
+        details: newItem.value.details,
+        status: newItem.value.status,
+        location: newItem.value.location,
+        price: newItem.value.price,
+        image_url: imageUrl,
+        date_added: new Date().toISOString()
+      }
+    ]);
+
+    if (insertError) throw insertError;
+
+    emit('item-added');
+    newItem.value = {
+      name: '',
+      details: '',
+      status: 'not_sold',
+      location: '',
+      price: ''
     };
-    // NOTE: Using FormData to upload an image to Airtable. Do NOT set Content-Type manually.
-
-    const handleSubmit = async () => {
-  if (!isFormValid.value || !selectedFile.value) return;
-
-  try {
-    // Create FormData instead of JSON
-    const formData = new FormData();
-    
-    // Add your fields
-    formData.append('fields[Name]', newItem.value.name);
-    formData.append('fields[Details]', newItem.value.details);
-    formData.append('fields[Status]', newItem.value.status);
-    formData.append('fields[Location]', newItem.value.location);
-    formData.append('fields[Price]', newItem.value.price);
-    formData.append('fields[Date Added]', new Date().toISOString());
-    
-    // Add the file directly - no need to convert to base64
-    formData.append('fields[Image]', selectedFile.value);
-
-    // Use FormData in the request - don't set Content-Type
-    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer patazXusPtFl038QV'
-        // Don't set Content-Type - browser will set it with boundary
-      },
-      body: formData
-    });
-
-    if (response.ok) {
-      emit('item-added');
-      newItem.value = {
-        name: '',
-        details: '',
-        status: 'not_sold',
-        location: '',
-        price: ''
-      };
-      selectedFile.value = null;
-      previewUrl.value = '';
-    } else {
-      const error = await response.json();
-      alert('❌ Failed to save item to Airtable: ' + JSON.stringify(error));
-    }
-  } catch (err) {
+    selectedFile.value = null;
+    previewUrl.value = '';
+  } catch (err: any) {
     console.error(err);
-    alert('❌ Network error saving to Airtable');
+    alert('❌ Error saving item: ' + err.message);
   }
 };
 </script>

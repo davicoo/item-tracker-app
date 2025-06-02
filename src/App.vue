@@ -51,28 +51,18 @@ const serverError = ref('');
 async function fetchItems() {
   isLoading.value = true;
   serverError.value = '';
-  
+
   try {
-    const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
-      headers: {
-        'Authorization': 'Bearer patazXusPtFl038QV' // CORRECT CURRENT TOKEN
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      items.value = data.records.map(mapRecordToItem);
-      console.log('Fetched items:', items.value);
-    } else {
-      const error = await response.json();
-      serverError.value = `Error fetching items: ${error.error?.message || 'Unknown error'}`;
-      // Fall back to default items if there's an error
-      items.value = [...defaultItems];
-    }
-  } catch (err) {
+    const { data, error } = await supabase
+      .from('items')
+      .select('*')
+      .order('date_added', { ascending: false });
+
+    if (error) throw error;
+    items.value = data.map(mapRecordToItem); // adjust mapRecordToItem if needed
+  } catch (err: any) {
     console.error('Error fetching items:', err);
-    serverError.value = 'Network error fetching items';
-    // Fall back to default items if there's an error
+    serverError.value = 'Error fetching items';
     items.value = [...defaultItems];
   } finally {
     isLoading.value = false;
