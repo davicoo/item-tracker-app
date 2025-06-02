@@ -151,14 +151,34 @@ const handleSubmit = async () => {
         }
       ]
     };
+    // NOTE: Using FormData to upload an image to Airtable. Do NOT set Content-Type manually.
 
+    const handleSubmit = async () => {
+  if (!isFormValid.value || !selectedFile.value) return;
+
+  try {
+    // Create FormData instead of JSON
+    const formData = new FormData();
+    
+    // Add your fields
+    formData.append('fields[Name]', newItem.value.name);
+    formData.append('fields[Details]', newItem.value.details);
+    formData.append('fields[Status]', newItem.value.status);
+    formData.append('fields[Location]', newItem.value.location);
+    formData.append('fields[Price]', newItem.value.price);
+    formData.append('fields[Date Added]', new Date().toISOString());
+    
+    // Add the file directly - no need to convert to base64
+    formData.append('fields[Image]', selectedFile.value);
+
+    // Use FormData in the request - don't set Content-Type
     const response = await fetch('https://api.airtable.com/v0/appb4avbjcFIK4C6s/inventory', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer patazXusPtFl038QV',
-        'Content-Type': 'application/json'
+        'Authorization': 'Bearer patazXusPtFl038QV'
+        // Don't set Content-Type - browser will set it with boundary
       },
-      body: JSON.stringify(requestBody)
+      body: formData
     });
 
     if (response.ok) {
@@ -181,14 +201,4 @@ const handleSubmit = async () => {
     alert('❌ Network error saving to Airtable');
   }
 };
-
-// Helper function to convert a file to base64
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-  });
-}
 </script>
