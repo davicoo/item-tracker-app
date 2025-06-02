@@ -95,8 +95,9 @@ import { statusOptions } from '../types/item';
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client using your Supabase URL and anon key
-const supabaseUrl = 'https://ielukqallxtceqmobmvp.supabase.co';
-const supabaseKey = 'eyjhbgcioijiuzi1niisinr5cci6ikpxvcj9.eyjpc3mioijzdxbhymfzzsisinjlzii6imllbhvrcwfsbhh0y2vxbw9ibxzwiiwicm9szsi6imfub24ilcjpyxqioje3ndg4mza2nzisimv4cci6mja2ndqwnjy3mn0.-e-julbaaidzckdbqazitbdwqshkhywpxrsrkktpfyq'; // Replace with your actual anon key
+const supabaseUrl = 'https://ielukqallxtceqmobmvpv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllbHVrcWFsbHh0Y2VxbW9ibXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MzA2NzIsImV4cCI6MjA2NDQwNjY3Mn0.-e-JULBAaIdzCkDBQaZiTBdWqsHkHYWpxrsrKktPfyQ';
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const emit = defineEmits(['item-added', 'cancel']);
