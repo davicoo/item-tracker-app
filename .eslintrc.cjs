@@ -1,5 +1,6 @@
-export default {
+module.exports = {
   root: true,
+  parser: 'vue-eslint-parser',
   'env': {
     'browser': true,
     'es2021': true,
@@ -9,12 +10,14 @@ export default {
     'plugin:vue/vue3-recommended',
     'eslint:recommended'
   ],
-  'parserOptions': {
-    'ecmaVersion': 12,
-    'sourceType': 'module'
+  parserOptions: {
+    ecmaVersion: 12,
+    sourceType: 'module',
+    parser: '@typescript-eslint/parser'
   },
-  'plugins': [
-    'vue'
+  plugins: [
+    'vue',
+    '@typescript-eslint'
   ],
   'rules': {
     'vue/no-unused-vars': 'error',
