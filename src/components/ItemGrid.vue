@@ -1,9 +1,15 @@
 <template>
-  <div v-if="items.length === 0" class="text-center text-gray-500 py-8">
+  <div
+    v-if="items.length === 0"
+    class="text-center text-gray-500 py-8"
+  >
     No items added yet. Click "Add New Item" to get started.
   </div>
   
-  <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div
+    v-else
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
     <ItemCard 
       v-for="item in items" 
       :key="item.id" 
@@ -15,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import ItemCard from './ItemCard.vue';
 import type { Item } from '../types/item';
 
@@ -23,9 +30,9 @@ defineProps<{
 }>();
 
 defineEmits<{
-  (e: 'update-status', id: string, status: "not_sold" | "sold" | "sold_paid"): void;
-  (e: 'delete-item', id: string): void;
-}>();
+  'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
+  'delete-item': [string]
+}>()
 </script>
 
 <style scoped>

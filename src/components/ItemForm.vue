@@ -1,6 +1,8 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-    <h2 class="text-xl font-semibold mb-4">Add New Item</h2>
+    <h2 class="text-xl font-semibold mb-4">
+      Add New Item
+    </h2>
     
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Item Name</label>
@@ -9,7 +11,7 @@
         type="text"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         placeholder="Enter item name"
-      />
+      >
     </div>
 
     <div class="mb-4">
@@ -19,7 +21,7 @@
         type="text"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         placeholder="Enter item location"
-      />
+      >
     </div>
 
     <div class="mb-4">
@@ -29,7 +31,7 @@
         type="text"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         placeholder="Enter item price"
-      />
+      >
     </div>
 
     <div class="mb-4">
@@ -39,16 +41,19 @@
       <input
         type="file"
         accept="image/*"
-        @change="onFileChange"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         required
-      />
-      <div v-if="previewUrl" class="mt-2">
+        @change="onFileChange"
+      >
+      <div
+        v-if="previewUrl"
+        class="mt-2"
+      >
         <img
           :src="previewUrl"
           alt="Preview"
           class="mt-2 rounded max-w-full max-h-40 object-contain"
-        />
+        >
       </div>
     </div>
 
@@ -59,13 +64,20 @@
         class="w-full px-3 py-2 border border-gray-300 rounded"
         rows="3"
         placeholder="Enter item details"
-      ></textarea>
+      />
     </div>
 
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Status</label>
-      <select v-model="newItem.status" class="w-full px-3 py-2 border border-gray-300 rounded">
-        <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+      <select
+        v-model="newItem.status"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+      >
+        <option
+          v-for="option in statusOptions"
+          :key="option.value"
+          :value="option.value"
+        >
           {{ option.label }}
         </option>
       </select>
@@ -73,15 +85,15 @@
 
     <div class="flex space-x-2">
       <button
-        @click="handleSubmit"
         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
         :disabled="!isFormValid"
+        @click="handleSubmit"
       >
         Save Item
       </button>
       <button
-        @click="$emit('cancel')"
         class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
+        @click="$emit('cancel')"
       >
         Cancel
       </button>
@@ -90,15 +102,16 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ref, computed } from 'vue';
 import { statusOptions } from '../types/item';
 import type { Item } from '../types/item';
 import { supabase } from '../supabaseClient';
 
 const emit = defineEmits<{
-  (e: 'item-added', item: Item): void;
-  (e: 'cancel'): void;
-}>();
+  'item-added': [Item]
+  cancel: []
+}>()
 
 const newItem = ref({
   name: '',
@@ -134,7 +147,7 @@ const handleSubmit = async () => {
   try {
     const fileExt = selectedFile.value.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
-    const { data: imageData, error: imageError } = await supabase.storage
+    const { error: imageError } = await supabase.storage
       .from('images')
       .upload(fileName, selectedFile.value);
 

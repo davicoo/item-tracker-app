@@ -1,6 +1,6 @@
 const ImageKit = require('imagekit');
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // Add CORS headers for preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
