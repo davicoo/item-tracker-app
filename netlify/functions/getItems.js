@@ -24,7 +24,7 @@ const defaultItems = [
   }
 ];
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',

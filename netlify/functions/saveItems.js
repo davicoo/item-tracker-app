@@ -4,7 +4,7 @@ const path = require('path');
 // Path to our data file
 const DATA_FILE = path.join('/tmp', 'items-data.json');
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
