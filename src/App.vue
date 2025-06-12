@@ -47,7 +47,7 @@ const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 
-// Fetch items from Airtable
+// Fetch items from supabase
 async function fetchItems() {
   isLoading.value = true;
   serverError.value = '';
