@@ -92,6 +92,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { statusOptions } from '../types/item';
+import type { Item } from '../types/item';
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client using your Supabase URL and anon key
@@ -100,7 +101,10 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const emit = defineEmits(['item-added', 'cancel']);
+const emit = defineEmits<{
+  (e: 'item-added', item: Item): void;
+  (e: 'cancel'): void;
+}>();
 
 const newItem = ref({
   name: '',
@@ -144,7 +148,9 @@ const handleSubmit = async () => {
 
     const imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
 
-    const { error: insertError } = await supabase.from('items').insert([
+  const { data: inserted, error: insertError } = await supabase
+    .from('items')
+    .insert([
       {
         name: newItem.value.name,
         details: newItem.value.details,
@@ -154,11 +160,24 @@ const handleSubmit = async () => {
         image_url: imageUrl,
         date_added: new Date().toISOString()
       }
-    ]);
+    ])
+    .select()
+    .single();
 
-    if (insertError) throw insertError;
+  if (insertError) throw insertError;
 
-    emit('item-added');
+  const item: Item = {
+    id: inserted.id,
+    name: inserted.name,
+    imageUrl: inserted.image_url,
+    details: inserted.details,
+    status: inserted.status,
+    dateAdded: inserted.date_added,
+    location: inserted.location,
+    price: inserted.price
+  };
+
+  emit('item-added', item);
     newItem.value = {
       name: '',
       details: '',
