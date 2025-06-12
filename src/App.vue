@@ -48,7 +48,9 @@ const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 
-// Fetch items from Supabase
+
+// Fetch items from supabase
+
 async function fetchItems() {
   isLoading.value = true;
   serverError.value = '';

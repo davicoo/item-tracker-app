@@ -18,16 +18,17 @@ export const statusOptions = [
 export function mapRecordToItem(record: any): Item {
   return {
     id: record.id,
-    name: record.name ?? record.fields?.['Name'],
-    imageUrl: record.image_url ?? record.fields?.['Image']?.[0]?.url ?? '',
-    details: record.details ?? record.fields?.['Details'],
-    status: record.status ?? record.fields?.['Status'],
-    dateAdded: record.date_added ?? record.fields?.['Date Added'],
-    location: record.location ?? record.fields?.['Location'],
-    price: record.price ?? record.fields?.['Price']
+    name: record.name,
+    imageUrl: record.image_url ?? '',
+    details: record.details,
+    status: record.status,
+    dateAdded: record.date_added,
+    location: record.location,
+    price: record.price
+
   };
 }
-
+    
 export const DEFAULT_FALLBACK_IMAGE = 'https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg';
 
 // Add this defaultItems export to fix the build error
