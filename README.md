@@ -27,6 +27,9 @@ npm run dev
 npm run build
 ```
 
+## Environment Variables
+Create a `.env` file based on `.env.example` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` with your Supabase credentials.
+
 ## Project Structure
 
 ```
