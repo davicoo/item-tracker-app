@@ -25,6 +25,7 @@ export function mapRecordToItem(record: any): Item {
     dateAdded: record.date_added,
     location: record.location,
     price: record.price
+
   };
 }
     

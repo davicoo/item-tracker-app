@@ -40,6 +40,7 @@ import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import { Item, mapRecordToItem, defaultItems } from './types/item';
+import { supabase } from './supabaseClient';
 
 // Items state
 const items = ref<Item[]>([]);
@@ -47,7 +48,9 @@ const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 
+
 // Fetch items from supabase
+
 async function fetchItems() {
   isLoading.value = true;
   serverError.value = '';
