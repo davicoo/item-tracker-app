@@ -5,9 +5,8 @@
     </h1>
 
     <StatsDisplay :stats="currentStats" />
-    <StatsChart :items="items" />
 
-    <StatsDisplay />
+    <StatsChart :items="items" />
 
     
     <!-- Show server error if any -->
