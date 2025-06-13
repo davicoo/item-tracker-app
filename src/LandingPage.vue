@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center h-screen bg-gray-800">
     <img
-      src="/images/items/200.png"
+      src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//1749825362414.png"
       alt="Landing"
       class="w-48 h-48 animate-ping"
       @load="startTimer"
