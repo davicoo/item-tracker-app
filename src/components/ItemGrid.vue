@@ -10,12 +10,13 @@
     v-else
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
   >
-    <ItemCard 
-      v-for="item in items" 
-      :key="item.id" 
+    <ItemCard
+      v-for="item in items"
+      :key="item.id"
       :item="item"
-      @update-status="(id, status) => $emit('update-status', id, status)" 
+      @update-status="(id, status) => $emit('update-status', id, status)"
       @delete-item="(id) => $emit('delete-item', id)"
+      @edit-item="(item) => $emit('edit-item', item)"
     />
   </div>
 </template>
@@ -32,6 +33,7 @@ defineProps<{
 defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
   'delete-item': [string]
+  'edit-item': [Item]
 }>()
 </script>
 
