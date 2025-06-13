@@ -12,7 +12,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - View all items in a responsive grid layout
 - Persistent data storage using localStorage
 - Fully responsive design
-- Landing page that briefly displays an animation before navigating to the main application
+- Animation overlay that displays for a few seconds on initial load before revealing the main application
 
 ## Project Setup
 
@@ -60,7 +60,7 @@ item-tracker-app/
 ```
 
 ## Landing Page
-The application starts with a simple landing page that shows an animated image for a few seconds. After the animation finishes, the router automatically navigates to the main app at `/app`.
+When the application loads, an animation briefly appears on top of the main page. After a few seconds the animation disappears, revealing the app at the root path `/` without changing the URL.
 
 ## Technology Stack
 
