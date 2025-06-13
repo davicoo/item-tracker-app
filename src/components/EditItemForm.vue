@@ -35,6 +35,15 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Date Added</label>
+      <input
+        v-model="form.dateAdded"
+        type="date"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Image</label>
       <input
         type="file"
@@ -113,6 +122,7 @@ const form = ref({
   status: props.item.status,
   location: props.item.location,
   price: props.item.price,
+  dateAdded: props.item.dateAdded.slice(0, 10),
 });
 
 const selectedFile = ref<File | null>(null);
@@ -127,6 +137,7 @@ watch(
       status: val.status,
       location: val.location,
       price: val.price,
+      dateAdded: val.dateAdded.slice(0, 10),
     };
     previewUrl.value = val.imageUrl;
     selectedFile.value = null;
@@ -163,6 +174,7 @@ async function handleSubmit() {
         location: form.value.location,
         price: form.value.price,
         image_url: imageUrl,
+        date_added: new Date(form.value.dateAdded).toISOString(),
       })
       .eq('id', props.item.id)
       .select()
