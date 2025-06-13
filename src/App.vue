@@ -6,7 +6,19 @@
 
     <StatsDisplay :stats="currentStats" />
 
-    <StatsChart :items="items" />
+    <div class="flex justify-end mb-2">
+      <button
+        class="text-sm text-blue-500 hover:underline"
+        @click="showChart = !showChart"
+      >
+        {{ showChart ? 'Hide Chart' : 'Show Chart' }}
+      </button>
+    </div>
+
+    <StatsChart
+      v-if="showChart"
+      :items="items"
+    />
 
     
     <!-- Show server error if any -->
@@ -75,6 +87,7 @@ import { calculateStats, saveStats, type Stats } from './utils/stats';
 // Items state
 const items = ref<Item[]>([]);
 const showForm = ref(false);
+const showChart = ref(true);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
