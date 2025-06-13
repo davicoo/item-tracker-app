@@ -3,6 +3,7 @@
     <h1 class="text-3xl font-bold text-center mb-8">
       Item Tracker
     </h1>
+    <StatsDisplay />
     
     <!-- Show server error if any -->
     <div
@@ -59,9 +60,11 @@ import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
+import StatsDisplay from './components/StatsDisplay.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
+import { calculateStats, saveStats } from './utils/stats';
 
 // Items state
 const items = ref<Item[]>([]);
@@ -86,6 +89,8 @@ async function fetchItems() {
 
     if (error) throw error;
     items.value = data.map(mapRecordToItem); // adjust mapRecordToItem if needed
+    const stats = calculateStats(items.value);
+    await saveStats(stats);
   } catch (err: any) {
     console.error('Error fetching items:', err);
     serverError.value = 'Error fetching items';
@@ -124,7 +129,10 @@ watch(items, () => {
       }
       
       console.log('Items saved to server successfully');
-      
+
+      const stats = calculateStats(items.value);
+      await saveStats(stats);
+
     } catch (error) {
       console.error('Error saving to server:', error);
       serverError.value = 'Failed to save items to server. Saving locally as fallback.';
@@ -133,6 +141,8 @@ watch(items, () => {
       try {
         localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
         console.log('Items saved to localStorage as fallback');
+        const stats = calculateStats(items.value);
+        await saveStats(stats);
       } catch (localError) {
         console.error('Error with localStorage fallback:', localError);
       }
