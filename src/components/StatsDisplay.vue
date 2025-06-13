@@ -20,26 +20,23 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import { fetchStats, type Stats } from '../utils/stats';
 
-import type { Stats } from '../utils/stats';
+const props = defineProps<{ stats?: Stats }>();
 
-defineProps<{
-  stats: Stats
-}>();
-
-import { ref, onMounted } from 'vue';
-import type { Stats } from '../utils/stats';
-import { fetchStats } from '../utils/stats';
-
-const stats = ref<Stats>({ sold: 0, sold_paid: 0 });
+const fetchedStats = ref<Stats>({ sold: 0, sold_paid: 0 });
 
 onMounted(async () => {
-  const stored = await fetchStats();
-  if (stored) {
-    stats.value = stored;
+  if (!props.stats) {
+    const stored = await fetchStats();
+    if (stored) {
+      fetchedStats.value = stored;
+    }
   }
 });
 
+const stats = computed(() => props.stats ?? fetchedStats.value);
 </script>
 
 <style scoped>
