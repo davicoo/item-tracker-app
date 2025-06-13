@@ -3,6 +3,8 @@
     <h1 class="text-3xl font-bold text-center mb-8">
       Item Tracker
     </h1>
+    <StatsDisplay :stats="currentStats" />
+    <StatsChart :items="items" />
     
     <!-- Show server error if any -->
     <div
@@ -59,9 +61,12 @@ import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
+import StatsDisplay from './components/StatsDisplay.vue';
+import StatsChart from './components/StatsChart.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
+import { calculateStats, saveStats, type Stats } from './utils/stats';
 
 // Items state
 const items = ref<Item[]>([]);
@@ -69,6 +74,7 @@ const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
+const currentStats = ref<Stats>({ sold: 0, sold_paid: 0 });
 
 
 
@@ -86,10 +92,14 @@ async function fetchItems() {
 
     if (error) throw error;
     items.value = data.map(mapRecordToItem); // adjust mapRecordToItem if needed
+    const stats = calculateStats(items.value);
+    currentStats.value = stats;
+    await saveStats(stats);
   } catch (err: any) {
     console.error('Error fetching items:', err);
     serverError.value = 'Error fetching items';
     items.value = [...defaultItems];
+    currentStats.value = calculateStats(items.value);
   } finally {
     isLoading.value = false;
   }
@@ -124,7 +134,11 @@ watch(items, () => {
       }
       
       console.log('Items saved to server successfully');
-      
+
+      const stats = calculateStats(items.value);
+      currentStats.value = stats;
+      await saveStats(stats);
+
     } catch (error) {
       console.error('Error saving to server:', error);
       serverError.value = 'Failed to save items to server. Saving locally as fallback.';
@@ -133,6 +147,9 @@ watch(items, () => {
       try {
         localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
         console.log('Items saved to localStorage as fallback');
+        const stats = calculateStats(items.value);
+        currentStats.value = stats;
+        await saveStats(stats);
       } catch (localError) {
         console.error('Error with localStorage fallback:', localError);
       }
@@ -144,6 +161,7 @@ watch(items, () => {
 const handleItemAdded = (newItem: Item) => {
   console.log('Adding new item:', newItem);
   items.value = [...items.value, newItem]; // Create a new array to ensure reactivity
+  currentStats.value = calculateStats(items.value);
   showForm.value = false;
 };
 
@@ -160,6 +178,7 @@ const handleItemUpdated = (updated: Item) => {
     const updatedItems = [...items.value];
     updatedItems[index] = updated;
     items.value = updatedItems;
+    currentStats.value = calculateStats(items.value);
   }
   editingItem.value = null;
 };
@@ -189,6 +208,7 @@ const updateItemStatus = async (
         status: data.status,
       };
       items.value = updatedItems;
+      currentStats.value = calculateStats(items.value);
     }
   } catch (err: any) {
     console.error(err);
@@ -200,6 +220,7 @@ const updateItemStatus = async (
 const deleteItem = (id: string) => {
   console.log('Deleting item:', id);
   items.value = items.value.filter(item => item.id !== id);
+  currentStats.value = calculateStats(items.value);
 };
 </script>
 

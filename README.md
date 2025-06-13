@@ -6,6 +6,8 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 
 - Add items with images, names, prices, locations, and detailed descriptions
 - Track item sales status (Not Sold / Sold / Sold & Paid)
+- Simple statistics for Sold and Sold & Paid counts stored in Supabase, updated automatically when items change
+- Bar chart showing how many items were sold in the last 30 days, 6 months, and year
 - Record when each item was added and display this date
 - View all items in a responsive grid layout
 - Persistent data storage using localStorage
