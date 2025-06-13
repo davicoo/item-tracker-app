@@ -3,8 +3,12 @@
     <h1 class="text-3xl font-bold text-center mb-8">
       Item Tracker
     </h1>
+
     <StatsDisplay :stats="currentStats" />
     <StatsChart :items="items" />
+
+    <StatsDisplay />
+
     
     <!-- Show server error if any -->
     <div
@@ -67,6 +71,7 @@ import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
+
 
 // Items state
 const items = ref<Item[]>([]);
@@ -136,7 +141,9 @@ watch(items, () => {
       console.log('Items saved to server successfully');
 
       const stats = calculateStats(items.value);
+
       currentStats.value = stats;
+
       await saveStats(stats);
 
     } catch (error) {

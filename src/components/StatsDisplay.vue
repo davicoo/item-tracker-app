@@ -20,11 +20,26 @@
 </template>
 
 <script setup lang="ts">
+
 import type { Stats } from '../utils/stats';
 
 defineProps<{
   stats: Stats
 }>();
+
+import { ref, onMounted } from 'vue';
+import type { Stats } from '../utils/stats';
+import { fetchStats } from '../utils/stats';
+
+const stats = ref<Stats>({ sold: 0, sold_paid: 0 });
+
+onMounted(async () => {
+  const stored = await fetchStats();
+  if (stored) {
+    stats.value = stored;
+  }
+});
+
 </script>
 
 <style scoped>

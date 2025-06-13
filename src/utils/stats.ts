@@ -6,6 +6,7 @@ export interface Stats {
   sold_paid: number;
 }
 
+
 export interface PeriodStats {
   last30Days: number;
   last6Months: number;
@@ -20,6 +21,7 @@ export function calculateStats(items: Item[]): Stats {
   const sold_paid = items.filter(i => i.status === 'sold_paid').length;
   return { sold, sold_paid };
 }
+
 
 export function calculatePeriodStats(items: Item[]): PeriodStats {
   const now = new Date();
