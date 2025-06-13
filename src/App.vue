@@ -59,7 +59,8 @@ import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
-import { Item, mapRecordToItem, defaultItems } from './types/item';
+import type { Item } from './types/item';
+import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
 
 // Items state
