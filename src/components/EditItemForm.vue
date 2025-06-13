@@ -27,7 +27,7 @@
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Price</label>
       <input
-        v-model="form.price"
+        v-model="displayPrice"
         type="text"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         placeholder="Enter item price"
@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions } from '../types/item';
 import { supabase } from '../supabaseClient';
@@ -123,6 +123,14 @@ const form = ref({
   location: props.item.location,
   price: props.item.price,
   dateAdded: props.item.dateAdded.slice(0, 10),
+});
+
+const displayPrice = computed({
+  get: () => (form.value.price ? `$${form.value.price}` : ''),
+  set: (val: string) => {
+    const numeric = val.replace(/[^0-9.]/g, '');
+    form.value.price = numeric;
+  }
 });
 
 const selectedFile = ref<File | null>(null);
