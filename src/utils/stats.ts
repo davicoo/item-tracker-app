@@ -4,6 +4,7 @@ import type { Item } from '../types/item';
 export interface Stats {
   sold: number;
   sold_paid: number;
+  sold_paid_total: number;
 }
 
 
@@ -18,8 +19,13 @@ const FILE_PATH = 'current-stats.json';
 
 export function calculateStats(items: Item[]): Stats {
   const sold = items.filter(i => i.status === 'sold').length;
-  const sold_paid = items.filter(i => i.status === 'sold_paid').length;
-  return { sold, sold_paid };
+  const soldPaidItems = items.filter(i => i.status === 'sold_paid');
+  const sold_paid = soldPaidItems.length;
+  const sold_paid_total = soldPaidItems.reduce((sum, item) => {
+    const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
+    return sum + (isNaN(num) ? 0 : num);
+  }, 0);
+  return { sold, sold_paid, sold_paid_total };
 }
 
 

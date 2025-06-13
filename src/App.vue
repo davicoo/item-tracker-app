@@ -91,7 +91,7 @@ const showChart = ref(true);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
-const currentStats = ref<Stats>({ sold: 0, sold_paid: 0 });
+const currentStats = ref<Stats>({ sold: 0, sold_paid: 0, sold_paid_total: 0 });
 
 
 

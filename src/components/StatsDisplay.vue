@@ -16,6 +16,14 @@
         {{ props.stats.sold_paid }}
       </p>
     </div>
+    <div class="bg-gray-100 p-4 rounded text-center">
+      <p class="text-sm text-gray-600">
+        Paid Total
+      </p>
+      <p class="text-xl font-bold">
+        ${{ props.stats.sold_paid_total.toFixed(2) }}
+      </p>
+    </div>
   </div>
 </template>
 

@@ -27,7 +27,7 @@
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Price</label>
       <input
-        v-model="newItem.price"
+        v-model="displayPrice"
         type="text"
         class="w-full px-3 py-2 border border-gray-300 rounded"
         placeholder="Enter item price"
@@ -119,6 +119,14 @@ const newItem = ref({
   status: 'not_sold' as const,
   location: '',
   price: ''
+});
+
+const displayPrice = computed({
+  get: () => (newItem.value.price ? `$${newItem.value.price}` : ''),
+  set: (val: string) => {
+    const numeric = val.replace(/[^0-9.]/g, '');
+    newItem.value.price = numeric;
+  }
 });
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>('');
