@@ -1,9 +1,12 @@
 import { createApp } from 'vue'
-import App from './App.vue'
+import router from './router'
+import AppRoot from './AppRoot.vue'
 import * as ImageKitVue from '@imagekit/vue'  // Namespace import
 import './assets/main.css'
 
-const app = createApp(App)
+const app = createApp(AppRoot)
+
+app.use(router)
 
 app.use(ImageKitVue, {
   publicKey: 'public_8RxT918PPFr+aU5aqwgMZx/waIU=',
