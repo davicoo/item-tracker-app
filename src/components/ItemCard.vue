@@ -39,6 +39,9 @@
         {{ item.details }}
       </p>
       <p class="text-gray-600 text-sm mb-1">
+        Price: {{ item.price }}
+      </p>
+      <p class="text-gray-600 text-sm mb-1">
         Location: {{ item.location }}
       </p>
       <p class="text-gray-500 text-xs mb-3">
@@ -133,6 +136,17 @@ const formattedDate = computed(() => {
   } catch {
     return props.item.dateAdded;
   }
+});
+
+const formattedPrice = computed(() => {
+  const number = parseFloat(props.item.price);
+  if (Number.isFinite(number)) {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(number);
+  }
+  return props.item.price;
 });
 
 const statusLabel = computed(() => {
