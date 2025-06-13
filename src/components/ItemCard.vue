@@ -39,7 +39,7 @@
         {{ item.details }}
       </p>
       <p class="text-gray-600 text-sm mb-1">
-        Price: {{ formattedPrice }}
+        Price: {{ item.price }}
       </p>
       <p class="text-gray-600 text-sm mb-1">
         Location: {{ item.location }}
