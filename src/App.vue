@@ -7,8 +7,6 @@
     <StatsDisplay :stats="currentStats" />
     <StatsChart :items="items" />
 
-    <StatsDisplay />
-
     
     <!-- Show server error if any -->
     <div
