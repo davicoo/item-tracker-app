@@ -164,19 +164,34 @@ const handleItemUpdated = (updated: Item) => {
 };
 
 // Handle updating an item's status
-const updateItemStatus = (id: string, status: "not_sold" | "sold" | "sold_paid") => {
-  console.log('Updating item status:', id, status);
-  
-  // Find the item and update its status
-  const itemIndex = items.value.findIndex(item => item.id === id);
-  if (itemIndex !== -1) {
-    // Create a new array to ensure reactivity
-    const updatedItems = [...items.value];
-    updatedItems[itemIndex] = {
-      ...updatedItems[itemIndex],
-      status: status
-    };
-    items.value = updatedItems;
+const updateItemStatus = async (
+  id: string,
+  status: "not_sold" | "sold" | "sold_paid"
+) => {
+  console.log("Updating item status:", id, status);
+
+  try {
+    const { data, error } = await supabase
+      .from("items")
+      .update({ status })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    const itemIndex = items.value.findIndex(item => item.id === id);
+    if (itemIndex !== -1 && data) {
+      const updatedItems = [...items.value];
+      updatedItems[itemIndex] = {
+        ...updatedItems[itemIndex],
+        status: data.status,
+      };
+      items.value = updatedItems;
+    }
+  } catch (err: any) {
+    console.error(err);
+    alert("❌ Error updating status: " + err.message);
   }
 };
 
