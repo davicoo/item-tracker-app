@@ -1,36 +1,55 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
-    <h1 class="text-3xl font-bold text-center mb-8">Item Tracker</h1>
+    <h1 class="text-3xl font-bold text-center mb-8">
+      Item Tracker
+    </h1>
     
     <!-- Show server error if any -->
-    <div v-if="serverError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <div
+      v-if="serverError"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+    >
       {{ serverError }}
     </div>
     
-    <ItemForm 
-      v-if="showForm" 
-      @item-added="handleItemAdded" 
-      @cancel="showForm = false" 
+    <ItemForm
+      v-if="showForm && !editingItem"
+      @item-added="handleItemAdded"
+      @cancel="showForm = false"
+    />
+
+    <EditItemForm
+      v-if="editingItem"
+      :item="editingItem"
+      @item-updated="handleItemUpdated"
+      @cancel="editingItem = null"
     />
     
-    <div v-if="!showForm" class="mb-6">
+    <div
+      v-if="!showForm"
+      class="mb-6"
+    >
       <button
-        @click="showForm = true"
         class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium"
+        @click="showForm = true"
       >
         Add New Item
       </button>
     </div>
     
-    <div v-if="isLoading" class="text-center py-8">
+    <div
+      v-if="isLoading"
+      class="text-center py-8"
+    >
       Loading items...
     </div>
     
-    <ItemGrid 
+    <ItemGrid
       v-else
-      :items="items" 
-      @update-status="updateItemStatus" 
-      @delete-item="deleteItem" 
+      :items="items"
+      @update-status="updateItemStatus"
+      @delete-item="deleteItem"
+      @edit-item="startEdit"
     />
   </div>
 </template>
@@ -38,6 +57,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import ItemForm from './components/ItemForm.vue';
+import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import { Item, mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
@@ -47,6 +67,7 @@ const items = ref<Item[]>([]);
 const showForm = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
+const editingItem = ref<Item | null>(null);
 
 
 
@@ -123,6 +144,23 @@ const handleItemAdded = (newItem: Item) => {
   console.log('Adding new item:', newItem);
   items.value = [...items.value, newItem]; // Create a new array to ensure reactivity
   showForm.value = false;
+};
+
+// Start editing an item
+const startEdit = (item: Item) => {
+  editingItem.value = item;
+  showForm.value = false;
+};
+
+// Handle updated item from edit form
+const handleItemUpdated = (updated: Item) => {
+  const index = items.value.findIndex(i => i.id === updated.id);
+  if (index !== -1) {
+    const updatedItems = [...items.value];
+    updatedItems[index] = updated;
+    items.value = updatedItems;
+  }
+  editingItem.value = null;
 };
 
 // Handle updating an item's status

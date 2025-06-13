@@ -65,21 +65,28 @@
         </select>
       </div>
       
-      <!-- Status badge and delete button -->
+      <!-- Status badge and actions -->
       <div class="flex justify-between items-center">
-        <span 
+        <span
           class="px-2 py-1 rounded text-xs font-medium"
           :class="statusColor"
         >
           {{ statusLabel }}
         </span>
-        
-        <button
-          class="text-red-500 hover:text-red-700 text-sm font-medium"
-          @click="handleDelete"
-        >
-          Delete
-        </button>
+        <div class="space-x-2">
+          <button
+            class="text-blue-500 hover:text-blue-700 text-sm font-medium"
+            @click="handleEdit"
+          >
+            Edit
+          </button>
+          <button
+            class="text-red-500 hover:text-red-700 text-sm font-medium"
+            @click="handleDelete"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -98,6 +105,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
   'delete-item': [string]
+  'edit-item': [Item]
 }>()
 
 // Add image error handling
@@ -118,6 +126,10 @@ const handleStatusChange = (event: Event) => {
 
 const handleDelete = () => {
   emit('delete-item', props.item.id);
+};
+
+const handleEdit = () => {
+  emit('edit-item', props.item);
 };
 
 const statusLabel = computed(() => {
