@@ -5,6 +5,7 @@
     </h1>
 
     <StatsDisplay :stats="currentStats" />
+
     <StatsChart :items="items" />
 
     
