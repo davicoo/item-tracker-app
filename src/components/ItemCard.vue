@@ -138,16 +138,6 @@ const formattedDate = computed(() => {
   }
 });
 
-const formattedPrice = computed(() => {
-  const number = parseFloat(props.item.price);
-  if (Number.isFinite(number)) {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: 'USD'
-    }).format(number);
-  }
-  return props.item.price;
-});
 
 const statusLabel = computed(() => {
   const option = statusOptions.find(opt => opt.value === props.item.status);
