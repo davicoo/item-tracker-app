@@ -1,13 +1,5 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- Debug info to see what's happening -->
-    <div
-      v-if="!item.imageUrl"
-      class="p-2 bg-red-100 text-xs"
-    >
-      No image URL available: {{ JSON.stringify(item) }}
-    </div>
-    
     <!-- Image display with local fallback support -->
     <div
       v-if="item.imageUrl"
@@ -43,8 +35,17 @@
       <h3 class="text-lg font-semibold mb-2">
         {{ item.name }}
       </h3>
-      <p class="text-gray-600 text-sm mb-3">
+      <p class="text-gray-600 text-sm mb-1">
         {{ item.details }}
+      </p>
+      <p class="text-gray-600 text-sm mb-1">
+        Price: {{ formattedPrice }}
+      </p>
+      <p class="text-gray-600 text-sm mb-1">
+        Location: {{ item.location }}
+      </p>
+      <p class="text-gray-500 text-xs mb-3">
+        Added {{ formattedDate }}
       </p>
       
       <!-- Status controls -->
@@ -112,15 +113,12 @@ const emit = defineEmits<{
 const imageError = ref(false);
 
 const handleImageError = () => {
-  console.log(`Image failed to load: ${props.item.imageUrl}`);
   imageError.value = true;
 };
 
-// FIX: Update the handleStatusChange function to properly emit both parameters
 const handleStatusChange = (event: Event) => {
   const target = event.target as HTMLSelectElement;
   const newStatus = target.value as "not_sold" | "sold" | "sold_paid";
-  console.log(`Updating status for item ${props.item.id} to ${newStatus}`);
   emit('update-status', props.item.id, newStatus);
 };
 
@@ -131,6 +129,25 @@ const handleDelete = () => {
 const handleEdit = () => {
   emit('edit-item', props.item);
 };
+
+const formattedDate = computed(() => {
+  try {
+    return new Date(props.item.dateAdded).toLocaleDateString();
+  } catch {
+    return props.item.dateAdded;
+  }
+});
+
+const formattedPrice = computed(() => {
+  const number = parseFloat(props.item.price);
+  if (Number.isFinite(number)) {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'USD'
+    }).format(number);
+  }
+  return props.item.price;
+});
 
 const statusLabel = computed(() => {
   const option = statusOptions.find(opt => opt.value === props.item.status);

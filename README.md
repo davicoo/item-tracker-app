@@ -4,8 +4,9 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 
 ## Features
 
-- Add items with images, names, and detailed descriptions
+- Add items with images, names, prices, locations, and detailed descriptions
 - Track item sales status (Not Sold / Sold / Sold & Paid)
+- Record when each item was added and display this date
 - View all items in a responsive grid layout
 - Persistent data storage using localStorage
 - Fully responsive design
