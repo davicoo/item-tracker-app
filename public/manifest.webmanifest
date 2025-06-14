@@ -1,0 +1,30 @@
+{
+  "name": "Item Tracker",
+  "short_name": "ItemTracker",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/ugly_192px.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/ugly_512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/ugly_400px.png",
+      "sizes": "400x400",
+      "type": "image/png"
+    },
+    {
+      "src": "/Uglyico.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
