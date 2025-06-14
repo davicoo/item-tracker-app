@@ -8,7 +8,7 @@
       <img
         src="/Uglygif.gif.GIF"
         alt="Intro animation"
-        class="w-48 h-48"
+        class="w-full h-auto max-w-[640px] max-h-[854px] object-contain"
       >
     </div>
   </div>
