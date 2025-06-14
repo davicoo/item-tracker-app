@@ -15,6 +15,12 @@ export interface PeriodStats {
   lastYear: number;
 }
 
+export interface PeriodTotals {
+  last30Days: number;
+  last6Months: number;
+  lastYear: number;
+}
+
 const BUCKET = 'stats';
 const FILE_PATH = 'current-stats.json';
 
@@ -49,6 +55,32 @@ export function calculatePeriodStats(items: Item[]): PeriodStats {
     last30Days: countSince(d30),
     last6Months: countSince(m6),
     lastYear: countSince(y1)
+  };
+}
+
+export function calculatePeriodTotals(items: Item[]): PeriodTotals {
+  const now = new Date();
+  const d30 = new Date(now);
+  d30.setDate(now.getDate() - 30);
+  const m6 = new Date(now);
+  m6.setMonth(now.getMonth() - 6);
+  const y1 = new Date(now);
+  y1.setFullYear(now.getFullYear() - 1);
+
+  const totalSince = (date: Date) =>
+    items.reduce((sum, item) => {
+      if (item.status === 'sold_paid' && new Date(item.dateAdded) >= date) {
+        const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
+        const net = isNaN(num) ? 0 : num * 0.8;
+        return sum + net;
+      }
+      return sum;
+    }, 0);
+
+  return {
+    last30Days: totalSince(d30),
+    last6Months: totalSince(m6),
+    lastYear: totalSince(y1)
   };
 }
 
