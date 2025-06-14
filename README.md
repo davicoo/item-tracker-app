@@ -62,7 +62,7 @@ item-tracker-app/
 ```
 
 ## Landing Page
-When the application loads, an animation briefly appears on top of the main page. After a few seconds the animation disappears, revealing the app at the root path `/` without changing the URL.
+When the application loads, an animation briefly appears on top of the main page. After about five seconds the animation disappears, revealing the app at the root path `/` without changing the URL.
 
 ## Technology Stack
 

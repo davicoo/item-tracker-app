@@ -22,6 +22,6 @@ const showLanding = ref(true);
 onMounted(() => {
   setTimeout(() => {
     showLanding.value = false;
-  }, 3000);
+  }, 5000);
 });
 </script>
