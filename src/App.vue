@@ -188,6 +188,8 @@ const handleItemAdded = (newItem: Item) => {
 const startEdit = (item: Item) => {
   editingItem.value = item;
   showForm.value = false;
+  // Scroll to top so the edit form is visible without manual scrolling
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // Handle updated item from edit form
