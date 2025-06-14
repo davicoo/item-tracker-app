@@ -37,6 +37,7 @@
 
     <EditItemForm
       v-if="editingItem"
+      ref="editFormEl"
       :item="editingItem"
       @item-updated="handleItemUpdated"
       @cancel="editingItem = null"
@@ -72,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
@@ -91,6 +92,7 @@ const showChart = ref(true);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
+const editFormEl = ref<HTMLElement | null>(null);
 const currentStats = ref<Stats>({ sold: 0, sold_paid: 0, sold_paid_total: 0 });
 
 
@@ -188,6 +190,14 @@ const handleItemAdded = (newItem: Item) => {
 const startEdit = (item: Item) => {
   editingItem.value = item;
   showForm.value = false;
+  // Ensure scrolling happens after DOM updates
+  nextTick(() => {
+    if (editFormEl.value) {
+      editFormEl.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 };
 
 // Handle updated item from edit form
