@@ -2,6 +2,7 @@ import { supabase } from '../supabaseClient';
 import type { Item } from '../types/item';
 
 export interface Stats {
+  items: number;
   sold: number;
   sold_paid: number;
   sold_paid_total: number;
@@ -18,6 +19,7 @@ const BUCKET = 'stats';
 const FILE_PATH = 'current-stats.json';
 
 export function calculateStats(items: Item[]): Stats {
+  const total = items.length;
   const sold = items.filter(i => i.status === 'sold').length;
   const soldPaidItems = items.filter(i => i.status === 'sold_paid');
   const sold_paid = soldPaidItems.length;
@@ -27,7 +29,7 @@ export function calculateStats(items: Item[]): Stats {
     const net = isNaN(num) ? 0 : num * 0.8;
     return sum + net;
   }, 0);
-  return { sold, sold_paid, sold_paid_total };
+  return { items: total, sold, sold_paid, sold_paid_total };
 }
 
 
@@ -58,7 +60,13 @@ export async function fetchStats(): Promise<Stats | null> {
   }
   try {
     const text = await data.text();
-    return JSON.parse(text) as Stats;
+    const parsed = JSON.parse(text) as Partial<Stats>;
+    return {
+      items: parsed.items ?? 0,
+      sold: parsed.sold ?? 0,
+      sold_paid: parsed.sold_paid ?? 0,
+      sold_paid_total: parsed.sold_paid_total ?? 0
+    };
   } catch (err) {
     console.error('Error parsing stats:', err);
     return null;
