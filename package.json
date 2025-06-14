@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build:css": "tailwindcss -c tailwind.config.js -i ./src/assets/main.css -o ./public/main.css",
+        "build": "npm run build:css && vite build",
         "preview": "vite preview",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
