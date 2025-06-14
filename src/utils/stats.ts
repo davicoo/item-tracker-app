@@ -23,7 +23,9 @@ export function calculateStats(items: Item[]): Stats {
   const sold_paid = soldPaidItems.length;
   const sold_paid_total = soldPaidItems.reduce((sum, item) => {
     const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
-    return sum + (isNaN(num) ? 0 : num);
+    // Account for the 20% fee that goes to the shop
+    const net = isNaN(num) ? 0 : num * 0.8;
+    return sum + net;
   }, 0);
   return { sold, sold_paid, sold_paid_total };
 }
