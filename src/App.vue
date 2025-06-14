@@ -87,11 +87,11 @@ import { calculateStats, saveStats, type Stats } from './utils/stats';
 // Items state
 const items = ref<Item[]>([]);
 const showForm = ref(false);
-const showChart = ref(true);
+const showChart = ref(false);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
-const currentStats = ref<Stats>({ sold: 0, sold_paid: 0, sold_paid_total: 0 });
+const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
 
 
 
