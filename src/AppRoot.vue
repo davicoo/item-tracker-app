@@ -6,9 +6,9 @@
       class="fixed inset-0 flex items-center justify-center bg-black z-50"
     >
       <img
-        src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//1749825362414.png"
-        alt="Landing"
-        class="w-48 h-48 animate-ping"
+        src="/Uglygif.gif.GIF"
+        alt="Intro animation"
+        class="w-48 h-48"
       >
     </div>
   </div>
