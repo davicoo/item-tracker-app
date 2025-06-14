@@ -40,7 +40,8 @@ Create a `.env` file based on `.env.example` and set `VITE_SUPABASE_URL` and `VI
 ```
 item-tracker-app/
 ├── public/
-│   ├── favicon.ico
+│   ├── Uglyico.ico
+│   ├── manifest.webmanifest
 │   └── index.html
 ├── src/
 │   ├── assets/
