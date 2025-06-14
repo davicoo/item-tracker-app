@@ -7,7 +7,7 @@
       style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background-color:#000; z-index:50;"
     >
       <img
-        src="/Uglygif.gif.GIF"
+        src="/Uglygif.gif"
         alt="Intro animation"
         class="w-full h-auto max-w-[640px] max-h-[854px] object-contain"
       >
