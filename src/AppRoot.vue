@@ -23,6 +23,7 @@ const showLanding = ref(true);
 onMounted(() => {
   setTimeout(() => {
     showLanding.value = false;
+    document.body.style.backgroundColor = '#f3f4f6';
   }, 5000);
 });
 </script>
