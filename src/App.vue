@@ -83,21 +83,13 @@
         placeholder="Search"
         class="flex-1 border border-gray-300 rounded px-2 py-1"
       >
-      <select
-        v-model="searchTag"
-        class="border border-gray-300 rounded px-2 py-1"
+      <button
+        v-if="searchQuery"
+        class="border border-gray-300 rounded px-2 py-1 bg-gray-100"
+        @click="clearSearch"
       >
-        <option value="">
-          All Tags
-        </option>
-        <option
-          v-for="tag in uniqueTags"
-          :key="tag"
-          :value="tag"
-        >
-          {{ tag }}
-        </option>
-      </select>
+        Clear
+      </button>
     </div>
 
     <div
@@ -141,12 +133,10 @@ const serverError = ref('');
 const editingItem = ref<Item | null>(null);
 const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
 const searchQuery = ref('');
-const searchTag = ref('');
 
-const uniqueTags = computed(() => {
-  const tags = items.value.flatMap(item => Array.isArray(item.tags) ? item.tags : []);
-  return Array.from(new Set(tags)).filter(tag => typeof tag === 'string' && tag.trim() !== '');
-});
+function clearSearch() {
+  searchQuery.value = '';
+}
 
 const filteredItems = computed(() => {
   let results = items.value;
@@ -156,9 +146,6 @@ const filteredItems = computed(() => {
       i.name.toLowerCase().includes(q) ||
       i.details.toLowerCase().includes(q)
     );
-  }
-  if (searchTag.value) {
-    results = results.filter(i => i.tags && i.tags.includes(searchTag.value));
   }
   return results;
 });
