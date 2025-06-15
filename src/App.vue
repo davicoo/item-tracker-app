@@ -1,8 +1,16 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
-    <h1 class="text-3xl font-bold text-center mb-8">
-      Artwork Tracker
-    </h1>
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold text-center flex-1">
+        Artwork Tracker
+      </h1>
+      <button
+        class="text-sm text-blue-500 hover:underline"
+        @click="signOut"
+      >
+        Sign Out
+      </button>
+    </div>
 
     <StatsDisplay :stats="currentStats" />
 
@@ -133,6 +141,10 @@ const serverError = ref('');
 const editingItem = ref<Item | null>(null);
 const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
 const searchQuery = ref('');
+
+async function signOut() {
+  await supabase.auth.signOut();
+}
 
 function clearSearch() {
   searchQuery.value = '';

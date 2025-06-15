@@ -14,6 +14,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - Persistent data storage using localStorage
 - Fully responsive design
 - Animation overlay that displays for a few seconds on initial load before revealing the main application
+- Built-in login and sign up using Supabase Auth
 
 ## Project Setup
 
@@ -71,18 +72,14 @@ When the application loads, an animation briefly appears on top of the main page
 - Vite
 - Tailwind CSS for styling
 
-## Adding Login with Supabase
+## Login with Supabase
 
-The project currently stores data in Supabase without user accounts. To enable
-authentication and manage items per user, follow the steps in
-[docs/SUPABASE_AUTH_SETUP.md](docs/SUPABASE_AUTH_SETUP.md). The guide explains
-how to configure Supabase auth, integrate login forms, hook the login check into
-the startup animation, and restore the project to this state if needed. It also
-shows how to keep each user's items and images private by using a `user_id`
-column and storing uploads in user-specific folders.
-
-Supabase automatically manages a built-in `auth.users` table for your accounts,
-so you don't need to create your own table for basic sign-up and login.
+The application now includes basic email/password authentication powered by
+Supabase. On first load, a login form appears after the startup animation. Users
+can sign up or sign in, and the item tracker only loads once a session is
+active. See
+[docs/SUPABASE_AUTH_SETUP.md](docs/SUPABASE_AUTH_SETUP.md) for details on how
+the auth integration works and how to restrict data per user.
 
 ## License
 
