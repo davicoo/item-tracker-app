@@ -144,8 +144,8 @@ const searchQuery = ref('');
 const searchTag = ref('');
 
 const uniqueTags = computed(() => {
-  const tags = items.value.flatMap(item => item.tags || []);
-  return Array.from(new Set(tags));
+  const tags = items.value.flatMap(item => Array.isArray(item.tags) ? item.tags : []);
+  return Array.from(new Set(tags)).filter(tag => typeof tag === 'string' && tag.trim() !== '');
 });
 
 const filteredItems = computed(() => {

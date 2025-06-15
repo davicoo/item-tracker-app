@@ -17,6 +17,20 @@ export const statusOptions = [
 ] as const;
 
 export function mapRecordToItem(record: any): Item {
+  let tags: string[] = [];
+  if (Array.isArray(record.tags)) {
+    tags = record.tags;
+  } else if (typeof record.tags === 'string') {
+    try {
+      const parsed = JSON.parse(record.tags);
+      if (Array.isArray(parsed)) {
+        tags = parsed;
+      }
+    } catch {
+      // leave tags as empty array
+    }
+  }
+
   return {
     id: record.id,
     name: record.name,
@@ -26,7 +40,7 @@ export function mapRecordToItem(record: any): Item {
     dateAdded: record.date_added,
     location: record.location,
     price: record.price,
-    tags: record.tags ?? []
+    tags
 
   };
 }
