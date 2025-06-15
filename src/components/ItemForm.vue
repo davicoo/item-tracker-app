@@ -173,7 +173,8 @@ const handleSubmit = async () => {
         location: newItem.value.location,
         price: newItem.value.price,
         image_url: imageUrl,
-        date_added: new Date().toISOString()
+        date_added: new Date().toISOString(),
+        tags: []
       }
     ])
     .select()
@@ -189,7 +190,8 @@ const handleSubmit = async () => {
     status: inserted.status,
     dateAdded: inserted.date_added,
     location: inserted.location,
-    price: inserted.price
+    price: inserted.price,
+    tags: []
   };
 
   emit('item-added', item);

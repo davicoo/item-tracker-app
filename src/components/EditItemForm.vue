@@ -89,6 +89,32 @@
       </select>
     </div>
 
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Tags</label>
+      <div class="flex flex-wrap mb-2">
+        <span
+          v-for="(tag, idx) in form.tags"
+          :key="idx"
+          class="bg-gray-200 rounded-full px-2 py-1 text-sm mr-2 mb-2 flex items-center"
+        >
+          {{ tag }}
+          <button
+            class="ml-1 text-red-500"
+            @click="removeTag(idx)"
+          >
+            ✕
+          </button>
+        </span>
+      </div>
+      <input
+        v-model="tagInput"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        placeholder="Add tag and press Enter"
+        @keyup.enter.prevent="addTag"
+      >
+    </div>
+
     <div class="flex space-x-2">
       <button
         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium"
@@ -123,6 +149,7 @@ const form = ref({
   location: props.item.location,
   price: props.item.price,
   dateAdded: props.item.dateAdded.slice(0, 10),
+  tags: [...(props.item.tags || [])]
 });
 
 const displayPrice = computed({
@@ -135,6 +162,7 @@ const displayPrice = computed({
 
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>(props.item.imageUrl);
+const tagInput = ref('');
 
 watch(
   () => props.item,
@@ -146,6 +174,7 @@ watch(
       location: val.location,
       price: val.price,
       dateAdded: val.dateAdded.slice(0, 10),
+      tags: [...(val.tags || [])]
     };
     previewUrl.value = val.imageUrl;
     selectedFile.value = null;
@@ -158,6 +187,18 @@ function onFileChange(e: Event) {
     selectedFile.value = files[0];
     previewUrl.value = URL.createObjectURL(files[0]);
   }
+}
+
+function addTag() {
+  const val = tagInput.value.trim();
+  if (val && !form.value.tags.includes(val)) {
+    form.value.tags.push(val);
+  }
+  tagInput.value = '';
+}
+
+function removeTag(index: number) {
+  form.value.tags.splice(index, 1);
 }
 
 async function handleSubmit() {
@@ -183,6 +224,7 @@ async function handleSubmit() {
         price: form.value.price,
         image_url: imageUrl,
         date_added: new Date(form.value.dateAdded).toISOString(),
+        tags: form.value.tags
       })
       .eq('id', props.item.id)
       .select()
@@ -199,6 +241,7 @@ async function handleSubmit() {
       dateAdded: updated.date_added,
       location: updated.location,
       price: updated.price,
+      tags: updated.tags ?? []
     };
 
     emit('item-updated', item);
