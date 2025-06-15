@@ -47,6 +47,18 @@
       <p class="text-gray-500 text-xs mb-3">
         Added {{ formattedDate }}
       </p>
+      <div
+        v-if="item.tags && item.tags.length"
+        class="flex flex-wrap mb-3"
+      >
+        <span
+          v-for="(tag, idx) in item.tags"
+          :key="idx"
+          class="bg-gray-200 rounded-full px-2 py-1 text-xs mr-2 mb-1"
+        >
+          {{ tag }}
+        </span>
+      </div>
       
       <!-- Status controls -->
       <div class="mb-3">
