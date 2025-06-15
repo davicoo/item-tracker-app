@@ -71,6 +71,19 @@ When the application loads, an animation briefly appears on top of the main page
 - Vite
 - Tailwind CSS for styling
 
+## Adding Login with Supabase
+
+The project currently stores data in Supabase without user accounts. To enable
+authentication and manage items per user, follow the steps in
+[docs/SUPABASE_AUTH_SETUP.md](docs/SUPABASE_AUTH_SETUP.md). The guide explains
+how to configure Supabase auth, integrate login forms, hook the login check into
+the startup animation, and restore the project to this state if needed. It also
+shows how to keep each user's items and images private by using a `user_id`
+column and storing uploads in user-specific folders.
+
+Supabase automatically manages a built-in `auth.users` table for your accounts,
+so you don't need to create your own table for basic sign-up and login.
+
 ## License
 
 MIT
