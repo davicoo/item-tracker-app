@@ -106,6 +106,7 @@
 import { ref, computed } from 'vue';
 import { statusOptions } from '../types/item';
 import type { Item } from '../types/item';
+import { mapRecordToItem } from '../types/item';
 import { supabase } from '../supabaseClient';
 
 const emit = defineEmits<{
@@ -182,17 +183,7 @@ const handleSubmit = async () => {
 
   if (insertError) throw insertError;
 
-  const item: Item = {
-    id: inserted.id,
-    name: inserted.name,
-    imageUrl: inserted.image_url,
-    details: inserted.details,
-    status: inserted.status,
-    dateAdded: inserted.date_added,
-    location: inserted.location,
-    price: inserted.price,
-    tags: []
-  };
+  const item: Item = mapRecordToItem(inserted);
 
   emit('item-added', item);
     newItem.value = {

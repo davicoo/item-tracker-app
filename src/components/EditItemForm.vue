@@ -135,7 +135,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import type { Item } from '../types/item';
-import { statusOptions } from '../types/item';
+import { statusOptions, mapRecordToItem } from '../types/item';
 import { supabase } from '../supabaseClient';
 
 const props = defineProps<{ item: Item }>();
@@ -232,17 +232,7 @@ async function handleSubmit() {
 
     if (error) throw error;
 
-    const item: Item = {
-      id: updated.id,
-      name: updated.name,
-      imageUrl: updated.image_url ?? '',
-      details: updated.details,
-      status: updated.status,
-      dateAdded: updated.date_added,
-      location: updated.location,
-      price: updated.price,
-      tags: updated.tags ?? []
-    };
+    const item: Item = mapRecordToItem(updated);
 
     emit('item-updated', item);
   } catch (err: any) {
