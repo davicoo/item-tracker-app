@@ -54,6 +54,28 @@
       </button>
     </div>
     
+    <div class="mb-4 flex justify-end">
+      <label
+        for="layout"
+        class="mr-2 text-sm text-gray-700"
+      >Layout:</label>
+      <select
+        id="layout"
+        v-model.number="columns"
+        class="border border-gray-300 rounded px-2 py-1 text-sm"
+      >
+        <option :value="1">
+          1 column
+        </option>
+        <option :value="2">
+          2 columns
+        </option>
+        <option :value="3">
+          3 columns
+        </option>
+      </select>
+    </div>
+
     <div
       v-if="isLoading"
       class="text-center py-8"
@@ -64,6 +86,7 @@
     <ItemGrid
       v-else
       :items="items"
+      :columns="columns"
       @update-status="updateItemStatus"
       @delete-item="deleteItem"
       @edit-item="startEdit"
@@ -88,6 +111,7 @@ import { calculateStats, saveStats, type Stats } from './utils/stats';
 const items = ref<Item[]>([]);
 const showForm = ref(false);
 const showChart = ref(false);
+const columns = ref(2);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);

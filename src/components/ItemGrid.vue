@@ -8,7 +8,8 @@
   
   <div
     v-else
-    class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6"
+    class="grid gap-6"
+    :class="columnsClass"
   >
     <ItemCard
       v-for="item in items"
@@ -23,12 +24,26 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { computed } from 'vue';
 import ItemCard from './ItemCard.vue';
 import type { Item } from '../types/item';
 
-defineProps<{
+const props = defineProps<{
   items: Item[];
+  columns: number;
 }>();
+
+const columnsClass = computed(() => {
+  switch (props.columns) {
+    case 1:
+      return 'grid-cols-1';
+    case 3:
+      return 'grid-cols-3';
+    case 2:
+    default:
+      return 'grid-cols-2';
+  }
+});
 
 defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
