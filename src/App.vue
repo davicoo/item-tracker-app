@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
@@ -250,7 +250,7 @@ const startEdit = (item: Item) => {
 };
 
 // Handle updated item from edit form
-const handleItemUpdated = (updated: Item) => {
+const handleItemUpdated = async (updated: Item) => {
   const index = items.value.findIndex(i => i.id === updated.id);
   if (index !== -1) {
     const updatedItems = [...items.value];
@@ -259,6 +259,9 @@ const handleItemUpdated = (updated: Item) => {
     currentStats.value = calculateStats(items.value);
   }
   editingItem.value = null;
+  await nextTick();
+  const element = document.getElementById(`item-${updated.id}`);
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
 // Handle updating an item's status

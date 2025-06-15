@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div
+    :id="`item-${item.id}`"
+    class="bg-white rounded-lg shadow-md overflow-hidden"
+  >
     <!-- Image display with local fallback support -->
     <div
       v-if="item.imageUrl"
