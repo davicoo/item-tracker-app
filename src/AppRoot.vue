@@ -1,6 +1,7 @@
 <template>
   <div>
-    <router-view />
+    <router-view v-if="loggedIn" />
+    <LoginForm v-else-if="!showLanding" />
     <div
       v-if="showLanding"
       class="fixed inset-0 flex items-center justify-center bg-black z-50"
@@ -17,13 +18,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { supabase } from './supabaseClient';
+import LoginForm from './components/LoginForm.vue';
 
 const showLanding = ref(true);
+const loggedIn = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   setTimeout(() => {
     showLanding.value = false;
     document.body.style.backgroundColor = '#f3f4f6';
   }, 5000);
+  const { data } = await supabase.auth.getSession();
+  loggedIn.value = !!data.session;
+});
+
+supabase.auth.onAuthStateChange((_event, session) => {
+  loggedIn.value = !!session;
 });
 </script>
