@@ -12,7 +12,7 @@ export interface Item {
 export const statusOptions = [
   { value: "not_sold", label: "Not Sold" },
   { value: "sold", label: "Sold" },
-  { value: "sold_paid", label: "Sold & Paid" }
+  { value: "sold_paid", label: "Paid" }
 ] as const;
 
 export function mapRecordToItem(record: any): Item {
