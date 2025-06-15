@@ -7,6 +7,7 @@ export interface Item {
   dateAdded: string;
   location: string;
   price: string;
+  tags: string[];
 }
 
 export const statusOptions = [
@@ -24,7 +25,8 @@ export function mapRecordToItem(record: any): Item {
     status: record.status,
     dateAdded: record.date_added,
     location: record.location,
-    price: record.price
+    price: record.price,
+    tags: record.tags ?? []
 
   };
 }
@@ -41,7 +43,8 @@ export const defaultItems: Item[] = [
     status: "not_sold",
     dateAdded: new Date().toISOString(),
     location: "New York, NY",
-    price: "199.99"
+    price: "199.99",
+    tags: []
   },
   {
     id: "2",
@@ -51,7 +54,8 @@ export const defaultItems: Item[] = [
     status: "sold",
     dateAdded: new Date().toISOString(),
     location: "San Francisco, CA",
-    price: "899.99"
+    price: "899.99",
+    tags: []
   }
 ];
 

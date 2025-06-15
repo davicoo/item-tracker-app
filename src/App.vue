@@ -76,6 +76,30 @@
       </select>
     </div>
 
+    <div class="mb-4 flex items-end space-x-2">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search"
+        class="flex-1 border border-gray-300 rounded px-2 py-1"
+      >
+      <select
+        v-model="searchTag"
+        class="border border-gray-300 rounded px-2 py-1"
+      >
+        <option value="">
+          All Tags
+        </option>
+        <option
+          v-for="tag in uniqueTags"
+          :key="tag"
+          :value="tag"
+        >
+          {{ tag }}
+        </option>
+      </select>
+    </div>
+
     <div
       v-if="isLoading"
       class="text-center py-8"
@@ -85,7 +109,7 @@
     
     <ItemGrid
       v-else
-      :items="items"
+      :items="filteredItems"
       :columns="columns"
       @update-status="updateItemStatus"
       @delete-item="deleteItem"
@@ -95,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
@@ -116,6 +140,28 @@ const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
 const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
+const searchQuery = ref('');
+const searchTag = ref('');
+
+const uniqueTags = computed(() => {
+  const tags = items.value.flatMap(item => item.tags || []);
+  return Array.from(new Set(tags));
+});
+
+const filteredItems = computed(() => {
+  let results = items.value;
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase();
+    results = results.filter(i =>
+      i.name.toLowerCase().includes(q) ||
+      i.details.toLowerCase().includes(q)
+    );
+  }
+  if (searchTag.value) {
+    results = results.filter(i => i.tags && i.tags.includes(searchTag.value));
+  }
+  return results;
+});
 
 
 
