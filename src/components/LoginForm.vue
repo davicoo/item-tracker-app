@@ -1,6 +1,16 @@
 <template>
   <div class="max-w-sm mx-auto mt-12 p-4 bg-white rounded shadow">
-    <h2 class="text-2xl font-bold mb-4 text-center">
+    <div class="flex flex-col items-center mb-4">
+      <img
+        src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//1749825362414.png"
+        alt="Artwork Tracker logo"
+        class="w-24 h-24 mb-2"
+      >
+      <h2 class="text-2xl font-bold text-center">
+        Artwork Tracker
+      </h2>
+    </div>
+    <h2 class="text-xl font-semibold mb-4 text-center">
       Login
     </h2>
     <form
@@ -42,6 +52,12 @@
       >
         {{ error }}
       </p>
+      <p
+        v-if="message"
+        class="text-green-600 text-sm"
+      >
+        {{ message }}
+      </p>
     </form>
   </div>
 </template>
@@ -53,9 +69,11 @@ import { supabase } from '../supabaseClient';
 const email = ref('');
 const password = ref('');
 const error = ref('');
+const message = ref('');
 
 async function handleLogin() {
   error.value = '';
+  message.value = '';
   const { error: err } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
@@ -65,11 +83,16 @@ async function handleLogin() {
 
 async function handleSignup() {
   error.value = '';
+  message.value = '';
   const { error: err } = await supabase.auth.signUp({
     email: email.value,
     password: password.value,
   });
-  if (err) error.value = err.message;
+  if (err) {
+    error.value = err.message;
+  } else {
+    message.value = 'Check your email to verify your account.';
+  }
 }
 </script>
 
