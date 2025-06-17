@@ -8,11 +8,12 @@
       v-if="item.imageUrl"
       class="h-48 overflow-hidden"
     >
-      <img 
+      <img
         :src="imageToDisplay"
         :alt="item.name"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover cursor-pointer"
         @error="handleImageError"
+        @click="handleViewImage"
       >
     </div>
     <div
@@ -122,6 +123,7 @@ const emit = defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
   'delete-item': [string]
   'edit-item': [Item]
+  'view-image': [string]
 }>()
 
 // Add image error handling
@@ -143,6 +145,10 @@ const handleDelete = () => {
 
 const handleEdit = () => {
   emit('edit-item', props.item);
+};
+
+const handleViewImage = () => {
+  emit('view-image', imageToDisplay.value);
 };
 
 const formattedDate = computed(() => {
