@@ -35,6 +35,17 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Shop Fee %</label>
+      <input
+        v-model.number="form.feePercent"
+        type="number"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        min="0"
+        step="0.1"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Date Added</label>
       <input
         v-model="form.dateAdded"
@@ -148,6 +159,7 @@ const form = ref({
   status: props.item.status,
   location: props.item.location,
   price: props.item.price,
+  feePercent: props.item.feePercent ?? 20,
   dateAdded: props.item.dateAdded.slice(0, 10),
   tags: [...(props.item.tags || [])]
 });
@@ -173,6 +185,7 @@ watch(
       status: val.status,
       location: val.location,
       price: val.price,
+      feePercent: val.feePercent ?? 20,
       dateAdded: val.dateAdded.slice(0, 10),
       tags: [...(val.tags || [])]
     };
@@ -225,6 +238,7 @@ async function handleSubmit() {
         status: form.value.status,
         location: form.value.location,
         price: form.value.price,
+        fee_percent: form.value.feePercent,
         image_url: imageUrl,
         date_added: new Date(form.value.dateAdded).toISOString(),
         tags: form.value.tags

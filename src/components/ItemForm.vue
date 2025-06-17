@@ -35,6 +35,17 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Shop Fee %</label>
+      <input
+        v-model.number="newItem.feePercent"
+        type="number"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        min="0"
+        step="0.1"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">
         Image <span class="text-red-500">*</span>
       </label>
@@ -119,7 +130,8 @@ const newItem = ref({
   details: '',
   status: 'not_sold' as const,
   location: '',
-  price: ''
+  price: '',
+  feePercent: 20
 });
 
 const displayPrice = computed({
@@ -138,7 +150,8 @@ const isFormValid = computed(() => {
     newItem.value.details.trim() &&
     selectedFile.value &&
     newItem.value.location.trim() &&
-    newItem.value.price.trim()
+    newItem.value.price.trim() &&
+    newItem.value.feePercent >= 0
   );
 });
 
@@ -177,6 +190,7 @@ const handleSubmit = async () => {
         status: newItem.value.status,
         location: newItem.value.location,
         price: newItem.value.price,
+        fee_percent: newItem.value.feePercent,
         image_url: imageUrl,
         date_added: new Date().toISOString(),
         tags: []
@@ -195,7 +209,8 @@ const handleSubmit = async () => {
       details: '',
       status: 'not_sold',
       location: '',
-      price: ''
+      price: '',
+      feePercent: 20
     };
     selectedFile.value = null;
     previewUrl.value = '';

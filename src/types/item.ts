@@ -9,6 +9,7 @@ export interface Item {
   dateAdded: string;
   location: string;
   price: string;
+  feePercent: number;
   tags: string[];
 }
 
@@ -43,6 +44,7 @@ export function mapRecordToItem(record: any): Item {
     dateAdded: record.date_added,
     location: record.location,
     price: record.price,
+    feePercent: typeof record.fee_percent === 'number' ? record.fee_percent : 20,
     tags
 
   };
@@ -61,6 +63,7 @@ export const defaultItems: Item[] = [
     dateAdded: new Date().toISOString(),
     location: "New York, NY",
     price: "199.99",
+    feePercent: 20,
     tags: []
   },
   {
@@ -72,6 +75,7 @@ export const defaultItems: Item[] = [
     dateAdded: new Date().toISOString(),
     location: "San Francisco, CA",
     price: "899.99",
+    feePercent: 20,
     tags: []
   }
 ];

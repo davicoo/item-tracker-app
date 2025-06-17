@@ -5,9 +5,10 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 ## Features
 
 - Add items with images, names, prices, locations, and detailed descriptions
+- Set a custom shop fee percentage for each item (defaults to 20%)
 - Track item sales status (Not Sold / Sold / Paid)
 - Simple per-user statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
-- Paid totals subtract a 20% shop fee from each sale
+- Paid totals subtract the shop fee percentage from each sale (default 20%, editable per item)
 - Bar chart showing how many items were sold in the last 30 days, 6 months, and year
 - Record when each item was added and display this date
 - View all items in a responsive grid layout
