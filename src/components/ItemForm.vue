@@ -154,20 +154,24 @@ const handleSubmit = async () => {
   if (!isFormValid.value || !selectedFile.value) return;
 
   try {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
     const fileExt = selectedFile.value.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${user?.id}/${fileName}`;
     const { error: imageError } = await supabase.storage
       .from('images')
-      .upload(fileName, selectedFile.value);
+      .upload(filePath, selectedFile.value);
 
     if (imageError) throw imageError;
 
-    const imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+    const imageUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
 
   const { data: inserted, error: insertError } = await supabase
     .from('items')
     .insert([
       {
+        user_id: user?.id,
         name: newItem.value.name,
         details: newItem.value.details,
         status: newItem.value.status,

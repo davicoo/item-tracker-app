@@ -22,7 +22,13 @@ export interface PeriodTotals {
 }
 
 const BUCKET = 'stats';
-const FILE_PATH = 'current-stats.json';
+const FILE_NAME = 'current-stats.json';
+
+async function buildPath(): Promise<string | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+  return userId ? `${userId}/${FILE_NAME}` : null;
+}
 
 export function calculateStats(items: Item[]): Stats {
   const total = items.length;
@@ -85,7 +91,9 @@ export function calculatePeriodTotals(items: Item[]): PeriodTotals {
 }
 
 export async function fetchStats(): Promise<Stats | null> {
-  const { data, error } = await supabase.storage.from(BUCKET).download(FILE_PATH);
+  const path = await buildPath();
+  if (!path) return null;
+  const { data, error } = await supabase.storage.from(BUCKET).download(path);
   if (error || !data) {
     console.error('Error downloading stats:', error);
     return null;
@@ -106,8 +114,10 @@ export async function fetchStats(): Promise<Stats | null> {
 }
 
 export async function saveStats(stats: Stats): Promise<void> {
+  const path = await buildPath();
+  if (!path) return;
   const blob = new Blob([JSON.stringify(stats)], { type: 'application/json' });
-  const { error } = await supabase.storage.from(BUCKET).upload(FILE_PATH, blob, {
+  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
     upsert: true,
     contentType: 'application/json'
   });

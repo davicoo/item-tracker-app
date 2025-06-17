@@ -205,13 +205,16 @@ async function handleSubmit() {
   try {
     let imageUrl = props.item.imageUrl;
     if (selectedFile.value) {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
       const fileExt = selectedFile.value.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${user?.id}/${fileName}`;
       const { error: imageError } = await supabase.storage
         .from('images')
-        .upload(fileName, selectedFile.value);
+        .upload(filePath, selectedFile.value);
       if (imageError) throw imageError;
-      imageUrl = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+      imageUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
     }
 
     const { data: updated, error } = await supabase

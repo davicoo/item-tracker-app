@@ -171,9 +171,12 @@ async function fetchItems() {
   serverError.value = '';
 
   try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData.session?.user.id;
     const { data, error } = await supabase
       .from('items')
       .select('*')
+      .eq('user_id', userId)
       .order('date_added', { ascending: false });
 
     if (error) throw error;
