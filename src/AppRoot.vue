@@ -11,7 +11,7 @@
         src="/appintrovid.mp4"
         autoplay
         muted
-        playsinline
+        playsinline loop autoplay muted playsinline 
         class="w-full h-auto max-w-[640px] max-h-[854px] object-contain"
       />
     </div>
