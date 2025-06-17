@@ -62,7 +62,7 @@
       </button>
     </div>
     
-    <div class="mb-4 flex justify-end">
+    <div class="mb-4 flex items-center justify-between">
       <label
         for="layout"
         class="mr-2 text-sm text-gray-700"
@@ -82,6 +82,12 @@
           3 columns
         </option>
       </select>
+      <button
+        class="ml-4 text-sm text-blue-500 hover:underline"
+        @click="handleExportPdf"
+      >
+        Export PDF
+      </button>
     </div>
 
     <div class="mb-4 flex items-end space-x-2">
@@ -129,6 +135,7 @@ import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
+import { exportItemsToPdf } from './utils/exportPdf';
 
 
 // Items state
@@ -318,6 +325,10 @@ const deleteItem = (id: string) => {
   items.value = items.value.filter(item => item.id !== id);
   currentStats.value = calculateStats(items.value);
 };
+
+async function handleExportPdf() {
+  await exportItemsToPdf(items.value);
+}
 </script>
 
 <style>
