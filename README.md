@@ -6,7 +6,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 
 - Add items with images, names, prices, locations, and detailed descriptions
 - Track item sales status (Not Sold / Sold / Paid)
-- Simple statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
+- Simple per-user statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
 - Paid totals subtract a 20% shop fee from each sale
 - Bar chart showing how many items were sold in the last 30 days, 6 months, and year
 - Record when each item was added and display this date
@@ -77,9 +77,13 @@ When the application loads, an animation briefly appears on top of the main page
 The application now includes basic email/password authentication powered by
 Supabase. On first load, a login form appears after the startup animation. Users
 can sign up or sign in, and the item tracker only loads once a session is
-active. See
+active. Items are saved with the authenticated user's UID (stored in a
+`user_id` column) so each account only sees its own records. See
 [docs/SUPABASE_AUTH_SETUP.md](docs/SUPABASE_AUTH_SETUP.md) for details on how
-the auth integration works and how to restrict data per user.
+the auth integration works, how to restrict data per user, and how to update an
+existing Supabase project for per-user items. A ready-to-run SQL script is
+available at [docs/SUPABASE_SETUP.sql](docs/SUPABASE_SETUP.sql) to create the
+required table, policies, and storage buckets.
 
 ## License
 

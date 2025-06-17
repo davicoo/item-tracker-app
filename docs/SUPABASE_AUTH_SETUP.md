@@ -96,7 +96,8 @@ table and set up Row Level Security policies that compare `user_id` to
 ID and filter queries by that field:
 
 ```ts
-const user = supabase.auth.currentUser;
+const { data: userData } = await supabase.auth.getUser();
+const user = userData.user;
 await supabase.from('items').insert({
   user_id: user?.id,
   name: newItem.name,
@@ -130,3 +131,36 @@ of the Supabase dashboard.
 
 If you want additional profile data, create a separate `profiles` table that
 references the user's ID and join it in your queries.
+
+## 10. Updating an existing project for per‑user items
+
+If you already have a Supabase project from earlier versions of the app,
+follow these steps before running the updated code:
+
+1. **Add a `user_id` column** to the `items` table. Use the `uuid` type and
+   allow `null` while you migrate existing data. This column should store the
+   ID from `auth.users` (also known as the user's UID). You may optionally set
+   the default value to `auth.uid()`.
+2. **Enable Row Level Security** and create policies for `select`, `insert`,
+   `update` and `delete` that check `user_id = auth.uid()` so each user only
+   accesses their own records.
+3. **Assign a user ID to existing rows** or remove them. Example SQL to attach
+   all current items to your user account:
+
+   ```sql
+   update items set user_id = '<your-user-id>' where user_id is null;
+   ```
+4. **Verify the `images` and `stats` buckets** exist. Add a policy allowing
+   access only when the path starts with the authenticated user's ID. Uploaded
+   images and generated stats will be saved under
+   `images/<userId>/...` and `stats/<userId>/current-stats.json` respectively.
+
+After completing these steps the application will correctly save and display
+items on a per-user basis.
+
+## 11. SQL setup script
+
+For a fresh project you can simply run the SQL from
+[SUPABASE_SETUP.sql](SUPABASE_SETUP.sql) using Supabase's SQL Editor. This
+creates the `items` table, enables Row Level Security with policies, and sets up
+`images` and `stats` storage buckets restricted to each user's folder.

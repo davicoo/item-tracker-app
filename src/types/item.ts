@@ -1,5 +1,7 @@
 export interface Item {
   id: string;
+  /** User that created the item */
+  userId?: string;
   name: string;
   imageUrl: string;
   details: string;
@@ -33,6 +35,7 @@ export function mapRecordToItem(record: any): Item {
 
   return {
     id: record.id,
+    userId: record.user_id,
     name: record.name,
     imageUrl: record.image_url ?? '',
     details: record.details,
