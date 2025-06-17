@@ -9,10 +9,7 @@
     >
       <video autoplay playsinline muted
         src="/appintrovid.mp4"
-        class="w-full h-auto max-w-[640px] max-h-[854px] object-contain" autoPlay
-loop
-playsInline
-muted
+        class="w-full h-auto max-w-[640px] max-h-[854px] object-contain" 
       />
     </div>
   </div>
