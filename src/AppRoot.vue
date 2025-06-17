@@ -7,11 +7,8 @@
       class="fixed inset-0 flex items-center justify-center bg-black z-50"
       style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background-color:#000; z-index:50;"
     >
-      <video
+      <video autoplay playsinline
         src="/appintrovid.mp4"
-        autoplay
-        muted
-        playsinline loop autoplay muted playsinline 
         class="w-full h-auto max-w-[640px] max-h-[854px] object-contain"
       />
     </div>
