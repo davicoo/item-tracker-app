@@ -46,6 +46,28 @@
           Sign Up
         </button>
       </div>
+      <p class="text-center text-sm text-gray-600">
+        Enter your email and a desired password, then click <strong>Sign Up</strong> to create an account. Use the Login button if you already have an account.
+      </p>
+      <div class="text-center">
+        <button
+          type="button"
+          class="text-blue-500 text-sm underline"
+          @click="toggleInstall"
+        >
+          How to Save to Desktop
+        </button>
+        <div
+          v-if="showInstall"
+          class="mt-2 text-sm text-gray-600"
+        >
+          <p>
+            You can install this web app to run it like a native application.
+            On Chrome, open the browser menu and choose <em>Install Item Tracker</em>.
+            On Safari, tap the share icon and select <em>Add to Home Screen</em>.
+          </p>
+        </div>
+      </div>
       <p
         v-if="error"
         class="text-red-500 text-sm"
@@ -70,6 +92,7 @@ const email = ref('');
 const password = ref('');
 const error = ref('');
 const message = ref('');
+const showInstall = ref(false);
 
 async function handleLogin() {
   error.value = '';
@@ -93,6 +116,10 @@ async function handleSignup() {
   } else {
     message.value = 'Check your email to verify your account.';
   }
+}
+
+function toggleInstall() {
+  showInstall.value = !showInstall.value;
 }
 </script>
 

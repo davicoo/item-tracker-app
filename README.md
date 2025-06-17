@@ -77,7 +77,10 @@ When the application loads, an animation briefly appears on top of the main page
 The application now includes basic email/password authentication powered by
 Supabase. On first load, a login form appears after the startup animation. Users
 can sign up or sign in, and the item tracker only loads once a session is
-active. Items are saved with the authenticated user's UID (stored in a
+active.
+
+To create an account, enter your email address and a password of your choice in the form and click **Sign Up**. Use the **Login** button if you already have an account.
+ Items are saved with the authenticated user's UID (stored in a
 `user_id` column) so each account only sees its own records. See
 [docs/SUPABASE_AUTH_SETUP.md](docs/SUPABASE_AUTH_SETUP.md) for details on how
 the auth integration works, how to restrict data per user, and how to update an
