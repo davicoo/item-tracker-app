@@ -12,6 +12,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - Bar chart showing how many items were sold in the last 30 days, 6 months, and year
 - Record when each item was added and display this date
 - View all items in a responsive grid layout
+- Click an item's image to open a full-screen viewer with a close button
 - Persistent data storage using localStorage
 - Export items as a PDF file
 - Fully responsive design

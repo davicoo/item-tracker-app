@@ -120,6 +120,12 @@
       @update-status="updateItemStatus"
       @delete-item="deleteItem"
       @edit-item="startEdit"
+      @view-image="openImageViewer"
+    />
+    <ImageViewer
+      v-if="selectedImage"
+      :src="selectedImage"
+      @close="selectedImage = null"
     />
   </div>
 </template>
@@ -131,6 +137,7 @@ import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
+import ImageViewer from './components/ImageViewer.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
@@ -148,6 +155,7 @@ const serverError = ref('');
 const editingItem = ref<Item | null>(null);
 const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
 const searchQuery = ref('');
+const selectedImage = ref<string | null>(null);
 
 async function signOut() {
   await supabase.auth.signOut();
@@ -155,6 +163,10 @@ async function signOut() {
 
 function clearSearch() {
   searchQuery.value = '';
+}
+
+function openImageViewer(src: string) {
+  selectedImage.value = src;
 }
 
 const filteredItems = computed(() => {

@@ -18,6 +18,7 @@
       @update-status="(id, status) => $emit('update-status', id, status)"
       @delete-item="(id) => $emit('delete-item', id)"
       @edit-item="(item) => $emit('edit-item', item)"
+      @view-image="(src) => $emit('view-image', src)"
     />
   </div>
 </template>
@@ -49,6 +50,7 @@ defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
   'delete-item': [string]
   'edit-item': [Item]
+  'view-image': [string]
 }>()
 </script>
 
