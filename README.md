@@ -13,6 +13,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - Record when each item was added and display this date
 - View all items in a responsive grid layout
 - Persistent data storage using localStorage
+- Export items as a PDF file
 - Fully responsive design
 - Animation overlay that displays for a few seconds on initial load before revealing the main application
 - Built-in login and sign up using Supabase Auth
@@ -26,6 +27,8 @@ cd item-tracker-app
 
 # Install dependencies
 npm install
+
+# This installs jsPDF required for PDF exports
 
 # Start development server
 npm run dev
