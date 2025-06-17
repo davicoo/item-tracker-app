@@ -11,11 +11,11 @@
       </h2>
     </div>
     <h2 class="text-xl font-semibold mb-4 text-center">
-      Login
+      {{ isSignup ? 'Sign Up' : 'Login' }}
     </h2>
     <form
       class="space-y-3"
-      @submit.prevent="handleLogin"
+      @submit.prevent="isSignup ? handleSignup() : handleLogin()"
     >
       <input
         v-model="email"
@@ -36,18 +36,19 @@
           type="submit"
           class="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          Login
+          {{ isSignup ? 'Sign Up' : 'Login' }}
         </button>
         <button
           type="button"
           class="text-blue-500"
-          @click="handleSignup"
+          @click="toggleMode"
         >
-          Sign Up
+          {{ isSignup ? 'Switch to Login' : 'Switch to Sign Up' }}
         </button>
       </div>
       <p class="text-center text-sm text-gray-600">
-        Enter your email and a desired password, then click <strong>Sign Up</strong> to create an account. Use the Login button if you already have an account.
+        <span v-if="isSignup">Enter your email and a desired password, then click <strong>Sign Up</strong> to create an account.</span>
+        <span v-else>Enter your email and password to log in.</span>
       </p>
       <div class="text-center">
         <button
@@ -85,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { supabase } from '../supabaseClient';
 
 const email = ref('');
@@ -93,6 +94,15 @@ const password = ref('');
 const error = ref('');
 const message = ref('');
 const showInstall = ref(false);
+const isSignup = ref(true);
+
+onMounted(() => {
+  isSignup.value = !document.cookie.includes('returningUser=true');
+});
+
+function setReturningUserCookie() {
+  document.cookie = 'returningUser=true; path=/; max-age=31536000';
+}
 
 async function handleLogin() {
   error.value = '';
@@ -101,7 +111,11 @@ async function handleLogin() {
     email: email.value,
     password: password.value,
   });
-  if (err) error.value = err.message;
+  if (err) {
+    error.value = err.message;
+  } else {
+    setReturningUserCookie();
+  }
 }
 
 async function handleSignup() {
@@ -115,7 +129,13 @@ async function handleSignup() {
     error.value = err.message;
   } else {
     message.value = 'Check your email to verify your account.';
+    setReturningUserCookie();
   }
+}
+
+function toggleMode() {
+  isSignup.value = !isSignup.value;
+  setReturningUserCookie();
 }
 
 function toggleInstall() {
