@@ -37,8 +37,8 @@ export function calculateStats(items: Item[]): Stats {
   const sold_paid = soldPaidItems.length;
   const sold_paid_total = soldPaidItems.reduce((sum, item) => {
     const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
-    // Account for the 20% fee that goes to the shop
-    const net = isNaN(num) ? 0 : num * 0.8;
+    const fee = typeof item.feePercent === 'number' ? item.feePercent : 20;
+    const net = isNaN(num) ? 0 : num * (1 - fee / 100);
     return sum + net;
   }, 0);
   return { items: total, sold, sold_paid, sold_paid_total };
@@ -77,7 +77,8 @@ export function calculatePeriodTotals(items: Item[]): PeriodTotals {
     items.reduce((sum, item) => {
       if (item.status === 'sold_paid' && new Date(item.dateAdded) >= date) {
         const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
-        const net = isNaN(num) ? 0 : num * 0.8;
+        const fee = typeof item.feePercent === 'number' ? item.feePercent : 20;
+        const net = isNaN(num) ? 0 : num * (1 - fee / 100);
         return sum + net;
       }
       return sum;
