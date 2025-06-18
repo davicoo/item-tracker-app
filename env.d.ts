@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   // more env variables...
   readonly VITE_SUPABASE_URL: string
   readonly VITE_SUPABASE_KEY: string
+  readonly VITE_HCAPTCHA_SITEKEY: string
 }
 
 interface ImportMeta {

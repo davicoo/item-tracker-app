@@ -31,6 +31,10 @@
         required
         class="border w-full px-3 py-2 rounded"
       >
+      <vue-hcaptcha
+        :sitekey="siteKey"
+        @verify="onVerify"
+      />
       <div class="flex justify-between items-center">
         <button
           type="submit"
@@ -88,6 +92,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { supabase } from '../supabaseClient';
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
 const email = ref('');
 const password = ref('');
@@ -95,6 +100,11 @@ const error = ref('');
 const message = ref('');
 const showInstall = ref(false);
 const isSignup = ref(true);
+const captchaToken = ref('');
+const siteKey = import.meta.env.VITE_HCAPTCHA_SITEKEY;
+if (!siteKey) {
+  console.warn('VITE_HCAPTCHA_SITEKEY is not set');
+}
 
 onMounted(() => {
   isSignup.value = !document.cookie.includes('returningUser=true');
@@ -104,12 +114,19 @@ function setReturningUserCookie() {
   document.cookie = 'returningUser=true; path=/; max-age=31536000';
 }
 
+function onVerify(token: string) {
+  captchaToken.value = token;
+}
+
 async function handleLogin() {
   error.value = '';
   message.value = '';
   const { error: err } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
+    options: {
+      captchaToken: captchaToken.value,
+    },
   });
   if (err) {
     error.value = err.message;
@@ -124,6 +141,9 @@ async function handleSignup() {
   const { error: err } = await supabase.auth.signUp({
     email: email.value,
     password: password.value,
+    options: {
+      captchaToken: captchaToken.value,
+    },
   });
   if (err) {
     error.value = err.message;
