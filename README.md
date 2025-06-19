@@ -30,6 +30,7 @@ cd item-tracker-app
 npm install
 
 # This installs jsPDF required for PDF exports
+# Preline is included for ready-to-use Tailwind components
 
 # Start development server
 npm run dev
@@ -84,6 +85,12 @@ When the application loads, an animation briefly appears on top of the main page
 - TypeScript
 - Vite
 - Tailwind CSS for styling
+- Preline UI plugin for additional Tailwind components
+
+The project imports Preline's scripts in `src/main.ts` and initializes them after
+the Vue app mounts. This enables Preline's interactive components like accordions
+and dropdowns. The plugin is configured in `tailwind.config.js` and the
+`variants.css` file is included in `src/assets/main.css`.
 
 ## Login with Supabase
 
