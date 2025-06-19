@@ -12,5 +12,10 @@ export default defineConfig({
   },
   css: {
     postcss: './postcss.config.js', // If you have PostCSS config
-  }
+  },
+  build: {
+    rollupOptions: {
+      external: ['vanillajs-datepicker/css/datepicker.min.css'],
+    },
+  },
 })
