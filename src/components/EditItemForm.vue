@@ -47,10 +47,11 @@
 
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Date Added</label>
-      <DatePicker
+      <input
         v-model="form.dateAdded"
-        placeholder="Select day"
-      />
+        type="date"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+      >
     </div>
 
     <div class="mb-4">
@@ -147,7 +148,6 @@ import { ref, watch, computed } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions, mapRecordToItem } from '../types/item';
 import { supabase } from '../supabaseClient';
-import DatePicker from "./DatePicker.vue";
 
 const props = defineProps<{ item: Item }>();
 
