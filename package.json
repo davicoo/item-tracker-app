@@ -12,6 +12,7 @@
     "dependencies": {
         "@hcaptcha/vue3-hcaptcha": "^1.3.0",
         "@imagekit/vue": "^4.0.0",
+        "@preline/datepicker": "^3.1.0",
         "@supabase/supabase-js": "^2.49.8",
         "chart.js": "^4.4.1",
         "imagekit": "^4.1.3",
