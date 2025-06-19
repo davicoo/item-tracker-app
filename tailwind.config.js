@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import preline from 'preline/plugin'
+import plugin from 'tailwindcss/plugin'
 
 export default {
   content: [
@@ -7,7 +8,22 @@ export default {
     './src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        10.5: '2.625rem',
+        160: '40rem'
+      },
+      width: {
+        160: '40rem'
+      }
+    }
   },
-  plugins: [preline],
+  plugins: [
+    preline,
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.outline-hidden': { outline: '0' }
+      })
+    })
+  ],
 }
