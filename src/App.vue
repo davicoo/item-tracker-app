@@ -28,7 +28,6 @@
       :items="items"
     />
 
-    <PrelineDatepicker />
 
     
     <!-- Show server error if any -->
@@ -140,7 +139,6 @@ import ItemGrid from './components/ItemGrid.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
-import PrelineDatepicker from './components/PrelineDatepicker.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, defaultItems } from './types/item';
 import { supabase } from './supabaseClient';
