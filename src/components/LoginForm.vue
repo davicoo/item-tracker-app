@@ -24,13 +24,28 @@
         required
         class="border w-full px-3 py-2 rounded"
       >
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        required
-        class="border w-full px-3 py-2 rounded"
-      >
+      <div>
+        <input
+          id="hs-login-password"
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          required
+          class="border w-full px-3 py-2 rounded"
+        >
+        <div class="flex items-center mt-2">
+          <input
+            id="hs-login-toggle"
+            type="checkbox"
+            data-hs-toggle-password="{&quot;target&quot;: &quot;#hs-login-password&quot;}"
+            class="shrink-0 mr-2 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500"
+          >
+          <label
+            for="hs-login-toggle"
+            class="text-sm text-gray-500"
+          >Show password</label>
+        </div>
+      </div>
       <vue-hcaptcha
         ref="captcha"
         :sitekey="siteKey"

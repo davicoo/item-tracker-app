@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import router from './router'
 import AppRoot from './AppRoot.vue'
 import * as ImageKitVue from '@imagekit/vue'  // Namespace import
+import 'preline/dist/preline'
 
 const app = createApp(AppRoot)
 
