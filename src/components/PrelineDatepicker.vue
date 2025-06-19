@@ -11,7 +11,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { Datepicker as VCalendar } from 'vanillajs-datepicker'
+import HSDatepicker from '@preline/datepicker'
 
 const datepicker = ref(null)
 
@@ -28,11 +28,8 @@ const config = JSON.stringify({
 })
 
 onMounted(() => {
-  if (window.hs?.Datepicker) {
-    window.hs.Datepicker.autoInit()
-  } else {
-    // Fallback if Preline doesn't load
-    new VCalendar(datepicker.value)
+  if (datepicker.value) {
+    new HSDatepicker(datepicker.value)
   }
 })
 </script>
