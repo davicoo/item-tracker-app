@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '@preline/datepicker/styles.css';
-@import '@preline/datepicker/variants.css';
 
 body {
   @apply bg-gray-100 text-gray-800;
