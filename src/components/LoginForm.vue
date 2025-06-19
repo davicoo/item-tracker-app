@@ -125,6 +125,8 @@ if (!siteKey) {
 
 onMounted(() => {
   isSignup.value = !document.cookie.includes('returningUser=true');
+  // Initialize Preline plugins like toggle password
+  (window as any).HSStaticMethods?.autoInit();
 });
 
 function setReturningUserCookie() {
