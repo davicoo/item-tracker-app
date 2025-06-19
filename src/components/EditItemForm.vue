@@ -52,7 +52,6 @@
         class="hs-datepicker py-3 px-4 block w-full border-gray-200 rounded-lg"
         type="text"
         placeholder="Select day"
-        readonly
         :value="form.dateAdded"
         @change="form.dateAdded = ($event.target as HTMLInputElement).value"
         data-hs-datepicker='{"selectionDatesMode":"multiple-ranged","dateMax":"2050-12-31"}'
@@ -149,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import type { Item } from '../types/item';
 import { statusOptions, mapRecordToItem } from '../types/item';
 import { supabase } from '../supabaseClient';
@@ -181,6 +180,12 @@ const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>(props.item.imageUrl);
 const tagInput = ref('');
 
+onMounted(() => {
+  // Initialize Preline components like datepicker
+  // when the form is displayed
+  (window as any).HSStaticMethods?.autoInit();
+});
+
 watch(
   () => props.item,
   (val) => {
@@ -196,6 +201,8 @@ watch(
     };
     previewUrl.value = val.imageUrl;
     selectedFile.value = null;
+    // Re-init datepicker when switching items
+    (window as any).HSStaticMethods?.autoInit();
   }
 );
 
