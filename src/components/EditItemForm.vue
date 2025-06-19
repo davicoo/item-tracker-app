@@ -192,13 +192,13 @@ const datepickerData = JSON.stringify({
 });
 
 onMounted(() => {
-  if (datepickerRef.value) {
-    new HSDatepicker(datepickerRef.value);
-    datepickerRef.value.addEventListener('change', (e: Event) => {
-      form.value.dateAdded = (e.target as HTMLInputElement).value;
-    });
-    datepickerRef.value.value = form.value.dateAdded;
-  }
+    if (datepickerRef.value) {
+      new HSDatepicker(datepickerRef.value);
+      datepickerRef.value.addEventListener('change.hs.datepicker', (e: Event) => {
+        form.value.dateAdded = (e.target as HTMLInputElement).value;
+      });
+      datepickerRef.value.value = form.value.dateAdded;
+    }
 });
 
 
