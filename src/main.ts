@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import router from './router'
 import AppRoot from './AppRoot.vue'
 import * as ImageKitVue from '@imagekit/vue'  // Namespace import
-import 'vanillajs-datepicker/css/datepicker.min.css'
 import 'preline/preline'
 // import { Datepicker } from 'preline' // Optional: manual init
 
