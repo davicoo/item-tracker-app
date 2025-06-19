@@ -32,6 +32,7 @@
         class="border w-full px-3 py-2 rounded"
       >
       <vue-hcaptcha
+        ref="captcha"
         :sitekey="siteKey"
         @verify="onVerify"
       />
@@ -101,6 +102,7 @@ const message = ref('');
 const showInstall = ref(false);
 const isSignup = ref(true);
 const captchaToken = ref('');
+const captcha = ref<InstanceType<typeof VueHcaptcha> | null>(null);
 const siteKey = import.meta.env.VITE_HCAPTCHA_SITEKEY;
 if (!siteKey) {
   console.warn('VITE_HCAPTCHA_SITEKEY is not set');
@@ -133,6 +135,8 @@ async function handleLogin() {
   } else {
     setReturningUserCookie();
   }
+  captcha.value?.reset();
+  captchaToken.value = '';
 }
 
 async function handleSignup() {
@@ -151,6 +155,8 @@ async function handleSignup() {
     message.value = 'Check your email to verify your account.';
     setReturningUserCookie();
   }
+  captcha.value?.reset();
+  captchaToken.value = '';
 }
 
 function toggleMode() {

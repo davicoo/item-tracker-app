@@ -39,7 +39,15 @@ npm run build
 ```
 
 ## Environment Variables
-Create a `.env` file based on `.env.example` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` with your Supabase credentials.
+Create a `.env` file based on `.env.example` and set the following variables:
+
+```
+VITE_SUPABASE_URL=<your project url>
+VITE_SUPABASE_KEY=<your anon key>
+VITE_HCAPTCHA_SITEKEY=<your hCaptcha site key>
+```
+
+Add your **hCaptcha secret key** in the Supabase Dashboard under **Settings → Authentication → Bot and Abuse Protection** when enabling CAPTCHA protection.
 
 ## Project Structure
 

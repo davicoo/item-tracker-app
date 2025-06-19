@@ -17,6 +17,7 @@ This guide explains how to add login functionality and manage users with Supabas
 ```bash
 VITE_SUPABASE_URL=<your project url>
 VITE_SUPABASE_KEY=<your anon key>
+VITE_HCAPTCHA_SITEKEY=<your hCaptcha site key>
 ```
 
 ## 3. Set up the database
@@ -28,6 +29,7 @@ VITE_SUPABASE_KEY=<your anon key>
 
 1. Go to **Auth > Settings** and enable email/password sign in. Enable other providers as needed.
 2. Accounts created through your app will appear under **Auth > Users**.
+3. Under **Settings → Authentication → Bot and Abuse Protection**, toggle **Enable CAPTCHA protection**, choose **hCaptcha**, and enter your secret key.
 
 > **Note**
 > Your Supabase dashboard login is only for administering the project. Users who register in your app are separate and managed under the **Users** tab.
