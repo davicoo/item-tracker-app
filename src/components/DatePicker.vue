@@ -28,9 +28,11 @@ onMounted(() => {
   if (inputRef.value) {
     calendar = new Calendar(inputRef.value, { inputMode: true });
     calendar.init();
-    inputRef.value.addEventListener('change', (e: Event) => {
+    const updateValue = (e: Event) => {
       emit('update:modelValue', (e.target as HTMLInputElement).value);
-    });
+    };
+    inputRef.value.addEventListener('input', updateValue);
+    inputRef.value.addEventListener('change', updateValue);
     if (props.modelValue) {
       inputRef.value.value = props.modelValue;
     }
