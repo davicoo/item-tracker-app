@@ -144,6 +144,8 @@ import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
 import { exportItemsToPdf } from './utils/exportPdf';
 
+const DEBUG = import.meta.env.VITE_DEBUG === 'true';
+
 
 // Items state
 const items = ref<Item[]>([]);
@@ -228,7 +230,7 @@ watch(items, () => {
   saveTimeout = setTimeout(async () => {
     try {
       serverError.value = '';
-      console.log('Saving items to server...');
+      if (DEBUG) console.log('Saving items to server...');
       
       // Send items to server
       const response = await fetch('/.netlify/functions/saveItems', {
@@ -241,7 +243,7 @@ watch(items, () => {
         throw new Error(`Server error: ${response.status}`);
       }
       
-      console.log('Items saved to server successfully');
+      if (DEBUG) console.log('Items saved to server successfully');
 
       const stats = calculateStats(items.value);
 
@@ -256,7 +258,7 @@ watch(items, () => {
       // Fallback to localStorage if server save fails
       try {
         localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
-        console.log('Items saved to localStorage as fallback');
+        if (DEBUG) console.log('Items saved to localStorage as fallback');
         const stats = calculateStats(items.value);
         currentStats.value = stats;
         await saveStats(stats);
@@ -269,7 +271,7 @@ watch(items, () => {
 
 // Handle adding a new item
 const handleItemAdded = (newItem: Item) => {
-  console.log('Adding new item:', newItem);
+  if (DEBUG) console.log('Adding new item:', newItem);
   items.value = [...items.value, newItem]; // Create a new array to ensure reactivity
   currentStats.value = calculateStats(items.value);
   showForm.value = false;
@@ -303,7 +305,7 @@ const updateItemStatus = async (
   id: string,
   status: "not_sold" | "sold" | "sold_paid"
 ) => {
-  console.log("Updating item status:", id, status);
+  if (DEBUG) console.log("Updating item status:", id, status);
 
   try {
     const { data, error } = await supabase
@@ -333,7 +335,7 @@ const updateItemStatus = async (
 
 // Handle deleting an item
 const deleteItem = (id: string) => {
-  console.log('Deleting item:', id);
+  if (DEBUG) console.log('Deleting item:', id);
   items.value = items.value.filter(item => item.id !== id);
   currentStats.value = calculateStats(items.value);
 };
