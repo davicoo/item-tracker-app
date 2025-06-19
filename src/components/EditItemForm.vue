@@ -48,9 +48,13 @@
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Date Added</label>
       <input
+        ref="datepickerRef"
         v-model="form.dateAdded"
-        type="date"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="hs-datepicker py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-600 focus:ring-blue-600 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder:text-neutral-400 dark:focus:border-blue-500 dark:focus:ring-neutral-500"
+        type="text"
+        placeholder="Select day"
+        readonly
+        :data-hs-datepicker="datepickerData"
       >
     </div>
 
@@ -144,7 +148,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
+import HSDatepicker from '@preline/datepicker';
 import type { Item } from '../types/item';
 import { statusOptions, mapRecordToItem } from '../types/item';
 import { supabase } from '../supabaseClient';
@@ -175,6 +180,26 @@ const displayPrice = computed({
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>(props.item.imageUrl);
 const tagInput = ref('');
+const datepickerRef = ref<HTMLInputElement | null>(null);
+const datepickerData = JSON.stringify({
+  type: 'default',
+  dateMax: '2050-12-31',
+  mode: 'custom-select',
+  templates: {
+    arrowPrev: '<button data-vc-arrow="prev"><svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>',
+    arrowNext: '<button data-vc-arrow="next"><svg class="shrink-0 size-4" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>'
+  }
+});
+
+onMounted(() => {
+  if (datepickerRef.value) {
+    new HSDatepicker(datepickerRef.value);
+    datepickerRef.value.addEventListener('change', (e: Event) => {
+      form.value.dateAdded = (e.target as HTMLInputElement).value;
+    });
+    datepickerRef.value.value = form.value.dateAdded;
+  }
+});
 
 
 watch(
@@ -192,6 +217,18 @@ watch(
     };
     previewUrl.value = val.imageUrl;
     selectedFile.value = null;
+    if (datepickerRef.value) {
+      datepickerRef.value.value = form.value.dateAdded;
+    }
+  }
+);
+
+watch(
+  () => form.value.dateAdded,
+  (val) => {
+    if (datepickerRef.value && datepickerRef.value.value !== val) {
+      datepickerRef.value.value = val;
+    }
   }
 );
 
