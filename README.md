@@ -31,6 +31,9 @@ npm install
 
 # This installs jsPDF required for PDF exports
 
+# Optionally lint the project
+npm run lint
+
 # Start development server
 npm run dev
 
