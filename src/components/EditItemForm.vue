@@ -48,9 +48,14 @@
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Date Added</label>
       <input
-        v-model="form.dateAdded"
-        type="date"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        id="edit-date-added"
+        class="hs-datepicker py-3 px-4 block w-full border-gray-200 rounded-lg"
+        type="text"
+        placeholder="Select day"
+        readonly
+        :value="form.dateAdded"
+        @change="form.dateAdded = ($event.target as HTMLInputElement).value"
+        data-hs-datepicker='{"selectionDatesMode":"multiple-ranged","dateMax":"2050-12-31"}'
       >
     </div>
 
