@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import router from './router'
 import AppRoot from './AppRoot.vue'
 import * as ImageKitVue from '@imagekit/vue'  // Namespace import
-import 'preline/dist/preline.js'
+import 'preline/dist/preline'
 // import { Datepicker } from 'preline' // Optional: manual init
 
 const app = createApp(AppRoot)
