@@ -26,7 +26,12 @@ let calendar: Calendar | null = null;
 
 onMounted(() => {
   if (inputRef.value) {
-    calendar = new Calendar(inputRef.value, { inputMode: true });
+    calendar = new Calendar(inputRef.value, {
+      inputMode: true,
+      onChangeToInput: (_self: Calendar, e: Event) => {
+        emit('update:modelValue', (e.target as HTMLInputElement).value);
+      }
+    });
     calendar.init();
     const updateValue = (e: Event) => {
       emit('update:modelValue', (e.target as HTMLInputElement).value);

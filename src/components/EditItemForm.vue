@@ -214,6 +214,29 @@ function removeTag(index: number) {
   form.value.tags.splice(index, 1);
 }
 
+function toISODate(input: string): string {
+  const parsed = new Date(input);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString();
+  }
+  const parts = input.split(/[./-]/);
+  if (parts.length === 3) {
+    let year = parts[0];
+    let month = parts[1];
+    let day = parts[2];
+    if (year.length !== 4) {
+      day = parts[0];
+      month = parts[1];
+      year = parts[2];
+    }
+    const iso = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+    if (!isNaN(iso.getTime())) {
+      return iso.toISOString();
+    }
+  }
+  return new Date().toISOString();
+}
+
 async function handleSubmit() {
   try {
     let imageUrl = props.item.imageUrl;
@@ -240,7 +263,7 @@ async function handleSubmit() {
         price: form.value.price,
         fee_percent: form.value.feePercent,
         image_url: imageUrl,
-        date_added: new Date(form.value.dateAdded).toISOString(),
+        date_added: toISODate(form.value.dateAdded),
         tags: form.value.tags
       })
       .eq('id', props.item.id)
