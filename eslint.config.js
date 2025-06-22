@@ -6,6 +6,34 @@ const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const globals = require('globals');
 
 module.exports = [
+  {
+    ignores: [
+      'logs',
+      '*.log',
+      'npm-debug.log*',
+      'yarn-debug.log*',
+      'yarn-error.log*',
+      'pnpm-debug.log*',
+      'lerna-debug.log*',
+      'node_modules',
+      '.DS_Store',
+      'dist',
+      'dist-ssr',
+      'coverage',
+      '*.local',
+      '/cypress/videos/',
+      '/cypress/screenshots/',
+      '.vscode/*',
+      '!.vscode/extensions.json',
+      '.idea',
+      '*.suo',
+      '*.ntvs*',
+      '*.njsproj',
+      '*.sln',
+      '*.sw?',
+      '.env'
+    ]
+  },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
