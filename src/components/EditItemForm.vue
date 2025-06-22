@@ -214,27 +214,14 @@ function removeTag(index: number) {
   form.value.tags.splice(index, 1);
 }
 
-function toISODate(input: string): string {
-  const parsed = new Date(input);
-  if (!isNaN(parsed.getTime())) {
-    return parsed.toISOString();
-  }
-  const parts = input.split(/[./-]/);
-  if (parts.length === 3) {
-    let year = parts[0];
-    let month = parts[1];
-    let day = parts[2];
-    if (year.length !== 4) {
-      day = parts[0];
-      month = parts[1];
-      year = parts[2];
-    }
-    const iso = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
-    if (!isNaN(iso.getTime())) {
-      return iso.toISOString();
+function toISODate(input: string): string | null {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+    const parsed = new Date(`${input}T00:00:00.000Z`);
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toISOString();
     }
   }
-  return new Date().toISOString();
+  return null;
 }
 
 async function handleSubmit() {
@@ -253,6 +240,12 @@ async function handleSubmit() {
       imageUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
     }
 
+    const dateISO = toISODate(form.value.dateAdded);
+    if (!dateISO) {
+      alert('❌ Invalid date. Please select a valid date.');
+      return;
+    }
+
     const { data: updated, error } = await supabase
       .from('items')
       .update({
@@ -263,7 +256,7 @@ async function handleSubmit() {
         price: form.value.price,
         fee_percent: form.value.feePercent,
         image_url: imageUrl,
-        date_added: toISODate(form.value.dateAdded),
+        date_added: dateISO,
         tags: form.value.tags
       })
       .eq('id', props.item.id)
