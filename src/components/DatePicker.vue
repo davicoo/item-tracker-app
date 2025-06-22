@@ -28,20 +28,22 @@ onMounted(() => {
   if (inputRef.value) {
     calendar = new Calendar(inputRef.value, {
       inputMode: true,
-      onChangeToInput: (_self: Calendar, e: Event) => {
+      onChangeToInput: (self: Calendar, e: Event) => {
         const raw = (e.target as HTMLInputElement).value.trim();
         if (!raw) return;
         const parsed = new Date(raw);
         if (!isNaN(parsed.getTime())) {
           const val = parsed.toISOString().slice(0, 10);
-          if (inputRef.value) inputRef.value.value = val;
+          self.set({ selectedDates: [val] });
+          self.context.inputElement!.value = val;
           emit('update:modelValue', val);
         }
       },
       onClickDate: (self: Calendar) => {
         if (self.selectedDates && self.selectedDates[0]) {
           const val = new Date(self.selectedDates[0]).toISOString().slice(0, 10);
-          if (inputRef.value) inputRef.value.value = val;
+          self.set({ selectedDates: [val] });
+          self.context.inputElement!.value = val;
           emit('update:modelValue', val);
         }
       }
