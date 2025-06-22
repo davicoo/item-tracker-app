@@ -2,10 +2,11 @@
     "name": "item-tracker",
     "version": "0.1.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "vite",
         "build:css": "postcss ./src/assets/main.css -o ./public/main.css",
-        "prebuild": "node ./scripts/check-postcss.js",
+        "prebuild": "node ./scripts/check-postcss.cjs",
         "build": "npm run build:css && vite build",
         "preview": "vite preview",
         "lint": "eslint \"**/*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}\" --fix"
