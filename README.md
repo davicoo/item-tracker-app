@@ -41,6 +41,8 @@ npm run dev
 npm run build
 ```
 
+**Note:** Run `npm install` before `npm run build` to ensure all dependencies like PostCSS are installed.
+
 ## Environment Variables
 Create a `.env` file based on `.env.example` and set the following variables:
 

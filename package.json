@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "vite",
         "build:css": "postcss ./src/assets/main.css -o ./public/main.css",
+        "prebuild": "node ./scripts/check-postcss.js",
         "build": "npm run build:css && vite build",
         "preview": "vite preview",
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix"
