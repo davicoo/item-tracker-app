@@ -30,6 +30,10 @@ onMounted(() => {
       inputMode: true,
       onChangeToInput: (_self: Calendar, e: Event) => {
         emit('update:modelValue', (e.target as HTMLInputElement).value);
+      },
+      onClickDate: (self: Calendar) => {
+        const val = self.context.inputElement?.value || '';
+        emit('update:modelValue', val);
       }
     });
     calendar.init();
