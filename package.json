@@ -8,7 +8,7 @@
         "prebuild": "node ./scripts/check-postcss.js",
         "build": "npm run build:css && vite build",
         "preview": "vite preview",
-        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix"
+        "lint": "eslint \"**/*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}\" --fix"
     },
     "dependencies": {
         "@hcaptcha/vue3-hcaptcha": "^1.3.0",
