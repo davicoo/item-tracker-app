@@ -29,12 +29,11 @@ onMounted(() => {
     calendar = new Calendar(inputRef.value, {
       inputMode: true,
       onChangeToInput: (_self: Calendar, e: Event) => {
-        const raw = (e.target as HTMLInputElement).value;
+        const raw = (e.target as HTMLInputElement).value.trim();
+        if (!raw) return;
         const parsed = new Date(raw);
         if (!isNaN(parsed.getTime())) {
           emit('update:modelValue', parsed.toISOString().slice(0, 10));
-        } else {
-          emit('update:modelValue', raw);
         }
       },
       onClickDate: (self: Calendar) => {
@@ -49,7 +48,8 @@ onMounted(() => {
     });
     calendar.init();
     const updateValue = (e: Event) => {
-      emit('update:modelValue', (e.target as HTMLInputElement).value);
+      const val = (e.target as HTMLInputElement).value.trim();
+      if (val) emit('update:modelValue', val);
     };
     inputRef.value.addEventListener('input', updateValue);
     inputRef.value.addEventListener('change', updateValue);
