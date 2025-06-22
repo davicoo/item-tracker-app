@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import '@preline/datepicker/styles.css'
+import '@/assets/datepicker.css'
 
 const props = defineProps<{
   modelValue: string
