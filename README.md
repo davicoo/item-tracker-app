@@ -38,10 +38,9 @@ npm run lint
 npm run dev
 
 # Build for production
+# Make sure you've run `npm install` first so PostCSS and other dependencies are available.
 npm run build
 ```
-
-**Note:** Run `npm install` before `npm run build` to ensure all dependencies like PostCSS are installed.
 
 ## Environment Variables
 Copy `.env.example` to `.env` (which is ignored by Git) and set the following variables:
