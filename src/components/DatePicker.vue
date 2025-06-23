@@ -5,6 +5,7 @@
     :placeholder="placeholder"
     class="hs-datepicker w-full px-3 py-2 border border-gray-300 rounded"
     data-hs-datepicker
+    data-hs-datepicker-options='{"dateFormat":"YYYY-MM-DD"}'
   >
 </template>
 
@@ -26,6 +27,8 @@ function updateValue(e: Event) {
 
 onMounted(() => {
   if (inputRef.value) {
+    // Initialize Preline plugins so HSDatepicker works
+    (window as any).HSStaticMethods?.autoInit?.();
     inputRef.value.addEventListener('change', updateValue)
     inputRef.value.addEventListener('input', updateValue)
     if (props.modelValue) {
