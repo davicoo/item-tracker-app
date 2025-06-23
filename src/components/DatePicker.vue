@@ -27,8 +27,12 @@ function updateValue(e: Event) {
 
 onMounted(() => {
   if (inputRef.value) {
-    // Initialize Preline plugins so HSDatepicker works
-    (window as any).HSStaticMethods?.autoInit?.();
+    // Create HSDatepicker instance on mount
+    const HSDatepicker = (window as any).HSDatepicker
+    if (HSDatepicker) {
+      // eslint-disable-next-line new-cap
+      new HSDatepicker(inputRef.value)
+    }
     inputRef.value.addEventListener('change', updateValue)
     inputRef.value.addEventListener('input', updateValue)
     if (props.modelValue) {
