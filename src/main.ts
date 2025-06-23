@@ -7,7 +7,7 @@ import '@preline/datepicker'
 import _ from 'lodash'
 // import { Datepicker } from 'preline' // Optional: manual init
 
-const app = createApp(AppRoot)
+const app = createApp(AppRoot);
 
 // Expose lodash for Preline plugins that expect global `_`
 (window as any)._ = _
