@@ -27,10 +27,17 @@ const showLanding = ref(true);
 const loggedIn = ref(false);
 
 onMounted(async () => {
-  setTimeout(() => {
+  // Skip intro video if cookie already set
+  if (document.cookie.includes('introShown=true')) {
     showLanding.value = false;
     document.body.style.backgroundColor = '#f3f4f6';
-  }, 5000);
+  } else {
+    setTimeout(() => {
+      showLanding.value = false;
+      document.cookie = 'introShown=true; path=/; max-age=31536000';
+      document.body.style.backgroundColor = '#f3f4f6';
+    }, 5000);
+  }
   const { data } = await supabase.auth.getSession();
   loggedIn.value = !!data.session;
 });

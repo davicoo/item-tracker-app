@@ -215,7 +215,8 @@ function removeTag(index: number) {
 }
 
 function toISODate(input: string): string | null {
-  const normalized = input.replace(/[.\/]/g, '-');
+  // Replace dots, forward slashes and backslashes with dashes
+  const normalized = input.replace(/[./\\]/g, '-');
   if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
     const parsed = new Date(`${normalized}T00:00:00.000Z`);
     if (!isNaN(parsed.getTime())) {
