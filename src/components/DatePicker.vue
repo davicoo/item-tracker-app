@@ -5,6 +5,7 @@
     :placeholder="placeholder"
     class="w-full px-3 py-2 border border-gray-300 rounded"
     @input="onInput"
+    @change="onChange"
   >
 </template>
 
@@ -21,6 +22,11 @@ const emit = defineEmits<{ 'update:modelValue': [string] }>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
 function onInput(e: Event) {
+  const val = (e.target as HTMLInputElement).value
+  emit('update:modelValue', val)
+}
+
+function onChange(e: Event) {
   const val = (e.target as HTMLInputElement).value
   emit('update:modelValue', val)
 }
