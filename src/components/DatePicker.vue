@@ -5,7 +5,7 @@
     :placeholder="placeholder"
     class="hs-datepicker w-full px-3 py-2 border border-gray-300 rounded"
     data-hs-datepicker
-    data-hs-datepicker-options='{"dateFormat":"YYYY-MM-DD"}'
+    data-hs-datepicker-options='{"dateFormat":"YYYY-MM-DD","inputModeOptions":{"dateSeparator":"-"}}'
   >
 </template>
 
