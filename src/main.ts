@@ -5,6 +5,7 @@ import * as ImageKitVue from '@imagekit/vue'  // Namespace import
 import 'preline/dist/preline'
 import '@preline/datepicker'
 // import { Datepicker } from 'preline' // Optional: manual init
+import { HSStaticMethods } from 'preline'
 
 const app = createApp(AppRoot)
 
@@ -17,3 +18,4 @@ app.use(ImageKitVue, {
 })
 
 app.mount('#app')
+HSStaticMethods.autoInit()
