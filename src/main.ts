@@ -4,9 +4,13 @@ import AppRoot from './AppRoot.vue'
 import * as ImageKitVue from '@imagekit/vue'  // Namespace import
 import 'preline/dist/preline'
 import '@preline/datepicker'
+import _ from 'lodash'
 // import { Datepicker } from 'preline' // Optional: manual init
 
 const app = createApp(AppRoot)
+
+// Expose lodash for Preline plugins that expect global `_`
+(window as any)._ = _
 
 app.use(router)
 
