@@ -50,9 +50,11 @@ Copy `.env.example` to `.env` (which is ignored by Git) and set the following va
 VITE_SUPABASE_URL=<your project url>
 VITE_SUPABASE_KEY=<your anon key>
 VITE_HCAPTCHA_SITEKEY=<your hCaptcha site key>
+IMAGEKIT_PRIVATE_KEY=<your ImageKit private key>
 ```
 
 Add your **hCaptcha secret key** in the Supabase Dashboard under **Settings → Authentication → Bot and Abuse Protection** when enabling CAPTCHA protection.
+The `IMAGEKIT_PRIVATE_KEY` value is required for the Netlify `auth.js` function.
 
 ## Project Structure
 
