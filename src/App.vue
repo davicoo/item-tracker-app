@@ -161,6 +161,7 @@ const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 
 async function signOut() {
+  document.cookie = 'introShown=; path=/; max-age=0';
   await supabase.auth.signOut();
 }
 

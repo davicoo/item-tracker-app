@@ -34,7 +34,7 @@ onMounted(async () => {
   } else {
     setTimeout(() => {
       showLanding.value = false;
-      document.cookie = 'introShown=true; path=/; max-age=31536000';
+      document.cookie = 'introShown=true; path=/; max-age=172800';
       document.body.style.backgroundColor = '#f3f4f6';
     }, 5000);
   }
