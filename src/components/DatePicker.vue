@@ -29,6 +29,7 @@ onMounted(() => {
   if (inputRef.value) {
     // Initialize Preline plugins so HSDatepicker works
     (window as any).HSStaticMethods?.autoInit?.();
+    (window as any).HSDatepicker?.autoInit?.();
     inputRef.value.addEventListener('change', updateValue)
     inputRef.value.addEventListener('input', updateValue)
     if (props.modelValue) {
