@@ -5,7 +5,7 @@
     :placeholder="placeholder"
     class="hs-datepicker w-full px-3 py-2 border border-gray-300 rounded"
     data-hs-datepicker
-    data-hs-datepicker-options='{"dateFormat":"YYYY-MM-DD"}'
+    data-hs-datepicker-options='{"dateFormat":"YYYY-MM-DD","inputModeOptions":{"dateSeparator":"-"}}'
   >
 </template>
 
@@ -22,7 +22,10 @@ const emit = defineEmits<{ 'update:modelValue': [string] }>()
 const inputRef = ref<HTMLInputElement | null>(null)
 
 function updateValue(e: Event) {
-  emit('update:modelValue', (e.target as HTMLInputElement).value)
+  const raw = (e.target as HTMLInputElement).value
+  const normalized = raw.replace(/\./g, '-')
+  ;(e.target as HTMLInputElement).value = normalized
+  emit('update:modelValue', normalized)
 }
 
 onMounted(() => {
@@ -33,7 +36,7 @@ onMounted(() => {
     inputRef.value.addEventListener('change', updateValue)
     inputRef.value.addEventListener('input', updateValue)
     if (props.modelValue) {
-      inputRef.value.value = props.modelValue
+      inputRef.value.value = props.modelValue.replace(/\./g, '-')
     }
   }
 })
@@ -49,7 +52,7 @@ watch(
   () => props.modelValue,
   (val) => {
     if (inputRef.value && inputRef.value.value !== val) {
-      inputRef.value.value = val
+      inputRef.value.value = val.replace(/\./g, '-')
     }
   }
 )
