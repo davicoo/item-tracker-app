@@ -44,7 +44,7 @@ npm run build
 **Note:** Run `npm install` before `npm run build` to ensure all dependencies like PostCSS are installed.
 
 ## Environment Variables
-Create a `.env` file based on `.env.example` and set the following variables:
+Copy `.env.example` to `.env` (which is ignored by Git) and set the following variables:
 
 ```
 VITE_SUPABASE_URL=<your project url>
