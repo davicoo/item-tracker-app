@@ -70,28 +70,46 @@
       </button>
     </div>
     
-    <div class="mb-4 flex items-center justify-between">
+    <div class="mb-4 flex flex-wrap items-center">
       <label
-        for="layout"
+        for="view"
         class="mr-2 text-sm text-gray-700"
-      >Layout:</label>
+      >View:</label>
       <select
-        id="layout"
-        v-model.number="columns"
+        id="view"
+        v-model="layout"
         class="border border-gray-300 rounded px-2 py-1 text-sm"
       >
-        <option :value="1">
-          1 column
+        <option value="grid">
+          Grid
         </option>
-        <option :value="2">
-          2 columns
-        </option>
-        <option :value="3">
-          3 columns
+        <option value="table">
+          Table
         </option>
       </select>
+      <template v-if="layout === 'grid'">
+        <label
+          for="columns"
+          class="ml-4 mr-2 text-sm text-gray-700"
+        >Columns:</label>
+        <select
+          id="columns"
+          v-model.number="columns"
+          class="border border-gray-300 rounded px-2 py-1 text-sm"
+        >
+          <option :value="1">
+            1 column
+          </option>
+          <option :value="2">
+            2 columns
+          </option>
+          <option :value="3">
+            3 columns
+          </option>
+        </select>
+      </template>
       <button
-        class="ml-4 text-sm text-blue-500 hover:underline"
+        class="ml-auto text-sm text-blue-500 hover:underline"
         @click="handleExportPdf"
       >
         Export PDF
@@ -121,15 +139,25 @@
       Loading items...
     </div>
     
-    <ItemGrid
-      v-else
-      :items="filteredItems"
-      :columns="columns"
-      @update-status="updateItemStatus"
-      @delete-item="deleteItem"
-      @edit-item="startEdit"
-      @view-image="openImageViewer"
-    />
+    <template v-else>
+      <ItemGrid
+        v-if="layout === 'grid'"
+        :items="filteredItems"
+        :columns="columns"
+        @update-status="updateItemStatus"
+        @delete-item="deleteItem"
+        @edit-item="startEdit"
+        @view-image="openImageViewer"
+      />
+      <ItemTable
+        v-else
+        :items="filteredItems"
+        @update-status="updateItemStatus"
+        @delete-item="deleteItem"
+        @edit-item="startEdit"
+        @view-image="openImageViewer"
+      />
+    </template>
     <ImageViewer
       v-if="selectedImage"
       :src="selectedImage"
@@ -143,6 +171,7 @@ import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
+import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
@@ -159,6 +188,7 @@ const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 const items = ref<Item[]>([]);
 const showForm = ref(false);
 const showChart = ref(false);
+const layout = ref<'grid' | 'table'>('grid');
 const columns = ref(2);
 const isLoading = ref(true);
 const serverError = ref('');
