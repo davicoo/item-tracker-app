@@ -5,7 +5,7 @@
         Artwork Tracker
       </h1>
       <button
-        class="text-sm text-blue-500 hover:underline"
+        class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded"
         @click="signOut"
       >
         Sign Out
@@ -16,7 +16,7 @@
 
     <div class="flex justify-end mb-2">
       <button
-        class="text-sm text-blue-500 hover:underline"
+        class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded"
         @click="showChart = !showChart"
       >
         {{ showChart ? 'Hide Chart' : 'Show Chart' }}
