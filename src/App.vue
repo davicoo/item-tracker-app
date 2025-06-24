@@ -1,11 +1,18 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-3xl font-bold text-center flex-1">
-        Artwork Tracker
-      </h1>
+      <div class="flex items-center space-x-2 flex-1">
+        <img
+          src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
+          alt="Artwork Tracker logo"
+          class="w-8 h-8 object-contain"
+        >
+        <h1 class="text-3xl font-bold">
+          Artwork Tracker
+        </h1>
+      </div>
       <button
-        class="text-sm text-blue-500 hover:underline"
+        class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded"
         @click="signOut"
       >
         Sign Out
@@ -16,7 +23,7 @@
 
     <div class="flex justify-end mb-2">
       <button
-        class="text-sm text-blue-500 hover:underline"
+        class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded"
         @click="showChart = !showChart"
       >
         {{ showChart ? 'Hide Chart' : 'Show Chart' }}

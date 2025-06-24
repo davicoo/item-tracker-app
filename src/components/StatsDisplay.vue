@@ -1,6 +1,6 @@
 <template>
-  <div class="flex space-x-4 mb-6">
-    <div class="bg-gray-100 p-4 rounded text-center">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white border rounded-lg shadow p-4 text-center">
       <p class="text-sm text-gray-600">
         Items
       </p>
@@ -8,7 +8,7 @@
         {{ props.stats.items }}
       </p>
     </div>
-    <div class="bg-gray-100 p-4 rounded text-center">
+    <div class="bg-white border rounded-lg shadow p-4 text-center">
       <p class="text-sm text-gray-600">
         Sold
       </p>
@@ -16,7 +16,7 @@
         {{ props.stats.sold }}
       </p>
     </div>
-    <div class="bg-gray-100 p-4 rounded text-center">
+    <div class="bg-white border rounded-lg shadow p-4 text-center">
       <p class="text-sm text-gray-600">
         Paid
       </p>
@@ -24,7 +24,7 @@
         {{ props.stats.sold_paid }}
       </p>
     </div>
-    <div class="bg-gray-100 p-4 rounded text-center">
+    <div class="bg-white border rounded-lg shadow p-4 text-center">
       <p class="text-sm text-gray-600">
         Paid Total
       </p>
