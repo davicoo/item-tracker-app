@@ -153,10 +153,14 @@ const handleViewImage = () => {
 
 const formattedDate = computed(() => {
   try {
-    return new Date(props.item.dateAdded).toLocaleDateString();
+    const d = new Date(props.item.dateAdded);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
   } catch {
-    return props.item.dateAdded;
+    // ignore
   }
+  return props.item.dateAdded;
 });
 
 
