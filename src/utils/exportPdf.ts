@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import type { Item } from '../types/item';
+import { fetchStats, type Stats } from './stats';
 
 async function loadImageAsDataUrl(url: string): Promise<string> {
   const response = await fetch(url);
@@ -19,7 +20,7 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
   const pageHeight = doc.internal.pageSize.getHeight();
 
   const margin = 10;
-  const rowHeight = 30;
+  const rowHeight = 40;
 
   doc.setFontSize(18);
   doc.text('Item Tracker', pageWidth / 2, 15, { align: 'center' });
@@ -30,6 +31,26 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
     doc.addImage(logoUrl, 'PNG', margin, 8, 15, 15);
   } catch (err) {
     console.error('Failed to load logo', err);
+  }
+
+  let stats: Stats | null = null;
+  try {
+    stats = await fetchStats();
+  } catch (err) {
+    console.error('Failed to fetch stats', err);
+  }
+
+  if (stats) {
+    doc.setFontSize(10);
+    const lines = [
+      `Items: ${stats.items}`,
+      `Sold: ${stats.sold}`,
+      `Paid: ${stats.sold_paid}`,
+      `Paid Total: $${stats.sold_paid_total.toFixed(2)}`
+    ];
+    lines.forEach((line, idx) => {
+      doc.text(line, pageWidth - margin, 10 + idx * 4, { align: 'right' });
+    });
   }
 
   let y = 25;
@@ -43,9 +64,10 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
     const imgSize = 20;
     const textX = margin + imgSize + 4;
 
-    // Draw container
-    doc.setDrawColor(200);
-    doc.rect(margin, y - 5, pageWidth - margin * 2, rowHeight);
+    // Draw container mimicking app card style
+    doc.setDrawColor(220);
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(margin, y - 5, pageWidth - margin * 2, rowHeight, 2, 2, 'FD');
 
     // Draw image if available
     if (item.imageUrl) {
@@ -64,11 +86,13 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
     const details = doc.splitTextToSize(item.details, pageWidth - textX - margin);
     doc.text(details, textX, y + 10);
     doc.text(`$${item.price}`, textX, y + 15);
-    doc.text(item.location, textX + 35, y + 15);
-    doc.text(item.status, textX + 70, y + 15);
+    doc.text(item.location, textX + 30, y + 15);
+    doc.text(item.status.replace('_', ' '), textX + 60, y + 15);
+    doc.text(`Added: ${item.dateAdded.split('T')[0]}`, textX, y + 20);
 
     y += rowHeight;
   }
 
   doc.save('items.pdf');
 }
+
