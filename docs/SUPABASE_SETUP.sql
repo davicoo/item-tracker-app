@@ -12,6 +12,8 @@ create table if not exists public.items (
   location text,
   price numeric,
   fee_percent numeric default 20,
+  quantity integer default 1,
+  sku_codes text[],
   image_url text,
   date_added timestamptz default now(),
   tags text[]
