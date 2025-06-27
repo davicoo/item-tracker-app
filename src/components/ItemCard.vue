@@ -46,6 +46,15 @@
         Price: ${{ item.price }}
       </p>
       <p class="text-gray-600 text-sm mb-1">
+        Quantity: {{ item.quantity }}
+      </p>
+      <p
+        v-if="item.skuCodes && item.skuCodes.length"
+        class="text-gray-600 text-sm mb-1"
+      >
+        SKU: {{ item.skuCodes.join(', ') }}
+      </p>
+      <p class="text-gray-600 text-sm mb-1">
         Location: {{ item.location }}
       </p>
       <p class="text-gray-500 text-xs mb-3">

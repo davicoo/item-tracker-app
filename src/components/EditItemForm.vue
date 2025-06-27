@@ -46,6 +46,26 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Quantity</label>
+      <input
+        v-model.number="form.quantity"
+        type="number"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        min="1"
+      >
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">SKU Codes</label>
+      <input
+        v-model="skuInput"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        placeholder="ABC123, ABC124"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Date Added</label>
       <DatePicker
         v-model="form.dateAdded"
@@ -160,6 +180,8 @@ const form = ref({
   location: props.item.location,
   price: props.item.price,
   feePercent: props.item.feePercent ?? 20,
+  quantity: props.item.quantity,
+  skuCodes: [...(props.item.skuCodes || [])],
   dateAdded: props.item.dateAdded.slice(0, 10),
   tags: [...(props.item.tags || [])]
 });
@@ -175,6 +197,11 @@ const displayPrice = computed({
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>(props.item.imageUrl);
 const tagInput = ref('');
+const skuInput = ref(form.value.skuCodes.join(', '));
+
+watch(skuInput, val => {
+  form.value.skuCodes = val.split(',').map(v => v.trim()).filter(Boolean);
+});
 
 watch(
   () => props.item,
@@ -186,6 +213,8 @@ watch(
       location: val.location,
       price: val.price,
       feePercent: val.feePercent ?? 20,
+      quantity: val.quantity,
+      skuCodes: [...(val.skuCodes || [])],
       dateAdded: val.dateAdded.slice(0, 10),
       tags: [...(val.tags || [])]
     };
@@ -256,6 +285,8 @@ async function handleSubmit() {
         status: form.value.status,
         location: form.value.location,
         price: form.value.price,
+        quantity: form.value.quantity,
+        sku_codes: form.value.skuCodes,
         fee_percent: form.value.feePercent,
         image_url: imageUrl,
         date_added: dateISO,

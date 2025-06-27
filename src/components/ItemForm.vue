@@ -46,6 +46,26 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">Quantity</label>
+      <input
+        v-model.number="newItem.quantity"
+        type="number"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        min="1"
+      >
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2">SKU Codes</label>
+      <input
+        v-model="skuInput"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-300 rounded"
+        placeholder="ABC123, ABC124"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">
         Image <span class="text-red-500">*</span>
       </label>
@@ -114,7 +134,7 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { statusOptions } from '../types/item';
 import type { Item } from '../types/item';
 import { mapRecordToItem } from '../types/item';
@@ -131,7 +151,9 @@ const newItem = ref({
   status: 'not_sold' as const,
   location: '',
   price: '',
-  feePercent: 20
+  feePercent: 20,
+  quantity: 1,
+  skuCodes: [] as string[]
 });
 
 const displayPrice = computed({
@@ -143,6 +165,11 @@ const displayPrice = computed({
 });
 const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>('');
+const skuInput = ref('');
+
+watch(skuInput, val => {
+  newItem.value.skuCodes = val.split(',').map(v => v.trim()).filter(Boolean);
+});
 
 const isFormValid = computed(() => {
   return !!(
@@ -151,7 +178,8 @@ const isFormValid = computed(() => {
     selectedFile.value &&
     newItem.value.location.trim() &&
     newItem.value.price.trim() &&
-    newItem.value.feePercent >= 0
+    newItem.value.feePercent >= 0 &&
+    newItem.value.quantity > 0
   );
 });
 
@@ -187,6 +215,8 @@ const handleSubmit = async () => {
         user_id: user?.id,
         name: newItem.value.name,
         details: newItem.value.details,
+        quantity: newItem.value.quantity,
+        sku_codes: newItem.value.skuCodes,
         status: newItem.value.status,
         location: newItem.value.location,
         price: newItem.value.price,
@@ -210,10 +240,13 @@ const handleSubmit = async () => {
       status: 'not_sold',
       location: '',
       price: '',
-      feePercent: 20
+      feePercent: 20,
+      quantity: 1,
+      skuCodes: []
     };
     selectedFile.value = null;
     previewUrl.value = '';
+    skuInput.value = '';
   } catch (err: any) {
     console.error(err);
     alert('❌ Error saving item: ' + err.message);

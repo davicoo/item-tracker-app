@@ -5,6 +5,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 ## Features
 
 - Add items with images, names, prices, locations, and detailed descriptions
+- Specify a quantity and optional SKU codes for each item
 - Set a custom shop fee percentage for each item (defaults to 20%)
 - Track item sales status (Not Sold / Sold / Paid)
 - Simple per-user statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
@@ -107,6 +108,9 @@ the auth integration works, how to restrict data per user, and how to update an
 existing Supabase project for per-user items. A ready-to-run SQL script is
 available at [docs/SUPABASE_SETUP.sql](docs/SUPABASE_SETUP.sql) to create the
 required table, policies, and storage buckets.
+If you've already created the `items` table, run
+[docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql](docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql)
+to add the `quantity` and `sku_codes` columns.
 
 ## License
 

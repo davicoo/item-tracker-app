@@ -37,6 +37,12 @@
       ${{ item.price }}
     </td>
     <td class="px-3 py-2 text-sm text-gray-600">
+      {{ item.quantity }}
+    </td>
+    <td class="px-3 py-2 text-sm text-gray-600">
+      <span v-if="item.skuCodes && item.skuCodes.length">{{ item.skuCodes.join(', ') }}</span>
+    </td>
+    <td class="px-3 py-2 text-sm text-gray-600">
       {{ item.location }}
     </td>
     <td class="px-3 py-2">
