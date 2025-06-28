@@ -72,7 +72,7 @@ export function mapRecordToItem(record: any): Item {
   };
 }
     
-export const DEFAULT_FALLBACK_IMAGE = 'https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg';
+export const DEFAULT_FALLBACK_IMAGE = '/images/items/200.png';
 
 // Add this defaultItems export to fix the build error
 export const defaultItems: Item[] = [
