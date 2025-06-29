@@ -79,7 +79,7 @@ export const defaultItems: Item[] = [
   {
     id: "1",
     name: "Vintage Camera",
-    imageUrl: "https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg",
+    imageUrl: DEFAULT_FALLBACK_IMAGE,
     details: "A vintage film camera from the 1970s in excellent condition.",
     quantity: 1,
     skuCodes: [],
@@ -93,7 +93,7 @@ export const defaultItems: Item[] = [
   {
     id: "2",
     name: "Antique Chair",
-    imageUrl: "https://ik.imagekit.io/mydwcapp/placeholder-image-1.jpg",
+    imageUrl: DEFAULT_FALLBACK_IMAGE,
     details: "Hand-carved wooden chair from the early 1900s.",
     quantity: 1,
     skuCodes: [],
