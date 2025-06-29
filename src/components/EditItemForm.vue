@@ -90,6 +90,12 @@
           alt="Preview"
           class="mt-2 rounded max-w-full max-h-40 object-contain"
         >
+        <button
+          class="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+          @click="editImage"
+        >
+          Edit Image
+        </button>
       </div>
     </div>
 
@@ -159,11 +165,18 @@
         Cancel
       </button>
     </div>
+    <ImageCropper
+      :src="cropperSrc"
+      :visible="showCropper"
+      @cropped="onCropped"
+      @cancel="showCropper = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
+import ImageCropper from './ImageCropper.vue';
 import DatePicker from './DatePicker.vue';
 import type { Item } from '../types/item';
 import { statusOptions, mapRecordToItem } from '../types/item';
@@ -198,6 +211,8 @@ const selectedFile = ref<File | null>(null);
 const previewUrl = ref<string>(props.item.imageUrl);
 const tagInput = ref('');
 const skuInput = ref(form.value.skuCodes.join(', '));
+const showCropper = ref(false);
+const cropperSrc = ref('');
 
 watch(skuInput, val => {
   form.value.skuCodes = val.split(',').map(v => v.trim()).filter(Boolean);
@@ -226,9 +241,22 @@ watch(
 function onFileChange(e: Event) {
   const files = (e.target as HTMLInputElement).files;
   if (files && files[0]) {
-    selectedFile.value = files[0];
-    previewUrl.value = URL.createObjectURL(files[0]);
+    cropperSrc.value = URL.createObjectURL(files[0]);
+    showCropper.value = true;
   }
+}
+
+function editImage() {
+  if (previewUrl.value) {
+    cropperSrc.value = previewUrl.value;
+    showCropper.value = true;
+  }
+}
+
+function onCropped(file: File) {
+  selectedFile.value = file;
+  previewUrl.value = URL.createObjectURL(file);
+  showCropper.value = false;
 }
 
 function addTag() {
@@ -311,3 +339,4 @@ async function handleSubmit() {
 <style scoped>
 /* Add any component-specific styles here */
 </style>
+
