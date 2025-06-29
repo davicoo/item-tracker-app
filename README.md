@@ -110,6 +110,10 @@ If you've already created the `items` table, run
 [docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql](docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql)
 to add the `quantity` and `sku_codes` columns.
 
+## Service Worker Caching
+
+Images fetched from Supabase storage are cached using a service worker located at `public/sw.js`. The worker is automatically registered in `src/main.ts` and serves cached images on subsequent visits.
+
 ## License
 
 MIT
