@@ -123,17 +123,24 @@
     <div class="flex space-x-2">
       <button
         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
-        :disabled="!isFormValid"
+        :disabled="!isFormValid || loading"
         @click="handleSubmit"
       >
         Save Item
       </button>
       <button
         class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
+        :disabled="loading"
         @click="$emit('cancel')"
       >
         Cancel
       </button>
+    </div>
+    <div
+      v-if="loading"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    >
+      <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
     </div>
     <ImageCropper
       :src="cropperSrc"
@@ -168,6 +175,8 @@ const newItem = ref({
   quantity: 1,
   skuCodes: [] as string[]
 });
+
+const loading = ref(false);
 
 const displayPrice = computed({
   get: () => (newItem.value.price ? `$${newItem.value.price}` : ''),
@@ -222,6 +231,7 @@ function onCropped(file: File) {
 const handleSubmit = async () => {
   if (!isFormValid.value || !selectedFile.value) return;
 
+  loading.value = true;
   try {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
@@ -278,6 +288,8 @@ const handleSubmit = async () => {
   } catch (err: any) {
     console.error(err);
     alert('❌ Error saving item: ' + err.message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
