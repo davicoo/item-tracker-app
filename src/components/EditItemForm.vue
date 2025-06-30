@@ -154,16 +154,24 @@
     <div class="flex space-x-2">
       <button
         class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium"
+        :disabled="loading"
         @click="handleSubmit"
       >
         Update Item
       </button>
       <button
         class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
+        :disabled="loading"
         @click="$emit('cancel')"
       >
         Cancel
       </button>
+    </div>
+    <div
+      v-if="loading"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    >
+      <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
     </div>
     <ImageCropper
       :src="cropperSrc"
@@ -213,6 +221,7 @@ const tagInput = ref('');
 const skuInput = ref(form.value.skuCodes.join(', '));
 const showCropper = ref(false);
 const cropperSrc = ref('');
+const loading = ref(false);
 
 watch(skuInput, val => {
   form.value.skuCodes = val.split(',').map(v => v.trim()).filter(Boolean);
@@ -284,6 +293,7 @@ function toISODate(input: string): string | null {
 }
 
 async function handleSubmit() {
+  loading.value = true;
   try {
     let imageUrl = props.item.imageUrl;
     if (selectedFile.value) {
@@ -332,6 +342,8 @@ async function handleSubmit() {
   } catch (err: any) {
     console.error(err);
     alert('❌ Error updating item: ' + err.message);
+  } finally {
+    loading.value = false;
   }
 }
 </script>
