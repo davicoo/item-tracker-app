@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { supabase } from './supabaseClient';
 import LoginForm from './components/LoginForm.vue';
 
@@ -30,18 +30,20 @@ onMounted(async () => {
   // Skip intro video if cookie already set
   if (document.cookie.includes('introShown=true')) {
     showLanding.value = false;
-    document.body.style.backgroundColor = '#f3f4f6';
   } else {
     setTimeout(() => {
       showLanding.value = false;
 
       document.cookie = 'introShown=true; path=/; max-age=172800';
-
-      document.body.style.backgroundColor = '#f3f4f6';
     }, 5000);
   }
   const { data } = await supabase.auth.getSession();
   loggedIn.value = !!data.session;
+  document.body.style.backgroundColor = loggedIn.value ? '#f3f4f6' : 'rgb(22,23,72)';
+});
+
+watch(loggedIn, (isLoggedIn) => {
+  document.body.style.backgroundColor = isLoggedIn ? '#f3f4f6' : 'rgb(22,23,72)';
 });
 
 supabase.auth.onAuthStateChange((_event, session) => {
