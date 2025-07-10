@@ -69,6 +69,12 @@
           Edit
         </button>
         <button
+          class="text-green-500 hover:text-green-700 text-sm font-medium"
+          @click="handleDuplicate"
+        >
+          Duplicate
+        </button>
+        <button
           class="text-red-500 hover:text-red-700 text-sm font-medium"
           @click="handleDelete"
         >
@@ -93,6 +99,7 @@ const emit = defineEmits<{
   'delete-item': [string]
   'edit-item': [Item]
   'view-image': [string]
+  'duplicate-item': [Item]
 }>()
 
 const imageError = ref(false)
@@ -113,6 +120,10 @@ function handleDelete() {
 
 function handleEdit() {
   emit('edit-item', props.item)
+}
+
+function handleDuplicate() {
+  emit('duplicate-item', props.item)
 }
 
 function handleViewImage() {
