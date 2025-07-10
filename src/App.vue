@@ -109,10 +109,32 @@
         </select>
       </template>
       <button
-        class="ml-auto text-sm text-blue-500 hover:underline"
+        class="ml-auto flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+        :disabled="exporting"
         @click="handleExportPdf"
       >
-        Export PDF
+        <svg
+          v-if="exporting"
+          class="animate-spin h-4 w-4 mr-2 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          />
+        </svg>
+        <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
       </button>
     </div>
 
@@ -148,6 +170,7 @@
         @delete-item="deleteItem"
         @edit-item="startEdit"
         @view-image="openImageViewer"
+        @duplicate-item="duplicateItem"
       />
       <ItemTable
         v-else
@@ -156,6 +179,7 @@
         @delete-item="deleteItem"
         @edit-item="startEdit"
         @view-image="openImageViewer"
+        @duplicate-item="duplicateItem"
       />
     </template>
     <ImageViewer
@@ -193,9 +217,10 @@ const columns = ref(2);
 const isLoading = ref(true);
 const serverError = ref('');
 const editingItem = ref<Item | null>(null);
-const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0 });
+const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0, sold_unpaid_total: 0 });
 const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
+const exporting = ref(false);
 
 async function signOut() {
   document.cookie = 'introShown=; path=/; max-age=0';
@@ -292,7 +317,7 @@ watch(items, () => {
 
     } catch (error) {
       console.error('Error saving to server:', error);
-      serverError.value = 'Failed to save items to server. Saving locally as fallback.';
+      serverError.value = `Failed to save items to server: ${(error as Error).message}. Saving locally as fallback.`;
       
       // Fallback to localStorage if server save fails
       try {
@@ -379,8 +404,48 @@ const deleteItem = (id: string) => {
   currentStats.value = calculateStats(items.value);
 };
 
+async function duplicateItem(item: Item) {
+  if (DEBUG) console.log('Duplicating item:', item.id);
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    const { data: inserted, error } = await supabase
+      .from('items')
+      .insert([
+        {
+          user_id: user?.id,
+          name: item.name,
+          details: item.details,
+          quantity: item.quantity,
+          sku_codes: item.skuCodes,
+          status: 'not_sold',
+          location: item.location,
+          price: item.price,
+          fee_percent: item.feePercent,
+          image_url: item.imageUrl,
+          date_added: new Date().toISOString(),
+          tags: item.tags
+        }
+      ])
+      .select()
+      .single();
+    if (error) throw error;
+    const newItem: Item = mapRecordToItem(inserted);
+    items.value = [newItem, ...items.value];
+    currentStats.value = calculateStats(items.value);
+  } catch (err: any) {
+    console.error(err);
+    alert('❌ Error duplicating item: ' + err.message);
+  }
+}
+
 async function handleExportPdf() {
-  await exportItemsToPdf(items.value);
+  exporting.value = true;
+  try {
+    await exportItemsToPdf(items.value);
+  } finally {
+    exporting.value = false;
+  }
 }
 </script>
 
