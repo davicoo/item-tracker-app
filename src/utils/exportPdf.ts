@@ -46,7 +46,8 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
       `Items: ${stats.items}`,
       `Sold: ${stats.sold}`,
       `Paid: ${stats.sold_paid}`,
-      `Paid Total: $${stats.sold_paid_total.toFixed(2)}`
+      `Paid Total: $${stats.sold_paid_total.toFixed(2)}`,
+      `Outstanding: $${stats.sold_unpaid_total.toFixed(2)}`
     ];
     lines.forEach((line, idx) => {
       doc.text(line, pageWidth - margin, 10 + idx * 4, { align: 'right' });

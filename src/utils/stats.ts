@@ -6,6 +6,7 @@ export interface Stats {
   sold: number;
   sold_paid: number;
   sold_paid_total: number;
+  sold_unpaid_total: number;
 }
 
 
@@ -41,7 +42,14 @@ export function calculateStats(items: Item[]): Stats {
     const net = isNaN(num) ? 0 : num * (1 - fee / 100);
     return sum + net;
   }, 0);
-  return { items: total, sold, sold_paid, sold_paid_total };
+  const soldUnpaidItems = items.filter(i => i.status === 'sold');
+  const sold_unpaid_total = soldUnpaidItems.reduce((sum, item) => {
+    const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
+    const fee = typeof item.feePercent === 'number' ? item.feePercent : 20;
+    const net = isNaN(num) ? 0 : num * (1 - fee / 100);
+    return sum + net;
+  }, 0);
+  return { items: total, sold, sold_paid, sold_paid_total, sold_unpaid_total };
 }
 
 
@@ -106,7 +114,8 @@ export async function fetchStats(): Promise<Stats | null> {
       items: parsed.items ?? 0,
       sold: parsed.sold ?? 0,
       sold_paid: parsed.sold_paid ?? 0,
-      sold_paid_total: parsed.sold_paid_total ?? 0
+      sold_paid_total: parsed.sold_paid_total ?? 0,
+      sold_unpaid_total: parsed.sold_unpaid_total ?? 0
     };
   } catch (err) {
     console.error('Error parsing stats:', err);
