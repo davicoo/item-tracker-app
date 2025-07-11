@@ -18,7 +18,9 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - Persistent data storage using localStorage
 - Export items as a PDF file
 - Fully responsive design
+
 - Outstanding totals show the value of sold but unpaid items and can toggle with the Paid Total display
+
 - Duplicate listings with a single click
 - Export PDF button shows a spinner while the file is being generated
 - Animation overlay that displays for a few seconds on initial load before revealing the main application
