@@ -317,7 +317,7 @@ watch(items, () => {
 
     } catch (error) {
       console.error('Error saving to server:', error);
-      serverError.value = 'Failed to save items to server. Saving locally as fallback.';
+      serverError.value = `Failed to save items to server: ${(error as Error).message}. Saving locally as fallback.`;
       
       // Fallback to localStorage if server save fails
       try {
