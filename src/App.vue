@@ -286,49 +286,78 @@ onMounted(() => {
 
 // Save items to server with debouncing
 let saveTimeout: number | undefined;
+const MAX_SAVE_RETRIES = 3;
+let retryCount = 0;
+let retryTimeout: number | undefined;
+
+async function attemptSave() {
+  try {
+    serverError.value = '';
+    if (DEBUG) console.log('Saving items to server...');
+
+    const response = await fetch('/.netlify/functions/saveItems', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(items.value)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    if (DEBUG) console.log('Items saved to server successfully');
+
+    const stats = calculateStats(items.value);
+    currentStats.value = stats;
+    await saveStats(stats);
+
+    retryCount = 0;
+    return true;
+  } catch (error) {
+    console.error('Error saving to server:', error);
+    serverError.value = `Failed to save items to server: ${(error as Error).message}. Saving locally as fallback.`;
+
+    try {
+      localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
+      if (DEBUG) console.log('Items saved to localStorage as fallback');
+      const stats = calculateStats(items.value);
+      currentStats.value = stats;
+      await saveStats(stats);
+    } catch (localError) {
+      console.error('Error with localStorage fallback:', localError);
+    }
+
+    return false;
+  }
+}
+
+function scheduleRetry() {
+  if (retryCount >= MAX_SAVE_RETRIES) {
+    return;
+  }
+  if (retryTimeout) {
+    return;
+  }
+  retryTimeout = setTimeout(async () => {
+    retryTimeout = undefined;
+    if (DEBUG) console.log('Retrying save to server...');
+    const success = await attemptSave();
+    if (!success) {
+      retryCount++;
+      scheduleRetry();
+    }
+  }, 5000) as unknown as number;
+}
+
 watch(items, () => {
   // Clear previous timeout
   if (saveTimeout) clearTimeout(saveTimeout);
   
   // Set a timeout to avoid too many saves
   saveTimeout = setTimeout(async () => {
-    try {
-      serverError.value = '';
-      if (DEBUG) console.log('Saving items to server...');
-      
-      // Send items to server
-      const response = await fetch('/.netlify/functions/saveItems', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(items.value)
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-      
-      if (DEBUG) console.log('Items saved to server successfully');
-
-      const stats = calculateStats(items.value);
-
-      currentStats.value = stats;
-
-      await saveStats(stats);
-
-    } catch (error) {
-      console.error('Error saving to server:', error);
-      serverError.value = `Failed to save items to server: ${(error as Error).message}. Saving locally as fallback.`;
-      
-      // Fallback to localStorage if server save fails
-      try {
-        localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
-        if (DEBUG) console.log('Items saved to localStorage as fallback');
-        const stats = calculateStats(items.value);
-        currentStats.value = stats;
-        await saveStats(stats);
-      } catch (localError) {
-        console.error('Error with localStorage fallback:', localError);
-      }
+    const success = await attemptSave();
+    if (!success) {
+      scheduleRetry();
     }
   }, 1000) as unknown as number;
 }, { deep: true });
