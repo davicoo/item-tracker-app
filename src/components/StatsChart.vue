@@ -1,5 +1,12 @@
 <template>
-  <div class="mb-6">
+  <div class="chart-container bg-white p-4 rounded-lg shadow-md relative">
+    <button
+      class="absolute top-0 right-0 m-2 text-gray-500"
+      aria-label="Close"
+      @click="emit('close')"
+    >
+      &times;
+    </button>
     <div class="flex justify-end mb-2 space-x-2">
       <button
         class="px-2 py-1 text-sm bg-gray-200 rounded"
@@ -14,7 +21,10 @@
         Next
       </button>
     </div>
-    <canvas ref="canvas" />
+    <canvas
+      ref="canvas"
+      class="w-full h-64"
+    />
   </div>
 </template>
 
@@ -35,6 +45,7 @@ import {
 } from '../utils/stats';
 
 const props = defineProps<{ items: Item[] }>();
+const emit = defineEmits<{ close: [] }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 let chart: Chart | null = null;
@@ -185,7 +196,10 @@ watch(
 </script>
 
 <style scoped>
-div {
-  height: 300px;
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  min-height: 300px;
+  max-height: 90vh;
 }
 </style>
