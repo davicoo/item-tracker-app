@@ -47,8 +47,10 @@
     </div>
 
     <!-- Paid/Outstanding Toggle Card -->
-    <div class="flex flex-col bg-gradient-to-br from-blue-400 to-purple-500 text-white shadow-2xs rounded-xl border border-blue-400 dark:from-blue-500 dark:to-purple-600 dark:border-blue-500 cursor-pointer"
-      @click="toggleOutstanding">
+    <div
+      class="flex flex-col bg-gradient-to-br from-blue-400 to-purple-500 text-white shadow-2xs rounded-xl border border-blue-400 dark:from-blue-500 dark:to-purple-600 dark:border-blue-500 cursor-pointer"
+      @click="toggleOutstanding"
+    >
       <div class="p-4 md:p-5">
         <div class="flex items-center gap-x-2">
           <p class="text-xs uppercase opacity-90">

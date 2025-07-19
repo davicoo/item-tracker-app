@@ -30,10 +30,20 @@
       </button>
     </div>
 
-    <StatsChart
+    <div
       v-if="showChart"
-      :items="items"
+      class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
     />
+
+    <div
+      v-if="showChart"
+      class="fixed inset-0 flex items-center justify-center z-50 overflow-auto"
+    >
+      <StatsChart
+        :items="items"
+        @close="showChart = false"
+      />
+    </div>
 
 
     
