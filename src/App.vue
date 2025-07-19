@@ -37,6 +37,7 @@
 
     <div
       v-if="showChart"
+     
       class="relative z-50"
     >
       <StatsChart
