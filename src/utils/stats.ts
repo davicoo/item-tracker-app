@@ -135,3 +135,49 @@ export async function saveStats(stats: Stats): Promise<void> {
     console.error('Error uploading stats:', error);
   }
 }
+
+export interface MonthlyRevenue {
+  labels: string[];
+  totals: number[];
+}
+
+export function calculateMonthlyRevenue(items: Item[]): MonthlyRevenue {
+  const labels: string[] = [];
+  const totals: number[] = [];
+  const now = new Date();
+  for (let i = 11; i >= 0; i--) {
+    const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+    labels.push(start.toLocaleString('default', { month: 'short' }));
+    const total = items.reduce((sum, item) => {
+      if (
+        item.status === 'sold_paid' &&
+        new Date(item.dateAdded) >= start &&
+        new Date(item.dateAdded) < end
+      ) {
+        const num = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
+        const fee = typeof item.feePercent === 'number' ? item.feePercent : 20;
+        const net = isNaN(num) ? 0 : num * (1 - fee / 100);
+        return sum + net;
+      }
+      return sum;
+    }, 0);
+    totals.push(total);
+  }
+  return { labels, totals };
+}
+
+export interface StatusDistribution {
+  labels: string[];
+  counts: number[];
+}
+
+export function calculateStatusDistribution(items: Item[]): StatusDistribution {
+  const notSold = items.filter(i => i.status === 'not_sold').length;
+  const sold = items.filter(i => i.status === 'sold').length;
+  const paid = items.filter(i => i.status === 'sold_paid').length;
+  return {
+    labels: ['Not Sold', 'Sold', 'Paid'],
+    counts: [notSold, sold, paid]
+  };
+}
