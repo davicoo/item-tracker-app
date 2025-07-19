@@ -224,7 +224,7 @@ import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import type { Item } from './types/item';
-import { mapRecordToItem, defaultItems } from './types/item';
+import { mapRecordToItem } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
 import { exportItemsToPdf } from './utils/exportPdf';
@@ -296,7 +296,7 @@ async function fetchItems() {
   } catch (err: any) {
     console.error('Error fetching items:', err);
     serverError.value = 'Error fetching items';
-    items.value = [...defaultItems];
+    items.value = [];
     currentStats.value = calculateStats(items.value);
   } finally {
     isLoading.value = false;

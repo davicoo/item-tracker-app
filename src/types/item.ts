@@ -74,35 +74,4 @@ export function mapRecordToItem(record: any): Item {
     
 export const DEFAULT_FALLBACK_IMAGE = '/images/items/200.png';
 
-// Add this defaultItems export to fix the build error
-export const defaultItems: Item[] = [
-  {
-    id: "1",
-    name: "Vintage Camera",
-    imageUrl: DEFAULT_FALLBACK_IMAGE,
-    details: "A vintage film camera from the 1970s in excellent condition.",
-    quantity: 1,
-    skuCodes: [],
-    status: "not_sold",
-    dateAdded: new Date().toISOString(),
-    location: "New York, NY",
-    price: "199.99",
-    feePercent: 20,
-    tags: []
-  },
-  {
-    id: "2",
-    name: "Antique Chair",
-    imageUrl: DEFAULT_FALLBACK_IMAGE,
-    details: "Hand-carved wooden chair from the early 1900s.",
-    quantity: 1,
-    skuCodes: [],
-    status: "sold",
-    dateAdded: new Date().toISOString(),
-    location: "San Francisco, CA",
-    price: "899.99",
-    feePercent: 20,
-    tags: []
-  }
-];
 
