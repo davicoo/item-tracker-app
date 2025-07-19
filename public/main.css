@@ -541,9 +541,6 @@
       border-color: var(--color-gray-200);
     }
   }
-  .overflow-auto {
-    overflow: auto;
-  }
   .overflow-hidden {
     overflow: hidden;
   }

@@ -37,7 +37,8 @@
 
     <div
       v-if="showChart"
-      class="fixed inset-0 flex items-center justify-center z-50 overflow-auto"
+     
+      class="relative z-50"
     >
       <StatsChart
         :items="items"

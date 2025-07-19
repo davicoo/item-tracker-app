@@ -1,7 +1,8 @@
 <template>
-  <div class="chart-container bg-white p-4 rounded-lg shadow-md mb-6 relative">
+  <div class="chart-container bg-white p-4 rounded-lg shadow-md relative">
     <button
       class="absolute top-0 right-0 m-2 text-gray-500"
+      aria-label="Close"
       @click="emit('close')"
     >
       &times;
@@ -196,7 +197,10 @@ watch(
 
 <style scoped>
 .chart-container {
-  height: 300px;
+ 
   width: 100%;
+  max-width: 600px;
+  min-height: 300px;
+  max-height: 90vh;
 }
 </style>
