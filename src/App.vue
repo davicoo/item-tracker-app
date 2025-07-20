@@ -59,7 +59,7 @@
     
       <div
         v-if="showForm || editingItem"
-        class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
       />
 
       <div
