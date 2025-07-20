@@ -9,7 +9,7 @@
       <input
         v-model="newItem.name"
         type="text"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item name"
       >
     </div>
@@ -19,7 +19,7 @@
       <input
         v-model="newItem.location"
         type="text"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item location"
       >
     </div>
@@ -29,7 +29,7 @@
       <input
         v-model="displayPrice"
         type="text"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item price"
       >
     </div>
@@ -39,7 +39,7 @@
       <input
         v-model.number="newItem.feePercent"
         type="number"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         min="0"
         step="0.1"
       >
@@ -50,7 +50,7 @@
       <input
         v-model.number="newItem.quantity"
         type="number"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         min="1"
       >
     </div>
@@ -60,7 +60,7 @@
       <input
         v-model="skuInput"
         type="text"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="ABC123, ABC124"
       >
     </div>
@@ -72,7 +72,7 @@
       <input
         type="file"
         accept="image/*"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         required
         @change="onFileChange"
       >
@@ -98,7 +98,7 @@
       <label class="block text-gray-700 font-medium mb-2">Item Details</label>
       <textarea
         v-model="newItem.details"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         rows="3"
         placeholder="Enter item details"
       />
@@ -108,7 +108,7 @@
       <label class="block text-gray-700 font-medium mb-2">Status</label>
       <select
         v-model="newItem.status"
-        class="w-full px-3 py-2 border border-gray-300 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
       >
         <option
           v-for="option in statusOptions"

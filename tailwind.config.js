@@ -9,6 +9,9 @@ export default {
     './src/assets/**/*.css'
   ],
   theme: {
+    fontFamily: {
+      sans: ['Inter', 'sans-serif']
+    },
     extend: {
       spacing: {
         10.5: '2.625rem',

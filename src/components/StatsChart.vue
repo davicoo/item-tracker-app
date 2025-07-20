@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-container bg-white p-4 rounded-lg shadow-md relative">
+  <div class="chart-container bg-white p-4 rounded-xl shadow-lg max-w-xl mx-auto relative">
     <button
       class="absolute top-0 right-0 m-2 text-gray-500"
       aria-label="Close"
@@ -9,13 +9,13 @@
     </button>
     <div class="flex justify-end mb-2 space-x-2">
       <button
-        class="px-2 py-1 text-sm bg-gray-200 rounded"
+        class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 active:scale-95"
         @click="prevSlide"
       >
         Prev
       </button>
       <button
-        class="px-2 py-1 text-sm bg-gray-200 rounded"
+        class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 active:scale-95"
         @click="nextSlide"
       >
         Next
