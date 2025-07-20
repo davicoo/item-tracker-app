@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-container bg-white p-4 rounded-xl shadow-lg max-w-xl mx-auto relative">
+  <div class="chart-container relative z-50 bg-white p-6 rounded-xl shadow-xl max-w-2xl mx-auto mt-10 overflow-y-auto max-h-[90vh]">
     <button
       class="absolute top-0 right-0 m-2 text-gray-500"
       aria-label="Close"
@@ -197,9 +197,7 @@ watch(
 
 <style scoped>
 .chart-container {
- 
   width: 100%;
-  max-width: 600px;
   min-height: 300px;
   max-height: 90vh;
 }

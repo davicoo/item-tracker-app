@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md">
+  <div class="relative z-50 bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-10 overflow-y-auto max-h-[90vh]">
     <h2 class="text-xl font-semibold mb-4">
       Add New Item
     </h2>
@@ -9,7 +9,7 @@
       <input
         v-model="newItem.name"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item name"
       >
     </div>
@@ -19,7 +19,7 @@
       <input
         v-model="newItem.location"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item location"
       >
     </div>
@@ -29,7 +29,7 @@
       <input
         v-model="displayPrice"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item price"
       >
     </div>
@@ -39,7 +39,7 @@
       <input
         v-model.number="newItem.feePercent"
         type="number"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         min="0"
         step="0.1"
       >
@@ -50,7 +50,7 @@
       <input
         v-model.number="newItem.quantity"
         type="number"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         min="1"
       >
     </div>
@@ -60,7 +60,7 @@
       <input
         v-model="skuInput"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="ABC123, ABC124"
       >
     </div>
@@ -72,7 +72,7 @@
       <input
         type="file"
         accept="image/*"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         required
         @change="onFileChange"
       >
@@ -98,7 +98,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Item Details</label>
       <textarea
         v-model="newItem.details"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         rows="3"
         placeholder="Enter item details"
       />
@@ -108,7 +108,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
       <select
         v-model="newItem.status"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
       >
         <option
           v-for="option in statusOptions"
@@ -120,16 +120,16 @@
       </select>
     </div>
 
-    <div class="flex space-x-2">
+    <div class="flex gap-3 mt-4">
       <button
-        class="mt-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
+        class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
         :disabled="!isFormValid || loading"
         @click="handleSubmit"
       >
         Save Item
       </button>
       <button
-        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium"
+        class="w-full bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300 transition"
         :disabled="loading"
         @click="$emit('cancel')"
       >

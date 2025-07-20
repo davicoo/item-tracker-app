@@ -33,13 +33,8 @@
 
       <div
         v-if="showChart"
-        class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
-      />
-
-      <div
-        v-if="showChart"
-     
-        class="relative z-50"
+        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
+        @click.self="showChart = false"
       >
         <StatsChart
           :items="items"
@@ -58,13 +53,9 @@
       </div>
     
       <div
-        v-if="showForm || editingItem"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-      />
-
-      <div
         v-if="showForm && !editingItem"
-        class="relative z-50"
+        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
+        @click.self="showForm = false"
       >
         <ItemForm
           @item-added="handleItemAdded"
@@ -74,7 +65,8 @@
 
       <div
         v-if="editingItem"
-        class="relative z-50"
+        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
+        @click.self="editingItem = null"
       >
         <EditItemForm
           :item="editingItem"
