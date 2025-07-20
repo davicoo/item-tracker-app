@@ -1,7 +1,7 @@
 <template>
   <div
     :id="`item-${item.id}`"
-    class="bg-white rounded-lg shadow-md overflow-hidden"
+    class="bg-white rounded-lg shadow-md overflow-hidden mb-4"
   >
     <!-- Image display with local fallback support -->
     <div
@@ -36,25 +36,25 @@
     
     <!-- Item details -->
     <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">
         {{ item.name }}
       </h3>
-      <p class="text-gray-600 text-sm mb-1">
+      <p class="text-sm text-gray-500 mb-1">
         {{ item.details }}
       </p>
-      <p class="text-gray-600 text-sm mb-1">
+      <p class="text-sm text-gray-500 mb-1">
         Price: ${{ item.price }}
       </p>
-      <p class="text-gray-600 text-sm mb-1">
+      <p class="text-sm text-gray-500 mb-1">
         Quantity: {{ item.quantity }}
       </p>
       <p
         v-if="item.skuCodes && item.skuCodes.length"
-        class="text-gray-600 text-sm mb-1"
+        class="text-sm text-gray-500 mb-1"
       >
         SKU: {{ item.skuCodes.join(', ') }}
       </p>
-      <p class="text-gray-600 text-sm mb-1">
+      <p class="text-sm text-gray-500 mb-1">
         Location: {{ item.location }}
       </p>
       <p class="text-gray-500 text-xs mb-3">
@@ -78,7 +78,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
         <select
           :value="item.status"
-          class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+          class="w-full rounded border border-gray-300 px-3 py-1 text-sm"
           @change="handleStatusChange"
         >
           <option 
@@ -92,28 +92,28 @@
       </div>
       
       <!-- Status badge and actions -->
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between flex-wrap gap-2">
         <span
-          class="px-2 py-1 rounded text-xs font-medium"
+          class="text-xs font-semibold px-2 py-1 rounded"
           :class="statusColor"
         >
           {{ statusLabel }}
         </span>
-        <div class="space-x-2">
+        <div class="flex gap-2 flex-wrap">
           <button
-            class="text-blue-500 hover:text-blue-700 text-sm font-medium"
+            class="text-blue-600 hover:underline text-sm"
             @click="handleEdit"
           >
             Edit
           </button>
           <button
-            class="text-green-500 hover:text-green-700 text-sm font-medium"
+            class="text-green-600 hover:underline text-sm"
             @click="handleDuplicate"
           >
             Duplicate
           </button>
           <button
-            class="text-red-500 hover:text-red-700 text-sm font-medium"
+            class="text-red-600 hover:underline text-sm"
             @click="handleDelete"
           >
             Delete
@@ -191,9 +191,12 @@ const statusLabel = computed(() => {
 
 const statusColor = computed(() => {
   switch (props.item.status) {
-    case 'not_sold': return 'bg-red-100 text-red-800';
-    case 'sold': return 'bg-yellow-100 text-yellow-800';
-    case 'sold_paid': return 'bg-green-100 text-green-800';
+    case 'not_sold':
+      return 'bg-red-100 text-red-600';
+    case 'sold':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'sold_paid':
+      return 'bg-green-100 text-green-700';
     default: return 'bg-gray-100 text-gray-800';
   }
 });
