@@ -3,7 +3,7 @@
     ref="inputRef"
     type="date"
     :placeholder="placeholder"
-    class="w-full px-3 py-2 border border-gray-300 rounded"
+    class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
     @input="onInput"
     @change="onChange"
   >

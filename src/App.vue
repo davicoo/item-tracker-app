@@ -1,216 +1,218 @@
 <template>
-  <div class="max-w-4xl mx-auto p-4">
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex items-center space-x-2 flex-1">
-        <img
-          src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
-          alt="Artwork Tracker logo"
-          class="w-8 h-8 object-contain"
+  <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
+    <div class="max-w-4xl mx-auto p-4">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-2 flex-1">
+          <img
+            src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
+            alt="Artwork Tracker logo"
+            class="w-8 h-8 object-contain"
+          >
+          <h1 class="text-3xl font-bold">
+            Artwork Tracker
+          </h1>
+        </div>
+        <button
+          class="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 active:scale-95 transition"
+          @click="signOut"
         >
-        <h1 class="text-3xl font-bold">
-          Artwork Tracker
-        </h1>
+          Sign Out
+        </button>
       </div>
-      <button
-        class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded"
-        @click="signOut"
-      >
-        Sign Out
-      </button>
-    </div>
 
-    <StatsDisplay :stats="currentStats" />
+      <StatsDisplay :stats="currentStats" />
 
-    <div class="flex justify-end mb-2">
-      <button
-        class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded"
-        @click="showChart = !showChart"
-      >
-        {{ showChart ? 'Hide Chart' : 'Show Chart' }}
-      </button>
-    </div>
-
-    <div
-      v-if="showChart"
-      class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
-    />
-
-    <div
-      v-if="showChart"
-     
-      class="relative z-50"
-    >
-      <StatsChart
-        :items="items"
-        @close="showChart = false"
-      />
-    </div>
-
-
-    
-    <!-- Show server error if any -->
-    <div
-      v-if="serverError"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
-    >
-      {{ serverError }}
-    </div>
-    
-    <div
-      v-if="showForm || editingItem"
-      class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
-    />
-
-    <div
-      v-if="showForm && !editingItem"
-      class="relative z-50"
-    >
-      <ItemForm
-        @item-added="handleItemAdded"
-        @cancel="showForm = false"
-      />
-    </div>
-
-    <div
-      v-if="editingItem"
-      class="relative z-50"
-    >
-      <EditItemForm
-        :item="editingItem"
-        @item-updated="handleItemUpdated"
-        @cancel="editingItem = null"
-      />
-    </div>
-    
-    <div
-      v-if="!showForm"
-      class="mb-6"
-    >
-      <button
-        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium"
-        @click="showForm = true"
-      >
-        Add New Item
-      </button>
-    </div>
-    
-    <div class="mb-4 flex flex-wrap items-center">
-      <label
-        for="view"
-        class="mr-2 text-sm text-gray-700"
-      >View:</label>
-      <select
-        id="view"
-        v-model="layout"
-        class="border border-gray-300 rounded px-2 py-1 text-sm"
-      >
-        <option value="grid">
-          Grid
-        </option>
-        <option value="table">
-          Table
-        </option>
-      </select>
-      <template v-if="layout === 'grid'">
-        <label
-          for="columns"
-          class="ml-4 mr-2 text-sm text-gray-700"
-        >Columns:</label>
-        <select
-          id="columns"
-          v-model.number="columns"
-          class="border border-gray-300 rounded px-2 py-1 text-sm"
+      <div class="flex justify-end mb-2">
+        <button
+          class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition"
+          @click="showChart = !showChart"
         >
-          <option :value="1">
-            1 column
+          {{ showChart ? 'Hide Chart' : 'Show Chart' }}
+        </button>
+      </div>
+
+      <div
+        v-if="showChart"
+        class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
+      />
+
+      <div
+        v-if="showChart"
+     
+        class="relative z-50"
+      >
+        <StatsChart
+          :items="items"
+          @close="showChart = false"
+        />
+      </div>
+
+
+    
+      <!-- Show server error if any -->
+      <div
+        v-if="serverError"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+      >
+        {{ serverError }}
+      </div>
+    
+      <div
+        v-if="showForm || editingItem"
+        class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
+      />
+
+      <div
+        v-if="showForm && !editingItem"
+        class="relative z-50"
+      >
+        <ItemForm
+          @item-added="handleItemAdded"
+          @cancel="showForm = false"
+        />
+      </div>
+
+      <div
+        v-if="editingItem"
+        class="relative z-50"
+      >
+        <EditItemForm
+          :item="editingItem"
+          @item-updated="handleItemUpdated"
+          @cancel="editingItem = null"
+        />
+      </div>
+    
+      <div
+        v-if="!showForm"
+        class="mb-6"
+      >
+        <button
+          class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition"
+          @click="showForm = true"
+        >
+          Add New Item
+        </button>
+      </div>
+    
+      <div class="mb-4 flex flex-wrap items-center">
+        <label
+          for="view"
+          class="mr-2 text-sm text-gray-700"
+        >View:</label>
+        <select
+          id="view"
+          v-model="layout"
+          class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+        >
+          <option value="grid">
+            Grid
           </option>
-          <option :value="2">
-            2 columns
-          </option>
-          <option :value="3">
-            3 columns
+          <option value="table">
+            Table
           </option>
         </select>
-      </template>
-      <button
-        class="ml-auto flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-        :disabled="exporting"
-        @click="handleExportPdf"
-      >
-        <svg
-          v-if="exporting"
-          class="animate-spin h-4 w-4 mr-2 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
+        <template v-if="layout === 'grid'">
+          <label
+            for="columns"
+            class="ml-4 mr-2 text-sm text-gray-700"
+          >Columns:</label>
+          <select
+            id="columns"
+            v-model.number="columns"
+            class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+          >
+            <option :value="1">
+              1 column
+            </option>
+            <option :value="2">
+              2 columns
+            </option>
+            <option :value="3">
+              3 columns
+            </option>
+          </select>
+        </template>
+        <button
+          class="ml-auto flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
+          :disabled="exporting"
+          @click="handleExportPdf"
         >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-          />
-        </svg>
-        <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
-      </button>
-    </div>
+          <svg
+            v-if="exporting"
+            class="animate-spin h-4 w-4 mr-2 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+          <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
+        </button>
+      </div>
 
-    <div class="mb-4 flex items-end space-x-2">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search"
-        class="flex-1 border border-gray-300 rounded px-2 py-1"
-      >
-      <button
-        v-if="searchQuery"
-        class="border border-gray-300 rounded px-2 py-1 bg-gray-100"
-        @click="clearSearch"
-      >
-        Clear
-      </button>
-    </div>
+      <div class="mb-4 flex items-end space-x-2">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search"
+          class="flex-1 px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+        >
+        <button
+          v-if="searchQuery"
+          class="border border-gray-300 rounded px-2 py-1 bg-gray-100"
+          @click="clearSearch"
+        >
+          Clear
+        </button>
+      </div>
 
-    <div
-      v-if="isLoading"
-      class="text-center py-8"
-    >
-      Loading items...
-    </div>
+      <div
+        v-if="isLoading"
+        class="text-center py-8"
+      >
+        Loading items...
+      </div>
     
-    <template v-else>
-      <ItemGrid
-        v-if="layout === 'grid'"
-        :items="filteredItems"
-        :columns="columns"
-        @update-status="updateItemStatus"
-        @delete-item="deleteItem"
-        @edit-item="startEdit"
-        @view-image="openImageViewer"
-        @duplicate-item="duplicateItem"
+      <template v-else>
+        <ItemGrid
+          v-if="layout === 'grid'"
+          :items="filteredItems"
+          :columns="columns"
+          @update-status="updateItemStatus"
+          @delete-item="deleteItem"
+          @edit-item="startEdit"
+          @view-image="openImageViewer"
+          @duplicate-item="duplicateItem"
+        />
+        <ItemTable
+          v-else
+          :items="filteredItems"
+          @update-status="updateItemStatus"
+          @delete-item="deleteItem"
+          @edit-item="startEdit"
+          @view-image="openImageViewer"
+          @duplicate-item="duplicateItem"
+        />
+      </template>
+      <ImageViewer
+        v-if="selectedImage"
+        :src="selectedImage"
+        @close="selectedImage = null"
       />
-      <ItemTable
-        v-else
-        :items="filteredItems"
-        @update-status="updateItemStatus"
-        @delete-item="deleteItem"
-        @edit-item="startEdit"
-        @view-image="openImageViewer"
-        @duplicate-item="duplicateItem"
-      />
-    </template>
-    <ImageViewer
-      v-if="selectedImage"
-      :src="selectedImage"
-      @close="selectedImage = null"
-    />
+    </div>
   </div>
 </template>
 

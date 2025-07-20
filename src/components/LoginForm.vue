@@ -22,7 +22,7 @@
         type="email"
         placeholder="Email"
         required
-        class="border w-full px-3 py-2 rounded"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
       >
       <div>
         <input
@@ -31,7 +31,7 @@
           type="password"
           placeholder="Password"
           required
-          class="border w-full px-3 py-2 rounded"
+          class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
         >
         <div class="flex items-center mt-2">
           <input

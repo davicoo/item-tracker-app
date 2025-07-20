@@ -78,7 +78,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
         <select
           :value="item.status"
-          class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+          class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
           @change="handleStatusChange"
         >
           <option 
