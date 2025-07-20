@@ -1,78 +1,78 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md">
     <h2 class="text-xl font-semibold mb-4">
       Add New Item
     </h2>
     
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Item Name</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
       <input
         v-model="newItem.name"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder="Enter item name"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Location</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
       <input
         v-model="newItem.location"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder="Enter item location"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Price</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Price</label>
       <input
         v-model="displayPrice"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder="Enter item price"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Shop Fee %</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Shop Fee %</label>
       <input
         v-model.number="newItem.feePercent"
         type="number"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         min="0"
         step="0.1"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Quantity</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
       <input
         v-model.number="newItem.quantity"
         type="number"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         min="1"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">SKU Codes</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
         type="text"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder="ABC123, ABC124"
       >
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">
         Image <span class="text-red-500">*</span>
       </label>
       <input
         type="file"
         accept="image/*"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         required
         @change="onFileChange"
       >
@@ -95,20 +95,20 @@
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Item Details</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Item Details</label>
       <textarea
         v-model="newItem.details"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         rows="3"
         placeholder="Enter item details"
       />
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Status</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
       <select
         v-model="newItem.status"
-        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+        class="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
       >
         <option
           v-for="option in statusOptions"
@@ -122,7 +122,7 @@
 
     <div class="flex space-x-2">
       <button
-        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+        class="mt-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-6 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
         :disabled="!isFormValid || loading"
         @click="handleSubmit"
       >
