@@ -45,18 +45,31 @@
       {{ serverError }}
     </div>
     
-    <ItemForm
-      v-if="showForm && !editingItem"
-      @item-added="handleItemAdded"
-      @cancel="showForm = false"
+    <div
+      v-if="showForm || editingItem"
+      class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
     />
 
-    <EditItemForm
+    <div
+      v-if="showForm && !editingItem"
+      class="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center mt-4 p-2"
+    >
+      <ItemForm
+        @item-added="handleItemAdded"
+        @cancel="showForm = false"
+      />
+    </div>
+
+    <div
       v-if="editingItem"
-      :item="editingItem"
-      @item-updated="handleItemUpdated"
-      @cancel="editingItem = null"
-    />
+      class="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center mt-4 p-2"
+    >
+      <EditItemForm
+        :item="editingItem"
+        @item-updated="handleItemUpdated"
+        @cancel="editingItem = null"
+      />
+    </div>
     
     <div
       v-if="!showForm"
