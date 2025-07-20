@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
-    <div class="flex flex-col gap-6 px-4 py-6 max-w-screen-xl mx-auto overflow-y-auto">
+    <div class="flex flex-col gap-6 px-4 pt-6 pb-6 max-w-screen-xl mx-auto overflow-y-auto">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center space-x-2 flex-1">
           <img
@@ -87,7 +87,7 @@
         </button>
       </div>
     
-      <div class="mb-4 flex flex-wrap items-center">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 flex-wrap">
         <label
           for="view"
           class="mr-2 text-sm text-gray-700"
@@ -125,37 +125,39 @@
             </option>
           </select>
         </template>
-        <button
-          class="ml-auto flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
-          :disabled="exporting"
-          @click="handleExportPdf"
-        >
-          <svg
-            v-if="exporting"
-            class="animate-spin h-4 w-4 mr-2 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
+        <div class="mt-4 sm:mt-0 sm:ml-auto">
+          <button
+            class="flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
+            :disabled="exporting"
+            @click="handleExportPdf"
           >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            />
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-          </svg>
-          <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
-        </button>
+            <svg
+              v-if="exporting"
+              class="animate-spin h-4 w-4 mr-2 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
+            <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
+          </button>
+        </div>
       </div>
 
-      <div class="mb-4 flex items-end space-x-2">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-end sm:space-x-2 space-y-2 sm:space-y-0">
         <input
           v-model="searchQuery"
           type="text"
