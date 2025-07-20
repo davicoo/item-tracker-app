@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
-    <div class="max-w-4xl mx-auto p-4">
+    <div class="flex flex-col gap-6 px-4 py-6 max-w-screen-xl mx-auto overflow-y-auto">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center space-x-2 flex-1">
           <img

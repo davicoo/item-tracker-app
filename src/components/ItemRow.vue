@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td class="px-3 py-2">
+    <td class="px-4 py-3 whitespace-nowrap">
       <div class="relative w-12 h-12">
         <img
           v-if="item.imageUrl"
@@ -22,7 +22,7 @@
         >Local</span>
       </div>
     </td>
-    <td class="px-3 py-2">
+    <td class="px-4 py-3 whitespace-nowrap">
       <div class="font-semibold">
         {{ item.name }}
       </div>
@@ -30,22 +30,22 @@
         {{ formattedDate }}
       </div>
     </td>
-    <td class="px-3 py-2 text-sm text-gray-600">
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.details }}
     </td>
-    <td class="px-3 py-2 text-sm text-gray-600">
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       ${{ item.price }}
     </td>
-    <td class="px-3 py-2 text-sm text-gray-600">
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.quantity }}
     </td>
-    <td class="px-3 py-2 text-sm text-gray-600">
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       <span v-if="item.skuCodes && item.skuCodes.length">{{ item.skuCodes.join(', ') }}</span>
     </td>
-    <td class="px-3 py-2 text-sm text-gray-600">
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.location }}
     </td>
-    <td class="px-3 py-2">
+    <td class="px-4 py-3 whitespace-nowrap">
       <select
         :value="item.status"
         class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
@@ -60,7 +60,7 @@
         </option>
       </select>
     </td>
-    <td class="px-3 py-2">
+    <td class="px-4 py-3 whitespace-nowrap">
       <div class="flex space-x-2">
         <button
           class="text-blue-500 hover:text-blue-700 text-sm font-medium"
