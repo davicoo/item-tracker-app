@@ -1,5 +1,5 @@
 <template>
-  <div class="relative z-50 bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-10">
+  <div class="relative z-50 bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-10 overflow-y-auto max-h-[90vh]">
     <h2 class="text-xl font-semibold mb-4">
       Edit Item
     </h2>
