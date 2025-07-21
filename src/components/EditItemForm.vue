@@ -56,6 +56,20 @@
     </div>
 
     <div class="mb-4">
+      <label
+        class="block text-sm font-medium text-gray-700 mb-1"
+        for="edit_min_quantity"
+      >Restock Alert Level</label>
+      <input
+        id="edit_min_quantity"
+        v-model.number="form.minQuantity"
+        type="number"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
+        min="0"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
@@ -202,6 +216,7 @@ const form = ref({
   price: props.item.price,
   feePercent: props.item.feePercent ?? 20,
   quantity: props.item.quantity,
+  minQuantity: props.item.minQuantity,
   skuCodes: [...(props.item.skuCodes || [])],
   dateAdded: props.item.dateAdded.slice(0, 10),
   tags: [...(props.item.tags || [])]
@@ -238,6 +253,7 @@ watch(
       price: val.price,
       feePercent: val.feePercent ?? 20,
       quantity: val.quantity,
+      minQuantity: val.minQuantity,
       skuCodes: [...(val.skuCodes || [])],
       dateAdded: val.dateAdded.slice(0, 10),
       tags: [...(val.tags || [])]
@@ -324,6 +340,7 @@ async function handleSubmit() {
         location: form.value.location,
         price: form.value.price,
         quantity: form.value.quantity,
+        min_quantity: form.value.minQuantity,
         sku_codes: form.value.skuCodes,
         fee_percent: form.value.feePercent,
         image_url: imageUrl,

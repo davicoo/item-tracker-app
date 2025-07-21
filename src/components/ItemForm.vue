@@ -56,6 +56,20 @@
     </div>
 
     <div class="mb-4">
+      <label
+        class="block text-sm font-medium text-gray-700 mb-1"
+        for="min_quantity"
+      >Restock Alert Level</label>
+      <input
+        id="min_quantity"
+        v-model.number="newItem.minQuantity"
+        type="number"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
+        min="0"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
@@ -173,6 +187,7 @@ const newItem = ref({
   price: '',
   feePercent: 20,
   quantity: 1,
+  minQuantity: 0,
   skuCodes: [] as string[]
 });
 
@@ -203,7 +218,8 @@ const isFormValid = computed(() => {
     newItem.value.location.trim() &&
     newItem.value.price.trim() &&
     newItem.value.feePercent >= 0 &&
-    newItem.value.quantity > 0
+    newItem.value.quantity > 0 &&
+    newItem.value.minQuantity >= 0
   );
 });
 
@@ -254,6 +270,7 @@ const handleSubmit = async () => {
         name: newItem.value.name,
         details: newItem.value.details,
         quantity: newItem.value.quantity,
+        min_quantity: newItem.value.minQuantity,
         sku_codes: newItem.value.skuCodes,
         status: newItem.value.status,
         location: newItem.value.location,
@@ -280,6 +297,7 @@ const handleSubmit = async () => {
       price: '',
       feePercent: 20,
       quantity: 1,
+      minQuantity: 0,
       skuCodes: []
     };
     selectedFile.value = null;

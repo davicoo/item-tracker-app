@@ -22,6 +22,13 @@
 
       <StatsDisplay :stats="currentStats" />
 
+      <div
+        v-if="lowStockItems.length"
+        class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded mb-4"
+      >
+        ⚠️ {{ lowStockItems.length }} item(s) need restocking
+      </div>
+
       <div class="flex justify-end mb-2">
         <button
           class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition"
@@ -266,6 +273,10 @@ const filteredItems = computed(() => {
   }
   return results;
 });
+
+const lowStockItems = computed(() =>
+  items.value.filter(i => i.quantity < i.minQuantity)
+);
 
 
 
