@@ -38,6 +38,11 @@
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.quantity }}
+      <span
+        v-if="item.quantity < item.minQuantity"
+        class="text-red-600 ml-1"
+        title="Needs restock"
+      >⚠️</span>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       <span v-if="item.skuCodes && item.skuCodes.length">{{ item.skuCodes.join(', ') }}</span>

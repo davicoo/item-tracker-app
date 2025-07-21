@@ -6,6 +6,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 
 - Add items with images, names, prices, locations, and detailed descriptions
 - Specify a quantity and optional SKU codes for each item
+- Set a restock alert level to flag low stock
 - Set a custom shop fee percentage for each item (defaults to 20%)
 - Track item sales status (Not Sold / Sold / Paid)
 - Simple per-user statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
@@ -114,6 +115,7 @@ required table, policies, and storage buckets.
 If you've already created the `items` table, run
 [docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql](docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql)
 to add the `quantity` and `sku_codes` columns.
+Run [docs/MIGRATION_ADD_MIN_QUANTITY.sql](docs/MIGRATION_ADD_MIN_QUANTITY.sql) to add `min_quantity` for restock alerts.
 
 ## Service Worker Caching
 
