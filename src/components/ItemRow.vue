@@ -38,6 +38,11 @@
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.quantity }}
+      <span
+        v-if="availableQuantity(item) < item.minQuantity"
+        class="text-red-600 ml-1"
+        title="Needs restock"
+      >⚠️</span>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       <span v-if="item.skuCodes && item.skuCodes.length">{{ item.skuCodes.join(', ') }}</span>
@@ -88,7 +93,11 @@
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from 'vue'
 import type { Item } from '../types/item'
-import { statusOptions, DEFAULT_FALLBACK_IMAGE } from '../types/item'
+import {
+  statusOptions,
+  DEFAULT_FALLBACK_IMAGE,
+  availableQuantity
+} from '../types/item'
 
 const props = defineProps<{
   item: Item

@@ -7,6 +7,8 @@ export interface Item {
   details: string;
   /** How many of this item exist */
   quantity: number;
+  /** Quantity threshold to trigger restock alerts */
+  minQuantity: number;
   /** Optional list of SKU codes for individual units */
   skuCodes: string[];
   status: "not_sold" | "sold" | "sold_paid";
@@ -61,15 +63,30 @@ export function mapRecordToItem(record: any): Item {
     imageUrl: record.image_url ?? '',
     details: record.details,
     quantity: typeof record.quantity === 'number' ? record.quantity : 1,
+    minQuantity: typeof record.min_quantity === 'number' ? record.min_quantity : 0,
     skuCodes,
     status: record.status,
     dateAdded: record.date_added,
     location: record.location,
     price: record.price,
     feePercent: typeof record.fee_percent === 'number' ? record.fee_percent : 20,
-    tags
+    tags,
 
   };
+}
+
+/**
+ * Calculate the currently available quantity of an item.
+ * If the item quantity is 1 and marked as sold or paid, treat it as 0.
+ */
+export function availableQuantity(item: Item): number {
+  if (
+    item.quantity <= 1 &&
+    (item.status === 'sold' || item.status === 'sold_paid')
+  ) {
+    return 0;
+  }
+  return item.quantity;
 }
     
 export const DEFAULT_FALLBACK_IMAGE = '/images/items/200.png';
