@@ -48,7 +48,9 @@
       <p class="text-sm text-gray-500 mb-1">
         Quantity: {{ item.quantity }}
         <span
+
           v-if="availableQuantity(item) < item.minQuantity"
+
           class="text-red-600 ml-1"
           title="Needs restock"
         >⚠️</span>

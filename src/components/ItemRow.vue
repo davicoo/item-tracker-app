@@ -39,7 +39,9 @@
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.quantity }}
       <span
+
         v-if="availableQuantity(item) < item.minQuantity"
+
         class="text-red-600 ml-1"
         title="Needs restock"
       >⚠️</span>

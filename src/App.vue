@@ -275,7 +275,9 @@ const filteredItems = computed(() => {
 });
 
 const lowStockItems = computed(() =>
+
   items.value.filter(i => availableQuantity(i) < i.minQuantity)
+
 );
 
 
