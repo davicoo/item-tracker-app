@@ -39,7 +39,9 @@
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.quantity }}
       <span
-        v-if="item.quantity < item.minQuantity"
+
+        v-if="availableQuantity(item) < item.minQuantity"
+
         class="text-red-600 ml-1"
         title="Needs restock"
       >⚠️</span>
@@ -93,7 +95,11 @@
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits } from 'vue'
 import type { Item } from '../types/item'
-import { statusOptions, DEFAULT_FALLBACK_IMAGE } from '../types/item'
+import {
+  statusOptions,
+  DEFAULT_FALLBACK_IMAGE,
+  availableQuantity
+} from '../types/item'
 
 const props = defineProps<{
   item: Item

@@ -48,7 +48,9 @@
       <p class="text-sm text-gray-500 mb-1">
         Quantity: {{ item.quantity }}
         <span
-          v-if="item.quantity < item.minQuantity"
+
+          v-if="availableQuantity(item) < item.minQuantity"
+
           class="text-red-600 ml-1"
           title="Needs restock"
         >⚠️</span>
@@ -133,7 +135,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ref, computed, defineProps, defineEmits } from 'vue';
 import type { Item } from '../types/item';
-import { statusOptions, DEFAULT_FALLBACK_IMAGE } from '../types/item';
+import {
+  statusOptions,
+  DEFAULT_FALLBACK_IMAGE,
+  availableQuantity
+} from '../types/item';
 
 const props = defineProps<{
   item: Item;

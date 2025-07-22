@@ -227,7 +227,7 @@ import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import type { Item } from './types/item';
-import { mapRecordToItem } from './types/item';
+import { mapRecordToItem, availableQuantity } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
 import { exportItemsToPdf } from './utils/exportPdf';
@@ -275,7 +275,9 @@ const filteredItems = computed(() => {
 });
 
 const lowStockItems = computed(() =>
-  items.value.filter(i => i.quantity < i.minQuantity)
+
+  items.value.filter(i => availableQuantity(i) < i.minQuantity)
+
 );
 
 

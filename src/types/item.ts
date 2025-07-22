@@ -74,6 +74,20 @@ export function mapRecordToItem(record: any): Item {
 
   };
 }
+
+/**
+ * Calculate the currently available quantity of an item.
+ * If the item quantity is 1 and marked as sold or paid, treat it as 0.
+ */
+export function availableQuantity(item: Item): number {
+  if (
+    item.quantity <= 1 &&
+    (item.status === 'sold' || item.status === 'sold_paid')
+  ) {
+    return 0;
+  }
+  return item.quantity;
+}
     
 export const DEFAULT_FALLBACK_IMAGE = '/images/items/200.png';
 

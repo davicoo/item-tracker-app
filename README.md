@@ -7,6 +7,7 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 - Add items with images, names, prices, locations, and detailed descriptions
 - Specify a quantity and optional SKU codes for each item
 - Set a restock alert level to flag low stock
+- Quantity 1 items marked Sold are treated as out of stock for alerts
 - Set a custom shop fee percentage for each item (defaults to 20%)
 - Track item sales status (Not Sold / Sold / Paid)
 - Simple per-user statistics for Sold and Paid counts stored in Supabase, updated automatically when items change
