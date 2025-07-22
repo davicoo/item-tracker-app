@@ -12,12 +12,12 @@
             Artwork Tracker
           </h1>
         </div>
-        <button
-          class="bg-red-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-red-600 active:scale-95 transition"
-          @click="signOut"
+        <router-link
+          to="/profile"
+          class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95 transition"
         >
-          Sign Out
-        </button>
+          Profile
+        </router-link>
       </div>
 
       <StatsDisplay :stats="currentStats" />
@@ -248,11 +248,6 @@ const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_tot
 const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 const exporting = ref(false);
-
-async function signOut() {
-  document.cookie = 'introShown=; path=/; max-age=0';
-  await supabase.auth.signOut();
-}
 
 function clearSearch() {
   searchQuery.value = '';
