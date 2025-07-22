@@ -132,11 +132,33 @@
             </option>
           </select>
         </template>
+        <label
+          for="exportFormat"
+          class="ml-4 mr-2 text-sm text-gray-700"
+        >Format:</label>
+        <select
+          id="exportFormat"
+          v-model="exportFormat"
+          class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+        >
+          <option value="pdf">
+            PDF
+          </option>
+          <option value="xlsx">
+            Excel
+          </option>
+          <option value="csv">
+            CSV
+          </option>
+          <option value="json">
+            JSON
+          </option>
+        </select>
         <div class="mt-4 sm:mt-0 sm:ml-auto">
           <button
             class="flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
             :disabled="exporting"
-            @click="handleExportPdf"
+            @click="handleExport"
           >
             <svg
               v-if="exporting"
@@ -159,7 +181,7 @@
                 d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
               />
             </svg>
-            <span>{{ exporting ? 'Exporting...' : 'Export PDF' }}</span>
+            <span>{{ exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}` }}</span>
           </button>
         </div>
       </div>
@@ -230,7 +252,7 @@ import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
-import { exportItemsToPdf } from './utils/exportPdf';
+import { exportDataAs } from './utils/export';
 
 const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 
@@ -248,6 +270,7 @@ const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_tot
 const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 const exporting = ref(false);
+const exportFormat = ref<'pdf' | 'xlsx' | 'csv' | 'json'>('pdf');
 
 function clearSearch() {
   searchQuery.value = '';
@@ -496,10 +519,10 @@ async function duplicateItem(item: Item) {
   }
 }
 
-async function handleExportPdf() {
+async function handleExport() {
   exporting.value = true;
   try {
-    await exportItemsToPdf(items.value);
+    await exportDataAs(items.value, exportFormat.value);
   } finally {
     exporting.value = false;
   }
