@@ -132,9 +132,12 @@
             </option>
           </select>
         </template>
+      </div>
+
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 flex-wrap">
         <label
           for="exportFormat"
-          class="ml-4 mr-2 text-sm text-gray-700"
+          class="mr-2 text-sm text-gray-700"
         >Format:</label>
         <select
           id="exportFormat"
