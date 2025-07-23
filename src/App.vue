@@ -12,12 +12,76 @@
             Artwork Tracker
           </h1>
         </div>
-        <router-link
-          to="/profile"
-          class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95 transition"
+        <div
+          ref="menuRef"
+          class="relative"
         >
-          Profile
-        </router-link>
+          <button
+            class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95 transition"
+            @click="toggleMenu"
+          >
+            ☰ Menu
+          </button>
+          <div
+            v-if="showMenu"
+            class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50"
+          >
+            <div class="px-4 py-2 text-xs font-semibold text-gray-500">
+              Tools
+            </div>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="openExport"
+            >
+              Export Data
+            </button>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="showChart = true; closeMenu()"
+            >
+              View Chart
+            </button>
+            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
+              Profile
+            </div>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="goTo('/profile')"
+            >
+              Edit Profile Info
+            </button>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="goTo('/profile/edit')"
+            >
+              Change Shop Title & Logo
+            </button>
+            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
+              Contact
+            </div>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="reportIssue"
+            >
+              Report an Issue
+            </button>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="requestFeature"
+            >
+              Request a Feature
+            </button>
+            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
+              Sign Out
+            </div>
+            <button
+              class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+              @click="handleSignOut"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
       </div>
 
       <StatsDisplay :stats="currentStats" />
@@ -134,60 +198,6 @@
         </template>
       </div>
 
-      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 flex-wrap">
-        <label
-          for="exportFormat"
-          class="mr-2 text-sm text-gray-700"
-        >Format:</label>
-        <select
-          id="exportFormat"
-          v-model="exportFormat"
-          class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-        >
-          <option value="pdf">
-            PDF
-          </option>
-          <option value="xlsx">
-            Excel
-          </option>
-          <option value="csv">
-            CSV
-          </option>
-          <option value="json">
-            JSON
-          </option>
-        </select>
-        <div class="mt-4 sm:mt-0 sm:ml-auto">
-          <button
-            class="flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
-            :disabled="exporting"
-            @click="handleExport"
-          >
-            <svg
-              v-if="exporting"
-              class="animate-spin h-4 w-4 mr-2 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              />
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              />
-            </svg>
-            <span>{{ exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}` }}</span>
-          </button>
-        </div>
-      </div>
 
       <div class="mb-4 flex flex-col sm:flex-row sm:items-end sm:space-x-2 space-y-2 sm:space-y-0">
         <input
@@ -238,12 +248,17 @@
         :src="selectedImage"
         @close="selectedImage = null"
       />
+      <ExportModal
+        v-if="showExportModal"
+        :items="items"
+        @close="showExportModal = false"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue';
 import ItemForm from './components/ItemForm.vue';
 import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
@@ -251,16 +266,20 @@ import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
+import ExportModal from './components/ExportModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
-import { exportDataAs } from './utils/export';
+import { signOut } from './utils/auth';
+import { useRouter } from 'vue-router';
 
 const DEBUG = import.meta.env.VITE_DEBUG === 'true';
 
 
 // Items state
+const router = useRouter();
+
 const items = ref<Item[]>([]);
 const showForm = ref(false);
 const showChart = ref(false);
@@ -272,8 +291,9 @@ const editingItem = ref<Item | null>(null);
 const currentStats = ref<Stats>({ items: 0, sold: 0, sold_paid: 0, sold_paid_total: 0, sold_unpaid_total: 0 });
 const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
-const exporting = ref(false);
-const exportFormat = ref<'pdf' | 'xlsx' | 'csv' | 'json'>('pdf');
+const showMenu = ref(false);
+const showExportModal = ref(false);
+const menuRef = ref<HTMLElement | null>(null);
 
 function clearSearch() {
   searchQuery.value = '';
@@ -282,6 +302,53 @@ function clearSearch() {
 function openImageViewer(src: string) {
   selectedImage.value = src;
 }
+
+function toggleMenu() {
+  showMenu.value = !showMenu.value;
+}
+
+function closeMenu() {
+  showMenu.value = false;
+}
+
+function openExport() {
+  showExportModal.value = true;
+  closeMenu();
+}
+
+function goTo(path: string) {
+  router.push(path);
+  closeMenu();
+}
+
+function reportIssue() {
+  console.log('Report an issue');
+  closeMenu();
+}
+
+function requestFeature() {
+  console.log('Request a feature');
+  closeMenu();
+}
+
+async function handleSignOut() {
+  closeMenu();
+  await signOut();
+}
+
+function onClickOutside(event: MouseEvent) {
+  if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
+    showMenu.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutside);
+});
 
 const filteredItems = computed(() => {
   let results = items.value;
@@ -522,14 +589,6 @@ async function duplicateItem(item: Item) {
   }
 }
 
-async function handleExport() {
-  exporting.value = true;
-  try {
-    await exportDataAs(items.value, exportFormat.value);
-  } finally {
-    exporting.value = false;
-  }
-}
 </script>
 
 <style>

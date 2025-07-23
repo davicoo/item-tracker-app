@@ -33,12 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from './supabaseClient'
-
-async function signOut() {
-  document.cookie = 'introShown=; path=/; max-age=0'
-  await supabase.auth.signOut()
-}
+import { signOut } from './utils/auth'
 </script>
 
 <style scoped>
