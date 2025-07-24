@@ -22,6 +22,8 @@
         "jspdf": "^2.5.1",
         "lodash": "^4.17.21",
         "preline": "^2.7.0",
+        "three": "^0.178.0",
+        "troisjs": "^0.3.4",
         "vanilla-calendar-pro": "^3.0.4",
         "vanillajs-datepicker": "^1.3.4",
         "vue": "^3.3.4",
