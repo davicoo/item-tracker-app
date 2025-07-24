@@ -107,6 +107,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, withDefaults, defineProps } from 'vue';
+import { useRouter } from 'vue-router';
 import { supabase } from '../supabaseClient';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
@@ -123,6 +124,7 @@ const isSignup = ref(true);
 const captchaToken = ref('');
 const captcha = ref<InstanceType<typeof VueHcaptcha> | null>(null);
 const siteKey = import.meta.env.VITE_HCAPTCHA_SITEKEY;
+const router = useRouter();
 if (!siteKey) {
   console.warn('VITE_HCAPTCHA_SITEKEY is not set');
 }
@@ -156,6 +158,7 @@ async function handleLogin() {
     error.value = err.message;
   } else {
     setReturningUserCookie();
+    router.push('/app');
   }
   captcha.value?.reset();
   captchaToken.value = '';
