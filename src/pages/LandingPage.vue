@@ -5,10 +5,16 @@
         ConsignEasy
       </div>
       <div class="space-x-4">
-        <button class="text-sm font-medium text-gray-600">
+        <button
+          class="text-sm font-medium text-gray-600"
+          @click="goLogin"
+        >
           Login
         </button>
-        <button class="text-sm font-medium border border-purple-500 text-purple-500 px-4 py-1 rounded">
+        <button
+          class="text-sm font-medium border border-purple-500 text-purple-500 px-4 py-1 rounded"
+          @click="goSignup"
+        >
           Sign Up
         </button>
       </div>
@@ -21,7 +27,10 @@
       <p class="text-lg md:text-xl text-gray-600 mb-6">
         Manage your consignment items all in one place.
       </p>
-      <button class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg text-lg">
+      <button
+        class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg text-lg"
+        @click="handleGetStarted"
+      >
         Get Started
       </button>
       <p class="mt-2 text-sm text-gray-400">
@@ -35,4 +44,23 @@
 
 <script setup>
 import AnimatedBlob from '@/components/AnimatedBlob.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function goLogin() {
+  router.push('/login')
+}
+
+function goSignup() {
+  router.push('/signup')
+}
+
+function handleGetStarted() {
+  if (document.cookie.includes('returningUser=true')) {
+    router.push('/login')
+  } else {
+    router.push('/signup')
+  }
+}
 </script>
