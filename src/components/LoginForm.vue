@@ -106,9 +106,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, withDefaults, defineProps } from 'vue';
 import { supabase } from '../supabaseClient';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
+
+const props = withDefaults(defineProps<{ startSignup?: boolean }>(), {
+  startSignup: undefined,
+});
 
 const email = ref('');
 const password = ref('');
@@ -124,7 +128,8 @@ if (!siteKey) {
 }
 
 onMounted(() => {
-  isSignup.value = !document.cookie.includes('returningUser=true');
+  const cookieDefault = !document.cookie.includes('returningUser=true');
+  isSignup.value = props.startSignup ?? cookieDefault;
   // Initialize Preline plugins like toggle password
   (window as any).HSStaticMethods?.autoInit();
 });
