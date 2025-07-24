@@ -326,6 +326,7 @@ function requestFeature() {
 async function handleSignOut() {
   closeMenu();
   await signOut();
+  router.push('/login');
 }
 
 function onClickOutside(event: MouseEvent) {
