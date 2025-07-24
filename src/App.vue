@@ -52,7 +52,7 @@
             </button>
             <button
               class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="goTo('/profile/edit')"
+              @click="goTo('/profile')"
             >
               Change Shop Title & Logo
             </button>
@@ -93,14 +93,6 @@
         ⚠️ {{ lowStockItems.length }} item(s) need restocking
       </div>
 
-      <div class="flex justify-end mb-2">
-        <button
-          class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition"
-          @click="showChart = !showChart"
-        >
-          {{ showChart ? 'Hide Chart' : 'Show Chart' }}
-        </button>
-      </div>
 
       <div
         v-if="showChart"
