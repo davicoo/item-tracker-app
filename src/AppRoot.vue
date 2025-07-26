@@ -10,10 +10,10 @@ import { supabase } from './supabaseClient';
 
 onMounted(async () => {
   const { data } = await supabase.auth.getSession();
-  document.body.style.backgroundColor = data.session ? '#f3f4f6' : 'rgb(22,23,72)';
+  document.body.style.backgroundColor = data.session ? '#f3f4f6' : '#fff';
 });
 
 supabase.auth.onAuthStateChange((_event, session) => {
-  document.body.style.backgroundColor = session ? '#f3f4f6' : 'rgb(22,23,72)';
+  document.body.style.backgroundColor = session ? '#f3f4f6' : '#fff';
 });
 </script>
