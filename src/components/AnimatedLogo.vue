@@ -10,7 +10,7 @@
       <Scene>
         <AmbientLight :intensity="0.8" />
         <PointLight :position="[10, 10, 10]" />
-        <group>
+        <group ref="logoGroup">
           <template
             v-for="i in 8"
             :key="i"
@@ -53,6 +53,7 @@ import {
 import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
+const logoGroup = ref<any>(null)
 
 
 onMounted(() => {
@@ -64,5 +65,14 @@ onMounted(() => {
       tex.needsUpdate = true
     }
   )
+
+  // simple rotation loop to verify the canvas is active
+  const animate = () => {
+    if (logoGroup.value) {
+      logoGroup.value.rotation.y += 0.01
+    }
+    requestAnimationFrame(animate)
+  }
+  animate()
 })
 </script>
