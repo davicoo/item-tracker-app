@@ -58,7 +58,7 @@ const texture = ref<Texture | null>(null)
 onMounted(() => {
   const loader = new TextureLoader()
   loader.load(
-    'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png',
+    'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
