@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-0 right-0 w-full h-full z-0 pointer-events-none">
+  <div class="fixed inset-0 z-0 pointer-events-none">
     <Renderer
       ref="renderer"
       :alpha="true"
