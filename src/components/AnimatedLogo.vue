@@ -54,7 +54,7 @@ import {
 import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
-const maskTexture = ref<Texture | null>(null)
+
 
 onMounted(() => {
   const loader = new TextureLoader()
