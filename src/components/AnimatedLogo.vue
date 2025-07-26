@@ -10,6 +10,7 @@
       <Scene>
         <AmbientLight :intensity="0.8" />
         <PointLight :position="[10, 10, 10]" />
+
         <Group ref="logoGroup">
           <template
             v-for="i in 8"
