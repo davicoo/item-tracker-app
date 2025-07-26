@@ -17,7 +17,7 @@
             :key="i"
           >
             <Mesh :position="[(i - 4.5) * 0.7, 0, 0]">
-              <planeGeometry :args="[0.6, 1.2]" />
+              <PlaneGeometry :args="[0.6, 1.2]" />
               <meshBasicMaterial
                 :map="texture"
                 transparent
