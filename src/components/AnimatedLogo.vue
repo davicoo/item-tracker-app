@@ -10,7 +10,8 @@
       <Scene>
         <AmbientLight :intensity="0.8" />
         <PointLight :position="[10, 10, 10]" />
-        <group ref="logoGroup">
+
+        <Group ref="logoGroup">
           <template
             v-for="i in 8"
             :key="i"
@@ -34,7 +35,7 @@
               </meshBasicMaterial>
             </Mesh>
           </template>
-        </group>
+        </Group>
       </Scene>
     </Renderer>
   </div>
@@ -48,7 +49,8 @@ import {
   Scene,
   AmbientLight,
   PointLight,
-  Mesh
+  Mesh,
+  Group
 } from 'troisjs'
 import { TextureLoader, type Texture } from 'three'
 
