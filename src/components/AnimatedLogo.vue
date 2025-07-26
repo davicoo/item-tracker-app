@@ -20,7 +20,7 @@
               <planeGeometry :args="[0.6, 1.2]" />
               <meshBasicMaterial
                 :map="texture"
-                :alphaMap="maskTexture"
+
                 transparent
                 :side="2"
               >
@@ -62,13 +62,6 @@ onMounted(() => {
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png',
     (tex) => {
       texture.value = tex
-      tex.needsUpdate = true
-    }
-  )
-  loader.load(
-    'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//oval_mask.png',
-    (tex) => {
-      maskTexture.value = tex
       tex.needsUpdate = true
     }
   )
