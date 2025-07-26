@@ -15,6 +15,7 @@
             v-for="i in 8"
             :key="i"
           >
+
             <Mesh :position="[(i - 4.5) * 0.7, 0, 0]">
               <planeGeometry :args="[0.6, 1.2]" />
               <meshBasicMaterial
@@ -53,6 +54,7 @@ import {
 import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
+
 
 onMounted(() => {
   const loader = new TextureLoader()
