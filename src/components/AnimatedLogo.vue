@@ -20,7 +20,6 @@
               <planeGeometry :args="[0.6, 1.2]" />
               <meshBasicMaterial
                 :map="texture"
-
                 transparent
                 :side="2"
               >
@@ -38,6 +37,13 @@
         </Group>
       </Scene>
     </Renderer>
+    <!-- simple debug indicator -->
+    <div
+      v-if="DEBUG"
+      class="absolute top-0 left-0 text-xs bg-white/70 p-1"
+    >
+      Playing: {{ isPlaying }}
+    </div>
   </div>
 </template>
 
@@ -56,6 +62,9 @@ import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
 const logoGroup = ref<any>(null)
+const renderer = ref<any>(null)
+const isPlaying = ref(false)
+const DEBUG = true
 
 
 onMounted(() => {
@@ -65,16 +74,16 @@ onMounted(() => {
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
+      if (DEBUG) console.log('Texture loaded')
     }
   )
 
-  // simple rotation loop to verify the canvas is active
-  const animate = () => {
+  // rotate using renderer's render loop
+  renderer.value?.onBeforeRender(() => {
     if (logoGroup.value) {
       logoGroup.value.rotation.y += 0.01
+      isPlaying.value = true
     }
-    requestAnimationFrame(animate)
-  }
-  animate()
+  })
 })
 </script>
