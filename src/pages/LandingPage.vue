@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen bg-white text-center flex flex-col items-center justify-center px-6">
+  <div class="relative min-h-screen text-center flex flex-col items-center justify-center px-6">
     <header class="absolute top-0 left-0 w-full flex justify-between items-center p-4">
       <div class="text-2xl font-bold">
         ConsignEasy
