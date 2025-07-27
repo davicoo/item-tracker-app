@@ -17,10 +17,9 @@
             :key="i"
           >
             <Mesh :position="[(i - 4.5) * 0.7, 0, 0]">
-              <planeGeometry :args="[0.6, 1.2]" />
-              <meshBasicMaterial
+              <PlaneGeometry :args="[0.6, 1.2]" />
+              <BasicMaterial
                 :map="texture"
-
                 transparent
                 :side="2"
               >
@@ -32,17 +31,24 @@
                   name="repeat"
                   :args="[0.125, 1]"
                 />
-              </meshBasicMaterial>
+              </BasicMaterial>
             </Mesh>
           </template>
         </Group>
       </Scene>
     </Renderer>
+    <!-- simple debug indicator -->
+    <div
+      v-if="DEBUG"
+      class="absolute top-0 left-0 text-xs bg-white/70 p-1"
+    >
+      Playing: {{ isPlaying }} Loaded: {{ textureLoaded }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import {
   Renderer,
   PerspectiveCamera,
@@ -55,26 +61,34 @@ import {
 import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
+const textureLoaded = ref(false)
 const logoGroup = ref<any>(null)
+const renderer = ref<any>(null)
+const isPlaying = ref(false)
+const DEBUG = true
 
 
 onMounted(() => {
   const loader = new TextureLoader()
+  loader.setCrossOrigin('anonymous')
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
+      textureLoaded.value = true
+      if (DEBUG) console.log('Texture loaded')
     }
   )
 
-  // simple rotation loop to verify the canvas is active
-  const animate = () => {
-    if (logoGroup.value) {
-      logoGroup.value.rotation.y += 0.01
-    }
-    requestAnimationFrame(animate)
-  }
-  animate()
+  // rotate using renderer's render loop
+  nextTick(() => {
+    renderer.value?.onBeforeRender(() => {
+      if (logoGroup.value) {
+        logoGroup.value.rotation.y += 0.01
+        isPlaying.value = true
+      }
+    })
+  })
 })
 </script>
