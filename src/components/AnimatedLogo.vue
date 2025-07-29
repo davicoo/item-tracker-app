@@ -78,12 +78,13 @@ onMounted(() => {
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
-      textureLoaded.value = true
+
       if (DEBUG) console.log('Texture loaded')
     }
   )
 
   // rotate using renderer's render loop
+
   nextTick(() => {
     renderer.value?.onBeforeRender(() => {
       if (logoGroup.value) {
@@ -91,6 +92,7 @@ onMounted(() => {
         isPlaying.value = true
       }
     })
+
   })
 })
 </script>
