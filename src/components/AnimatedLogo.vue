@@ -38,10 +38,12 @@
       </Scene>
     </Renderer>
 
-    <div v-if="DEBUG" class="absolute top-0 left-0 text-xs bg-white/70 p-1">
+    <div
+      v-if="DEBUG"
+      class="absolute top-0 left-0 text-xs bg-white/70 p-1"
+    >
       Playing: {{ isPlaying }} Loaded: {{ textureLoaded }} Renderer: {{ rendererReady }}
       <span v-if="loadError"> Error: {{ loadError }} </span>
-
     </div>
   </div>
 </template>
