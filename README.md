@@ -89,7 +89,9 @@ item-tracker-app/
 ```
 
 ## Landing Page
+
 When the application loads, a 3D animated logo plays in the background. The animation keeps running on the landing page until the visitor chooses **Login** or **Sign Up** to move on. During development, a small debug overlay in the corner reports whether the animation is playing and if the texture loaded correctly.
+
 
 ## Technology Stack
 

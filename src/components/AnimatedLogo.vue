@@ -42,8 +42,10 @@
       v-if="DEBUG"
       class="absolute top-0 left-0 text-xs bg-white/70 p-1"
     >
+
       Playing: {{ isPlaying }} Loaded: {{ textureLoaded }} Renderer: {{ rendererReady }}
       <span v-if="loadError"> Error: {{ loadError }} </span>
+
     </div>
   </div>
 </template>
@@ -65,18 +67,20 @@ import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
 const textureLoaded = ref(false)
+
 const loadError = ref('')
 const logoGroup = ref<any>(null)
 const renderer = ref<any>(null)
 const rendererReady = ref(false)
+
 const isPlaying = ref(false)
 const DEBUG = true
 
 
 onMounted(() => {
   const loader = new TextureLoader()
-  loader.crossOrigin = 'anonymous'
-  loader.setCrossOrigin('anonymous')
+  loader.setCrossOrigin('anonymous') // modern method
+
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
@@ -92,9 +96,23 @@ onMounted(() => {
     }
   )
 
-  // when renderer is ready, hook into its render loop
   nextTick(() => {
-    renderer.value?.onMounted(() => {
+    renderer.value?.onMounted?.(() => {
+      rendererReady.value = true
+      renderer.value?.onBeforeRender(() => {
+        if (logoGroup.value) {
+          logoGroup.value.rotation.y += 0.01
+          isPlaying.value = true
+        }
+      })
+    })
+  })
+})
+
+  // rotate using renderer's render loop
+
+  nextTick(() => {
+    renderer.value?.onMounted?.(() => {
       rendererReady.value = true
       renderer.value?.onBeforeRender(() => {
         if (logoGroup.value) {
