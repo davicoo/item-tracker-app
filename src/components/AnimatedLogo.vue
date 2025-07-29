@@ -42,13 +42,13 @@
       v-if="DEBUG"
       class="absolute top-0 left-0 text-xs bg-white/70 p-1"
     >
-      Playing: {{ isPlaying }}
+      Playing: {{ isPlaying }} Loaded: {{ textureLoaded }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import {
   Renderer,
   PerspectiveCamera,
@@ -56,11 +56,14 @@ import {
   AmbientLight,
   PointLight,
   Mesh,
-  Group
+  Group,
+  PlaneGeometry,
+  BasicMaterial
 } from 'troisjs'
 import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
+const textureLoaded = ref(false)
 const logoGroup = ref<any>(null)
 const renderer = ref<any>(null)
 const isPlaying = ref(false)
@@ -69,21 +72,27 @@ const DEBUG = true
 
 onMounted(() => {
   const loader = new TextureLoader()
+  loader.setCrossOrigin('anonymous')
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
+
       if (DEBUG) console.log('Texture loaded')
     }
   )
 
   // rotate using renderer's render loop
-  renderer.value?.onBeforeRender(() => {
-    if (logoGroup.value) {
-      logoGroup.value.rotation.y += 0.01
-      isPlaying.value = true
-    }
+
+  nextTick(() => {
+    renderer.value?.onBeforeRender(() => {
+      if (logoGroup.value) {
+        logoGroup.value.rotation.y += 0.01
+        isPlaying.value = true
+      }
+    })
+
   })
 })
 </script>
