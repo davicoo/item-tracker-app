@@ -38,12 +38,12 @@
       </p>
     </main>
 
-    <AnimatedLogo />
+    <AnimatedBlob />
   </div>
 </template>
 
 <script setup>
-import AnimatedLogo from '@/components/AnimatedLogo.vue'
+import AnimatedBlob from '@/components/AnimatedBlob.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
