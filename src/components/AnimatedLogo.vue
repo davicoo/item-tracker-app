@@ -43,7 +43,7 @@
       class="absolute top-0 left-0 text-xs bg-white/70 p-1"
     >
       Playing: {{ isPlaying }} Loaded: {{ textureLoaded }}
-      <span v-if="loadError"> Error: {{ loadError }} </span>
+
     </div>
   </div>
 </template>
@@ -65,7 +65,6 @@ import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
 const textureLoaded = ref(false)
-const loadError = ref('')
 const logoGroup = ref<any>(null)
 const renderer = ref<any>(null)
 const isPlaying = ref(false)
@@ -74,13 +73,14 @@ const DEBUG = true
 
 onMounted(() => {
   const loader = new TextureLoader()
-  loader.crossOrigin = 'anonymous'
+
   loader.setCrossOrigin('anonymous')
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
+
       textureLoaded.value = true
       if (DEBUG) console.log('Texture loaded')
     },
@@ -88,10 +88,12 @@ onMounted(() => {
     (err) => {
       loadError.value = err?.message || 'Failed to load texture'
       if (DEBUG) console.error('Texture load failed', err)
+
     }
   )
 
   // rotate using renderer's render loop
+
   nextTick(() => {
     renderer.value?.onBeforeRender(() => {
       if (logoGroup.value) {
@@ -99,6 +101,7 @@ onMounted(() => {
         isPlaying.value = true
       }
     })
+
   })
 })
 </script>

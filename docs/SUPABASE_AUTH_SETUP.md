@@ -55,6 +55,7 @@ Listen for changes with `supabase.auth.onAuthStateChange` and show your item tra
 
 `AppRoot.vue` displays a landing page with a looping 3D logo. A small debug overlay indicates whether the animation is playing and if its texture loaded. The main app only loads once visitors choose to **Login** or **Sign Up**. When they leave the landing page, check whether a user session exists:
 
+
 ```ts
 import { supabase } from '@/supabaseClient';
 import LoginForm from '@/components/LoginForm.vue';
