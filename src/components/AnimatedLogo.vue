@@ -37,10 +37,11 @@
         </Group>
       </Scene>
     </Renderer>
-    <!-- simple debug indicator -->
+
     <div v-if="DEBUG" class="absolute top-0 left-0 text-xs bg-white/70 p-1">
       Playing: {{ isPlaying }} Loaded: {{ textureLoaded }} Renderer: {{ rendererReady }}
       <span v-if="loadError"> Error: {{ loadError }} </span>
+
     </div>
   </div>
 </template>
@@ -62,23 +63,26 @@ import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
 const textureLoaded = ref(false)
+
 const loadError = ref('')
 const logoGroup = ref<any>(null)
 const renderer = ref<any>(null)
 const rendererReady = ref(false)
+
 const isPlaying = ref(false)
 const DEBUG = true
 
 
 onMounted(() => {
   const loader = new TextureLoader()
-  loader.crossOrigin = 'anonymous'
+
   loader.setCrossOrigin('anonymous')
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true
+
       textureLoaded.value = true
       if (DEBUG) console.log('Texture loaded')
     },
@@ -86,6 +90,7 @@ onMounted(() => {
     (err) => {
       loadError.value = err?.message || 'Failed to load texture'
       if (DEBUG) console.error('Texture load failed', err)
+
     }
   )
 
@@ -100,6 +105,7 @@ onMounted(() => {
         }
       })
     })
+
   })
 })
 </script>
