@@ -37,12 +37,10 @@
         </Group>
       </Scene>
     </Renderer>
-    <!-- simple debug indicator -->
-    <div
-      v-if="DEBUG"
-      class="absolute top-0 left-0 text-xs bg-white/70 p-1"
-    >
-      Playing: {{ isPlaying }} Loaded: {{ textureLoaded }}
+
+    <div v-if="DEBUG" class="absolute top-0 left-0 text-xs bg-white/70 p-1">
+      Playing: {{ isPlaying }} Loaded: {{ textureLoaded }} Renderer: {{ rendererReady }}
+      <span v-if="loadError"> Error: {{ loadError }} </span>
 
     </div>
   </div>
@@ -65,8 +63,12 @@ import { TextureLoader, type Texture } from 'three'
 
 const texture = ref<Texture | null>(null)
 const textureLoaded = ref(false)
+
+const loadError = ref('')
 const logoGroup = ref<any>(null)
 const renderer = ref<any>(null)
+const rendererReady = ref(false)
+
 const isPlaying = ref(false)
 const DEBUG = true
 
@@ -92,14 +94,16 @@ onMounted(() => {
     }
   )
 
-  // rotate using renderer's render loop
-
+  // when renderer is ready, hook into its render loop
   nextTick(() => {
-    renderer.value?.onBeforeRender(() => {
-      if (logoGroup.value) {
-        logoGroup.value.rotation.y += 0.01
-        isPlaying.value = true
-      }
+    renderer.value?.onMounted(() => {
+      rendererReady.value = true
+      renderer.value?.onBeforeRender(() => {
+        if (logoGroup.value) {
+          logoGroup.value.rotation.y += 0.01
+          isPlaying.value = true
+        }
+      })
     })
 
   })
