@@ -56,7 +56,9 @@ import {
   AmbientLight,
   PointLight,
   Mesh,
-  Group
+  Group,
+  PlaneGeometry,
+  BasicMaterial
 } from 'troisjs'
 import { TextureLoader, type Texture } from 'three'
 
