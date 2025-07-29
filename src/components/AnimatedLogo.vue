@@ -43,6 +43,7 @@
       class="absolute top-0 left-0 text-xs bg-white/70 p-1"
     >
       Playing: {{ isPlaying }} Loaded: {{ textureLoaded }}
+
     </div>
   </div>
 </template>
@@ -72,6 +73,7 @@ const DEBUG = true
 
 onMounted(() => {
   const loader = new TextureLoader()
+
   loader.setCrossOrigin('anonymous')
   loader.load(
     'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
@@ -79,7 +81,14 @@ onMounted(() => {
       texture.value = tex
       tex.needsUpdate = true
 
+      textureLoaded.value = true
       if (DEBUG) console.log('Texture loaded')
+    },
+    undefined,
+    (err) => {
+      loadError.value = err?.message || 'Failed to load texture'
+      if (DEBUG) console.error('Texture load failed', err)
+
     }
   )
 
