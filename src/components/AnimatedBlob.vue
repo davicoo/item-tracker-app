@@ -7,8 +7,15 @@
     >
       <PerspectiveCamera :position="[0, 0, 5]" />
       <Scene>
-        <AmbientLight :intensity="0.8" />
-        <PointLight :position="[10, 10, 10]" />
+        <AmbientLight :intensity="1.2" />
+        <PointLight
+          :position="[10, 10, 10]"
+          :intensity="1.5"
+        />
+        <PointLight
+          :position="[-10, -10, -10]"
+          :intensity="0.5"
+        />
         <Sphere
           ref="blob"
           :args="[1, 32, 32]"
@@ -16,7 +23,7 @@
           <meshStandardMaterial
             color="#7C3AED"
             roughness="0.2"
-            metalness="0.6"
+            metalness="0.1"
           />
         </Sphere>
       </Scene>
