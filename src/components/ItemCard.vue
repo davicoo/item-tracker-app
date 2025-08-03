@@ -61,6 +61,24 @@
       >
         SKU: {{ item.skuCodes.join(', ') }}
       </p>
+      <p
+        v-if="item.skuCodes && item.skuCodes.length && soldEntries.length"
+        class="text-sm text-gray-500 mb-1"
+      >
+        Sold:
+        <span
+          v-for="([sku, count], idx) in soldEntries"
+          :key="sku"
+        >
+          {{ sku }}: {{ count }}<span v-if="idx < soldEntries.length - 1">, </span>
+        </span>
+      </p>
+      <p
+        v-else-if="!item.skuCodes?.length && totalSold"
+        class="text-sm text-gray-500 mb-1"
+      >
+        Sold: {{ totalSold }}
+      </p>
       <p class="text-sm text-gray-500 mb-1">
         Location: {{ item.location }}
       </p>
@@ -120,6 +138,12 @@
             Duplicate
           </button>
           <button
+            class="text-purple-600 hover:underline text-sm"
+            @click="handleReset"
+          >
+            New Version
+          </button>
+          <button
             class="text-red-600 hover:underline text-sm"
             @click="handleDelete"
           >
@@ -138,7 +162,8 @@ import type { Item } from '../types/item';
 import {
   statusOptions,
   DEFAULT_FALLBACK_IMAGE,
-  availableQuantity
+  availableQuantity,
+  NO_SKU_KEY
 } from '../types/item';
 
 const props = defineProps<{
@@ -151,6 +176,7 @@ const emit = defineEmits<{
   'edit-item': [Item]
   'view-image': [string]
   'duplicate-item': [Item]
+  'reset-item': [string]
 }>()
 
 // Add image error handling
@@ -176,6 +202,10 @@ const handleEdit = () => {
 
 const handleDuplicate = () => {
   emit('duplicate-item', props.item);
+};
+
+const handleReset = () => {
+  emit('reset-item', props.item.id);
 };
 
 const handleViewImage = () => {
@@ -216,7 +246,10 @@ const statusColor = computed(() => {
 const isLocalImage = computed(() => {
   return props.item.imageUrl?.startsWith('local:');
 });
-
+const soldEntries = computed(() =>
+  Object.entries(props.item.soldCounts || {}).filter(([sku]) => sku !== NO_SKU_KEY)
+);
+const totalSold = computed(() => props.item.soldCounts?.[NO_SKU_KEY] || 0);
 
 // Use the fallback image when needed
 const imageToDisplay = computed(() => {

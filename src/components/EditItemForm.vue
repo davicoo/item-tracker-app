@@ -18,10 +18,18 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
       <input
         v-model="form.location"
+        list="storeOptionsList"
         type="text"
         class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="Enter item location"
       >
+      <datalist id="storeOptionsList">
+        <option
+          v-for="store in storeOptions"
+          :key="store"
+          :value="store"
+        />
+      </datalist>
     </div>
 
     <div class="mb-4">
@@ -73,10 +81,18 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
+        list="skuOptionsList"
         type="text"
         class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
         placeholder="ABC123, ABC124"
       >
+      <datalist id="skuOptionsList">
+        <option
+          v-for="sku in skuOptions"
+          :key="sku"
+          :value="sku"
+        />
+      </datalist>
     </div>
 
     <div class="mb-4">
@@ -197,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import ImageCropper from './ImageCropper.vue';
 import DatePicker from './DatePicker.vue';
 import type { Item } from '../types/item';
@@ -237,6 +253,22 @@ const skuInput = ref(form.value.skuCodes.join(', '));
 const showCropper = ref(false);
 const cropperSrc = ref('');
 const loading = ref(false);
+
+const storeOptions = ref<string[]>([]);
+const skuOptions = ref<string[]>([]);
+
+onMounted(async () => {
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return;
+  const { data } = await supabase
+    .from('users')
+    .select('store_types, sku_options')
+    .eq('id', user.id)
+    .single();
+  storeOptions.value = (data?.store_types as string[] | null) || [];
+  skuOptions.value = (data?.sku_options as string[] | null) || [];
+});
 
 watch(skuInput, val => {
   form.value.skuCodes = val.split(',').map(v => v.trim()).filter(Boolean);

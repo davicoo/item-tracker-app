@@ -47,7 +47,27 @@
       >⚠️</span>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-      <span v-if="item.skuCodes && item.skuCodes.length">{{ item.skuCodes.join(', ') }}</span>
+      <div v-if="item.skuCodes && item.skuCodes.length">
+        <div>{{ item.skuCodes.join(', ') }}</div>
+        <div
+          v-if="soldEntries.length"
+          class="text-xs text-gray-500"
+        >
+          Sold:
+          <span
+            v-for="([sku, count], idx) in soldEntries"
+            :key="sku"
+          >
+            {{ sku }}: {{ count }}<span v-if="idx < soldEntries.length - 1">, </span>
+          </span>
+        </div>
+      </div>
+      <div
+        v-else-if="totalSold"
+        class="text-xs text-gray-500"
+      >
+        Sold: {{ totalSold }}
+      </div>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       {{ item.location }}
@@ -82,6 +102,12 @@
           Duplicate
         </button>
         <button
+          class="text-purple-500 hover:text-purple-700 text-sm font-medium"
+          @click="handleReset"
+        >
+          New Version
+        </button>
+        <button
           class="text-red-500 hover:text-red-700 text-sm font-medium"
           @click="handleDelete"
         >
@@ -98,7 +124,8 @@ import type { Item } from '../types/item'
 import {
   statusOptions,
   DEFAULT_FALLBACK_IMAGE,
-  availableQuantity
+  availableQuantity,
+  NO_SKU_KEY
 } from '../types/item'
 
 const props = defineProps<{
@@ -111,6 +138,7 @@ const emit = defineEmits<{
   'edit-item': [Item]
   'view-image': [string]
   'duplicate-item': [Item]
+  'reset-item': [string]
 }>()
 
 const imageError = ref(false)
@@ -137,6 +165,10 @@ function handleDuplicate() {
   emit('duplicate-item', props.item)
 }
 
+function handleReset() {
+  emit('reset-item', props.item.id)
+}
+
 function handleViewImage() {
   emit('view-image', imageToDisplay.value)
 }
@@ -161,6 +193,11 @@ const imageToDisplay = computed(() => {
   }
   return props.item.imageUrl
 })
+
+const soldEntries = computed(() =>
+  Object.entries(props.item.soldCounts || {}).filter(([sku]) => sku !== NO_SKU_KEY)
+)
+const totalSold = computed(() => props.item.soldCounts?.[NO_SKU_KEY] || 0)
 </script>
 
 <style scoped>
