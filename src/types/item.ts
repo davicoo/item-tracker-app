@@ -11,6 +11,8 @@ export interface Item {
   minQuantity: number;
   /** Optional list of SKU codes for individual units */
   skuCodes: string[];
+  /** Number of units sold per SKU */
+  soldCounts?: Record<string, number>;
   status: "not_sold" | "sold" | "sold_paid";
   dateAdded: string;
   location: string;
@@ -18,6 +20,9 @@ export interface Item {
   feePercent: number;
   tags: string[];
 }
+
+// Internal key used when tracking sales for items without SKU codes
+export const NO_SKU_KEY = "__no_sku__";
 
 export const statusOptions = [
   { value: "not_sold", label: "Not Sold" },
@@ -65,6 +70,19 @@ export function mapRecordToItem(record: any): Item {
     quantity: typeof record.quantity === 'number' ? record.quantity : 1,
     minQuantity: typeof record.min_quantity === 'number' ? record.min_quantity : 0,
     skuCodes,
+    soldCounts: typeof record.sold_counts === 'object'
+      ? record.sold_counts
+      : (() => {
+          if (typeof record.sold_counts === 'string') {
+            try {
+              const parsed = JSON.parse(record.sold_counts);
+              if (parsed && typeof parsed === 'object') return parsed;
+            } catch {
+              /* ignore */
+            }
+          }
+          return {} as Record<string, number>;
+        })(),
     status: record.status,
     dateAdded: record.date_added,
     location: record.location,

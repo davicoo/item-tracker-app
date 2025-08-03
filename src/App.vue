@@ -224,6 +224,7 @@
           @edit-item="startEdit"
           @view-image="openImageViewer"
           @duplicate-item="duplicateItem"
+          @reset-item="resetItemForNewVersion"
         />
         <ItemTable
           v-else
@@ -233,6 +234,7 @@
           @edit-item="startEdit"
           @view-image="openImageViewer"
           @duplicate-item="duplicateItem"
+          @reset-item="resetItemForNewVersion"
         />
       </template>
       <ImageViewer
@@ -260,7 +262,7 @@ import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import type { Item } from './types/item';
-import { mapRecordToItem, availableQuantity } from './types/item';
+import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
 import { supabase } from './supabaseClient';
 import { calculateStats, saveStats, type Stats } from './utils/stats';
 import { signOut } from './utils/auth';
@@ -515,21 +517,36 @@ const updateItemStatus = async (
   if (DEBUG) console.log("Updating item status:", id, status);
 
   try {
+    const itemIndex = items.value.findIndex(item => item.id === id);
+    if (itemIndex === -1) return;
+    const item = items.value[itemIndex];
+    const wasSold = item.status === 'sold' || item.status === 'sold_paid';
+    const willBeSold = status === 'sold' || status === 'sold_paid';
+    let newSoldCounts = { ...(item.soldCounts || {}) };
+    if (!wasSold && willBeSold) {
+      if (item.skuCodes && item.skuCodes.length) {
+        for (const sku of item.skuCodes) {
+          newSoldCounts[sku] = (newSoldCounts[sku] || 0) + 1;
+        }
+      } else {
+        newSoldCounts[NO_SKU_KEY] = (newSoldCounts[NO_SKU_KEY] || 0) + 1;
+      }
+    }
+
     const { data, error } = await supabase
       .from("items")
-      .update({ status })
+      .update({ status, sold_counts: newSoldCounts })
       .eq("id", id)
       .select()
       .single();
 
     if (error) throw error;
-
-    const itemIndex = items.value.findIndex(item => item.id === id);
     if (itemIndex !== -1 && data) {
       const updatedItems = [...items.value];
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
         status: data.status,
+        soldCounts: newSoldCounts,
       };
       items.value = updatedItems;
       currentStats.value = calculateStats(items.value);
@@ -537,6 +554,35 @@ const updateItemStatus = async (
   } catch (err: any) {
     console.error(err);
     alert("❌ Error updating status: " + err.message);
+  }
+};
+
+// Reset an item for a new version while keeping sold counts
+const resetItemForNewVersion = async (id: string) => {
+  if (DEBUG) console.log('Resetting item for new version:', id);
+  try {
+    const now = new Date().toISOString();
+    const { data, error } = await supabase
+      .from('items')
+      .update({ status: 'not_sold', date_added: now })
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    const itemIndex = items.value.findIndex(item => item.id === id);
+    if (itemIndex !== -1 && data) {
+      const updatedItems = [...items.value];
+      updatedItems[itemIndex] = {
+        ...updatedItems[itemIndex],
+        status: 'not_sold',
+        dateAdded: data.date_added,
+      };
+      items.value = updatedItems;
+      currentStats.value = calculateStats(items.value);
+    }
+  } catch (err: any) {
+    console.error(err);
+    alert('❌ Error resetting item: ' + err.message);
   }
 };
 
@@ -567,7 +613,8 @@ async function duplicateItem(item: Item) {
           fee_percent: item.feePercent,
           image_url: item.imageUrl,
           date_added: new Date().toISOString(),
-          tags: item.tags
+          tags: item.tags,
+          sold_counts: {}
         }
       ])
       .select()
