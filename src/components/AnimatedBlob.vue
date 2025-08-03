@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 
-import { ref, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   Renderer,
   PerspectiveCamera,
@@ -40,7 +40,7 @@ import {
 const blob = ref<any>(null)
 const renderer = ref<any>(null)
 
-nextTick(() => {
+onMounted(() => {
   renderer.value?.onMounted(() => {
     renderer.value?.onBeforeRender(() => {
       if (blob.value) {
