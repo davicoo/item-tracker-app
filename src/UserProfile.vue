@@ -342,7 +342,9 @@ async function saveCatalog() {
       store_types: tempStores.value,
       sku_options: tempSkus.value
     }
+    
     const { error } = await supabase.from('profiles').update(updates).eq('id', user.id)
+
     if (error) throw error
     catalog.value.stores = [...tempStores.value]
     catalog.value.skus = [...tempSkus.value]
