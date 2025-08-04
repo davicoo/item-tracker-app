@@ -22,8 +22,9 @@ VITE_HCAPTCHA_SITEKEY=<your hCaptcha site key>
 
 ## 3. Set up the database
 
-1. In **Table Editor**, create a table named `items` (if it does not already exist) with fields like `id`, `name`, `price`, `details`, `image_url`, `status`, and `date_added`.
+1. In **Table Editor**, create a table named `items` (if it does not already exist) with fields like `id`, `name`, `price`, `details`, `image_url`, `status`, `date_added`, and `sold_counts` for tracking per-SKU sales.
 2. Enable Row Level Security if you plan to restrict items to the logged in user. Add a `user_id` column and create policies to match `auth.uid()`.
+3. Create a `profiles` table linked to `auth.users` for storing names, shop details, and catalog options. Running the SQL in `docs/SUPABASE_SETUP.sql` will create both tables and all required policies.
 
 ## 4. Enable authentication
 

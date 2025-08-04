@@ -218,7 +218,7 @@ onMounted(async () => {
   const user = userData.user;
   if (!user) return;
   const { data } = await supabase
-    .from('users')
+    .from('profiles')
     .select('store_types, sku_options')
     .eq('id', user.id)
     .single();

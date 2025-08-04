@@ -2,6 +2,29 @@
 -- Enable UUID generation
 create extension if not exists "pgcrypto";
 
+-- Create profiles table for user information
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  name text,
+  email text,
+  bio text,
+  shop_title text,
+  shop_logo_url text,
+  store_types text[],
+  sku_options text[]
+);
+
+alter table public.profiles enable row level security;
+
+create policy "select own profile" on public.profiles
+  for select using (auth.uid() = id);
+
+create policy "insert own profile" on public.profiles
+  for insert with check (auth.uid() = id);
+
+create policy "update own profile" on public.profiles
+  for update using (auth.uid() = id);
+
 -- Create items table with a user_id column
 create table if not exists public.items (
   id uuid primary key default gen_random_uuid(),
@@ -16,7 +39,8 @@ create table if not exists public.items (
   sku_codes text[],
   image_url text,
   date_added timestamptz default now(),
-  tags text[]
+  tags text[],
+  sold_counts jsonb default '{}'::jsonb
 );
 
 -- Restrict rows to their owners

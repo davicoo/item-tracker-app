@@ -252,7 +252,7 @@ async function fetchProfile() {
   const { data: userData } = await supabase.auth.getUser()
   const user = userData.user
   if (!user) return
-  const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single()
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
   if (error || !data) {
     console.error('Error fetching profile:', error)
     return
@@ -283,7 +283,7 @@ async function saveInfo() {
     const user = userData.user
     if (!user) return
     const updates = { name: form.value.name, bio: form.value.bio }
-    const { error } = await supabase.from('users').update(updates).eq('id', user.id)
+    const { error } = await supabase.from('profiles').update(updates).eq('id', user.id)
     if (error) throw error
     profile.value = { ...profile.value, ...updates }
     editingInfo.value = false
@@ -342,7 +342,9 @@ async function saveCatalog() {
       store_types: tempStores.value,
       sku_options: tempSkus.value
     }
-    const { error } = await supabase.from('users').update(updates).eq('id', user.id)
+    
+    const { error } = await supabase.from('profiles').update(updates).eq('id', user.id)
+
     if (error) throw error
     catalog.value.stores = [...tempStores.value]
     catalog.value.skus = [...tempSkus.value]
@@ -371,7 +373,7 @@ async function saveShop() {
     }
 
     const updates = { shop_title: form.value.shop_title, shop_logo_url: logoUrl }
-    const { error } = await supabase.from('users').update(updates).eq('id', user.id)
+    const { error } = await supabase.from('profiles').update(updates).eq('id', user.id)
     if (error) throw error
     profile.value = { ...profile.value, ...updates }
     editingShop.value = false
