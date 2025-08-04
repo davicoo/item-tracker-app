@@ -51,6 +51,7 @@
           @edit-item="item => $emit('edit-item', item)"
           @view-image="src => $emit('view-image', src)"
           @duplicate-item="item => $emit('duplicate-item', item)"
+          @reset-item="id => $emit('reset-item', id)"
         />
       </tbody>
     </table>
@@ -69,6 +70,7 @@ defineEmits<{
   'edit-item': [Item]
   'view-image': [string]
   'duplicate-item': [Item]
+  'reset-item': [string]
 }>()
 </script>
 
