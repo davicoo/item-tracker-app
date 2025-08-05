@@ -221,7 +221,7 @@ onMounted(async () => {
     .from('profiles')
     .select('store_types, sku_options')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
   storeOptions.value = (data?.store_types as string[] | null) || [];
   skuOptions.value = (data?.sku_options as string[] | null) || [];
 });

@@ -252,18 +252,35 @@ async function fetchProfile() {
   const { data: userData } = await supabase.auth.getUser()
   const user = userData.user
   if (!user) return
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (error || !data) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle()
+  if (error) {
     console.error('Error fetching profile:', error)
     return
   }
-  profile.value = data as Profile
-  form.value.name = data.name ?? ''
-  form.value.bio = data.bio ?? ''
-  form.value.shop_title = data.shop_title ?? ''
-  logoPreview.value = data.shop_logo_url ?? ''
-  catalog.value.stores = (data.store_types as string[] | null) || []
-  catalog.value.skus = (data.sku_options as string[] | null) || []
+  let profileData = data as Profile | null
+  if (!profileData) {
+    const { data: inserted, error: insertError } = await supabase
+      .from('profiles')
+      .insert({ id: user.id, email: user.email })
+      .select()
+      .single()
+    if (insertError) {
+      console.error('Error creating profile:', insertError)
+      return
+    }
+    profileData = inserted as Profile
+  }
+  profile.value = profileData
+  form.value.name = profileData.name ?? ''
+  form.value.bio = profileData.bio ?? ''
+  form.value.shop_title = profileData.shop_title ?? ''
+  logoPreview.value = profileData.shop_logo_url ?? ''
+  catalog.value.stores = (profileData.store_types as string[] | null) || []
+  catalog.value.skus = (profileData.sku_options as string[] | null) || []
 }
 
 onMounted(fetchProfile)
