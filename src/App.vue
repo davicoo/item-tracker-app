@@ -587,10 +587,20 @@ const resetItemForNewVersion = async (id: string) => {
 };
 
 // Handle deleting an item
-const deleteItem = (id: string) => {
+const deleteItem = async (id: string) => {
   if (DEBUG) console.log('Deleting item:', id);
-  items.value = items.value.filter(item => item.id !== id);
-  currentStats.value = calculateStats(items.value);
+  try {
+    const { error } = await supabase
+      .from('items')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    items.value = items.value.filter(item => item.id !== id);
+    currentStats.value = calculateStats(items.value);
+  } catch (err: any) {
+    console.error(err);
+    alert('❌ Error deleting item: ' + err.message);
+  }
 };
 
 async function duplicateItem(item: Item) {
