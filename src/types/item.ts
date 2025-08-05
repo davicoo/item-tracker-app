@@ -13,6 +13,8 @@ export interface Item {
   skuCodes: string[];
   /** Number of units sold per SKU */
   soldCounts?: Record<string, number>;
+  /** Total number of times this item has been sold in the past */
+  pastSales: number;
   status: "not_sold" | "sold" | "sold_paid";
   dateAdded: string;
   location: string;
@@ -83,6 +85,7 @@ export function mapRecordToItem(record: any): Item {
           }
           return {} as Record<string, number>;
         })(),
+    pastSales: typeof record.past_sales === 'number' ? record.past_sales : 0,
     status: record.status,
     dateAdded: record.date_added,
     location: record.location,
