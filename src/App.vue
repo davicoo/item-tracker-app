@@ -557,25 +557,30 @@ const updateItemStatus = async (
   }
 };
 
-// Reset an item for a new version while keeping sold counts
+// Reset a sold item for its next version.
+// This marks the item as available again while preserving its cumulative
+// sold counts so we can track how many versions have moved over time.
 const resetItemForNewVersion = async (id: string) => {
   if (DEBUG) console.log('Resetting item for new version:', id);
   try {
+    const itemIndex = items.value.findIndex(item => item.id === id);
+    const existing = items.value[itemIndex];
+    const newPastSales = (existing?.pastSales || 0) + 1;
     const now = new Date().toISOString();
     const { data, error } = await supabase
       .from('items')
-      .update({ status: 'not_sold', date_added: now })
+      .update({ status: 'not_sold', date_added: now, past_sales: newPastSales })
       .eq('id', id)
       .select()
       .single();
     if (error) throw error;
-    const itemIndex = items.value.findIndex(item => item.id === id);
     if (itemIndex !== -1 && data) {
       const updatedItems = [...items.value];
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
         status: 'not_sold',
         dateAdded: data.date_added,
+        pastSales: newPastSales,
       };
       items.value = updatedItems;
       currentStats.value = calculateStats(items.value);
@@ -624,7 +629,8 @@ async function duplicateItem(item: Item) {
           image_url: item.imageUrl,
           date_added: new Date().toISOString(),
           tags: item.tags,
-          sold_counts: {}
+          sold_counts: {},
+          past_sales: 0
         }
       ])
       .select()

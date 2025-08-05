@@ -55,6 +55,9 @@
           title="Needs restock"
         >⚠️</span>
       </p>
+      <p class="text-sm text-gray-500 mb-1">
+        Past Sales: {{ item.pastSales }}
+      </p>
       <p
         v-if="item.skuCodes && item.skuCodes.length"
         class="text-sm text-gray-500 mb-1"

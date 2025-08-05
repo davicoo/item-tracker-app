@@ -47,6 +47,9 @@
       >⚠️</span>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+      {{ item.pastSales }}
+    </td>
+    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
       <div v-if="item.skuCodes && item.skuCodes.length">
         <div>{{ item.skuCodes.join(', ') }}</div>
         <div
@@ -61,12 +64,6 @@
             {{ sku }}: {{ count }}<span v-if="idx < soldEntries.length - 1">, </span>
           </span>
         </div>
-      </div>
-      <div
-        v-else-if="totalSold"
-        class="text-xs text-gray-500"
-      >
-        Sold: {{ totalSold }}
       </div>
     </td>
     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
@@ -197,7 +194,6 @@ const imageToDisplay = computed(() => {
 const soldEntries = computed(() =>
   Object.entries(props.item.soldCounts || {}).filter(([sku]) => sku !== NO_SKU_KEY)
 )
-const totalSold = computed(() => props.item.soldCounts?.[NO_SKU_KEY] || 0)
 </script>
 
 <style scoped>
