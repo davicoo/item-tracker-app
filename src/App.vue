@@ -36,12 +36,6 @@
             >
               Export Data
             </button>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="showChart = true; closeMenu()"
-            >
-              View Chart
-            </button>
             <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
               Profile
             </div>
@@ -95,19 +89,6 @@
       </div>
 
 
-      <div
-        v-if="showChart"
-        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
-        @click.self="showChart = false"
-      >
-        <StatsChart
-          :items="items"
-          @close="showChart = false"
-        />
-      </div>
-
-
-    
       <!-- Show server error if any -->
       <div
         v-if="serverError"
@@ -259,7 +240,6 @@ import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
-import StatsChart from './components/StatsChart.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import type { Item } from './types/item';
@@ -277,7 +257,6 @@ const router = useRouter();
 
 const items = ref<Item[]>([]);
 const showForm = ref(false);
-const showChart = ref(false);
 const layout = ref<'grid' | 'table'>('grid');
 const columns = ref(2);
 const isLoading = ref(true);
