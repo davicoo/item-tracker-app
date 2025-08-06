@@ -12,7 +12,9 @@ const app = createApp(AppRoot);
 
 app.use(router);
 
-app.mount('#app');
+router.isReady().then(() => {
+  app.mount('#app');
+});
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
