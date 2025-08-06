@@ -1,8 +1,9 @@
 <template>
-  <div class="relative min-h-screen text-center flex flex-col items-center justify-center px-6">
+  <div class="relative min-h-screen flex flex-col items-start justify-center px-6">
     <header class="absolute top-0 left-0 w-full flex justify-between items-center p-4">
-      <div class="text-2xl font-bold">
-        ConsignEasy
+      <div class="text-2xl font-bold leading-tight">
+        ConsignTracker
+        <span class="block text-sm font-normal">by UglyStuff.ca</span>
       </div>
       <div class="space-x-4">
         <button
@@ -20,8 +21,8 @@
       </div>
     </header>
 
-    <main class="z-20 mt-20">
-      <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
+    <main class="z-20 mt-20 text-left">
+      <h1 class="text-[2.475rem] md:text-[4.125rem] font-extrabold mb-4">
         Track, Sell,<br>and Succeed.
       </h1>
       <p class="text-lg md:text-xl text-gray-600 mb-6">
@@ -37,13 +38,10 @@
         Free to try. No credit card required.
       </p>
     </main>
-
-    <AnimatedBlob />
   </div>
 </template>
 
 <script setup>
-import AnimatedBlob from '@/components/AnimatedBlob.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

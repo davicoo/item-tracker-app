@@ -50,7 +50,7 @@ export async function login(email: string, password: string) {
 }
 ```
 
-Listen for changes with `supabase.auth.onAuthStateChange` and show your item tracker only when a user is logged in.
+Listen for changes with `supabase.auth.onAuthStateChange` and show ConsignTracker only when a user is logged in.
 
 ## 6. Startup screen and main page loading
 
@@ -73,7 +73,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 });
 ```
 
-When `loggedIn` is `false`, display `<LoginForm />` instead of the item tracker. Once the user logs in, the main page loads normally.
+When `loggedIn` is `false`, display `<LoginForm />` instead of ConsignTracker. Once the user logs in, the main page loads normally.
 
 ## 7. Reverting if something goes wrong
 

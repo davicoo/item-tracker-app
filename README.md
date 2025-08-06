@@ -1,4 +1,4 @@
-# Item Tracker App
+# ConsignTracker by UglyStuff.ca
 
 A single-page application built with Vue 3 and TypeScript for tracking items with images and sales status.
 
@@ -32,8 +32,8 @@ A single-page application built with Vue 3 and TypeScript for tracking items wit
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/item-tracker-app.git
-cd item-tracker-app
+ git clone https://github.com/yourusername/consigntracker.git
+ cd consigntracker
 
 # Install dependencies
 npm install
@@ -65,7 +65,7 @@ Add your **hCaptcha secret key** in the Supabase Dashboard under **Settings → 
 ## Project Structure
 
 ```
-item-tracker-app/
+consigntracker/
 ├── public/
 │   ├── Uglyico.ico
 │   ├── manifest.webmanifest
@@ -104,7 +104,7 @@ When the application loads, a 3D animated logo plays in the background. The anim
 
 The application now includes basic email/password authentication powered by
 Supabase. On first load, a login form appears after the startup animation. Users
-can sign up or sign in, and the item tracker only loads once a session is
+can sign up or sign in, and ConsignTracker only loads once a session is
 active.
 
 To create an account, enter your email address and a password of your choice in the form and click **Sign Up**. Use the **Login** button if you already have an account.
