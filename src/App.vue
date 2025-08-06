@@ -5,11 +5,12 @@
         <div class="flex items-center space-x-2 flex-1">
           <img
             src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
-            alt="Artwork Tracker logo"
+            alt="ConsignTracker logo"
             class="w-8 h-8 object-contain"
           >
-          <h1 class="text-3xl font-bold">
-            Artwork Tracker
+          <h1 class="text-3xl font-bold leading-tight">
+            ConsignTracker
+            <span class="block text-sm font-normal">by UglyStuff.ca</span>
           </h1>
         </div>
         <div

@@ -23,7 +23,7 @@ export async function exportItemsToPdf(items: Item[]): Promise<void> {
   const rowHeight = 40;
 
   doc.setFontSize(18);
-  doc.text('Item Tracker', pageWidth / 2, 15, { align: 'center' });
+  doc.text('ConsignTracker', pageWidth / 2, 15, { align: 'center' });
 
   // Attempt to load and draw the logo
   try {

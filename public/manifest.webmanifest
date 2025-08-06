@@ -1,6 +1,7 @@
 {
-  "name": "Item Tracker",
-  "short_name": "ItemTracker",
+  "name": "ConsignTracker",
+  "short_name": "ConsignTracker",
+  "description": "ConsignTracker by UglyStuff.ca",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",

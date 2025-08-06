@@ -3,11 +3,12 @@
     <div class="flex flex-col items-center mb-4">
       <img
         src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//1749825362414.png"
-        alt="Artwork Tracker logo"
+        alt="ConsignTracker logo"
         class="w-24 h-24 mb-2"
       >
-      <h2 class="text-2xl font-bold text-center">
-        Artwork Tracker
+      <h2 class="text-2xl font-bold text-center leading-tight">
+        ConsignTracker
+        <span class="block text-sm font-normal">by UglyStuff.ca</span>
       </h2>
     </div>
     <h2 class="text-xl font-semibold mb-4 text-center">
@@ -84,7 +85,7 @@
         >
           <p>
             You can install this web app to run it like a native application.
-            On Chrome, open the browser menu and choose <em>Install Item Tracker</em>.
+            On Chrome, open the browser menu and choose <em>Install ConsignTracker</em>.
             On Safari, tap the share icon and select <em>Add to Home Screen</em>.
           </p>
         </div>
