@@ -79,7 +79,16 @@
         </div>
       </div>
 
-      <StatsDisplay :stats="currentStats" />
+      <StatsDisplay
+        :stats="currentStats"
+        @show-sold-details="showSoldDetails = true"
+      />
+
+      <SoldDetailsModal
+        v-if="showSoldDetails"
+        :items="items"
+        @close="showSoldDetails = false"
+      />
 
       <div
         v-if="lowStockItems.length"
@@ -242,6 +251,7 @@ import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
+import SoldDetailsModal from './components/SoldDetailsModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
 import { supabase } from './supabaseClient';
@@ -267,6 +277,7 @@ const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
+const showSoldDetails = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
 
 function clearSearch() {

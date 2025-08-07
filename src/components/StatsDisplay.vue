@@ -8,7 +8,10 @@
         {{ props.stats.items }}
       </p>
     </div>
-    <div class="bg-white rounded-xl shadow-md p-4 text-center">
+    <div
+      class="bg-white rounded-xl shadow-md p-4 text-center cursor-pointer"
+      @click="emit('show-sold-details')"
+    >
       <h2 class="text-sm text-gray-500 uppercase">
         Sold
       </h2>
@@ -69,6 +72,8 @@ import type { Stats } from '../utils/stats';
 const props = defineProps<{
   stats: Stats;
 }>();
+
+const emit = defineEmits(['show-sold-details']);
 
 const showOutstanding = ref(false);
 const toggleOutstanding = () => {
