@@ -122,7 +122,7 @@ Run [docs/MIGRATION_ADD_MIN_QUANTITY.sql](docs/MIGRATION_ADD_MIN_QUANTITY.sql) t
 
 ## Service Worker Caching
 
-Images fetched from Supabase storage are cached using a service worker located at `public/sw.js`. The worker is automatically registered in `src/main.ts` and serves cached images on subsequent visits.
+Images and item data fetched from Supabase are cached using a service worker located at `public/sw.js`. Images use a cache-first strategy, while item API responses use a network-first strategy with a cached fallback. The worker is automatically registered in `src/main.ts`, allowing previously viewed items to remain accessible offline.
 
 ## License
 
