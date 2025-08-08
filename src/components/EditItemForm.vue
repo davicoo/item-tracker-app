@@ -388,7 +388,7 @@ async function handleSubmit() {
     const item: Item = mapRecordToItem(updated);
 
     emit('item-updated', item);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert('❌ Error updating item: ' + err.message);
   } finally {

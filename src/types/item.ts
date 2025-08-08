@@ -31,8 +31,26 @@ export const statusOptions = [
   { value: "sold", label: "Sold" },
   { value: "sold_paid", label: "Paid" }
 ] as const;
+export interface ItemRecord {
+  id: string;
+  user_id?: string;
+  name: string;
+  image_url?: string | null;
+  details?: string;
+  quantity?: number | string;
+  min_quantity?: number | string;
+  sku_codes?: string[] | string | null;
+  sold_counts?: Record<string, number> | string | null;
+  past_sales?: number | string;
+  status: "not_sold" | "sold" | "sold_paid";
+  date_added: string;
+  location: string;
+  price: string;
+  fee_percent?: number | string;
+  tags?: string[] | string | null;
+}
 
-export function mapRecordToItem(record: any): Item {
+export function mapRecordToItem(record: ItemRecord): Item {
   let tags: string[] = [];
   if (Array.isArray(record.tags)) {
     tags = record.tags;

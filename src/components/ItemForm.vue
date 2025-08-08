@@ -341,7 +341,7 @@ const handleSubmit = async () => {
     selectedFile.value = null;
     previewUrl.value = '';
     skuInput.value = '';
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert('❌ Error saving item: ' + err.message);
   } finally {

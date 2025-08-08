@@ -61,18 +61,24 @@ import {
   PlaneGeometry,
   BasicMaterial
 } from 'troisjs'
-import { TextureLoader, type Texture } from 'three'
+import { TextureLoader, type Texture, type Group as ThreeGroup } from 'three'
 
 const texture = ref<Texture | null>(null)
 const textureLoaded = ref(false)
 
 const loadError = ref('')
-const logoGroup = ref<any>(null)
-const renderer = ref<any>(null)
+const logoGroup = ref<ThreeGroup | null>(null)
+/* eslint-disable no-unused-vars */
+interface TroisRenderer {
+  onMounted(cb: () => void): void
+  onBeforeRender(cb: () => void): void
+}
+/* eslint-enable no-unused-vars */
+const renderer = ref<TroisRenderer | null>(null)
 const rendererReady = ref(false)
 
 const isPlaying = ref(false)
-const DEBUG = true
+const DEBUG = import.meta.env.DEV
 
 
 onMounted(() => {
