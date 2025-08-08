@@ -41,7 +41,7 @@ import 'cropperjs/dist/cropper.css';
 defineProps<{ src: string; visible: boolean }>();
 const emit = defineEmits<{ cropped: [File]; cancel: [] }>();
 
-const cropper = ref<any>(null);
+const cropper = ref<InstanceType<typeof VueCropper> | null>(null);
 
 function cropImage() {
   const canvas = cropper.value?.getCroppedCanvas();

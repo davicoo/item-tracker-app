@@ -138,7 +138,8 @@ onMounted(() => {
 });
 
 function setReturningUserCookie() {
-  document.cookie = 'returningUser=true; path=/; max-age=31536000';
+  const secure = location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `returningUser=true; path=/; max-age=31536000; SameSite=Strict${secure}`;
 }
 
 function onVerify(token: string) {

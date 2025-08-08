@@ -259,8 +259,6 @@ import { calculateStats, saveStats, type Stats } from './utils/stats';
 import { signOut } from './utils/auth';
 import { useRouter } from 'vue-router';
 
-const DEBUG = import.meta.env.VITE_DEBUG === 'true';
-
 
 // Items state
 const router = useRouter();
@@ -307,12 +305,10 @@ function goTo(path: string) {
 }
 
 function reportIssue() {
-  console.log('Report an issue');
   closeMenu();
 }
 
 function requestFeature() {
-  console.log('Request a feature');
   closeMenu();
 }
 
@@ -376,7 +372,7 @@ async function fetchItems() {
     const stats = calculateStats(items.value);
     currentStats.value = stats;
     await saveStats(stats);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error fetching items:', err);
     serverError.value = 'Error fetching items';
     items.value = [];
@@ -400,7 +396,6 @@ let retryTimeout: number | undefined;
 async function attemptSave() {
   try {
     serverError.value = '';
-    if (DEBUG) console.log('Saving items to server...');
 
     const response = await fetch('/.netlify/functions/saveItems', {
       method: 'POST',
@@ -412,7 +407,6 @@ async function attemptSave() {
       throw new Error(`Server error: ${response.status}`);
     }
 
-    if (DEBUG) console.log('Items saved to server successfully');
 
     const stats = calculateStats(items.value);
     currentStats.value = stats;
@@ -426,7 +420,6 @@ async function attemptSave() {
 
     try {
       localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
-      if (DEBUG) console.log('Items saved to localStorage as fallback');
       const stats = calculateStats(items.value);
       currentStats.value = stats;
       await saveStats(stats);
@@ -447,7 +440,6 @@ function scheduleRetry() {
   }
   retryTimeout = setTimeout(async () => {
     retryTimeout = undefined;
-    if (DEBUG) console.log('Retrying save to server...');
     const success = await attemptSave();
     if (!success) {
       retryCount++;
@@ -471,7 +463,6 @@ watch(items, () => {
 
 // Handle adding a new item
 const handleItemAdded = (newItem: Item) => {
-  if (DEBUG) console.log('Adding new item:', newItem);
   items.value = [...items.value, newItem]; // Create a new array to ensure reactivity
   currentStats.value = calculateStats(items.value);
   showForm.value = false;
@@ -505,7 +496,6 @@ const updateItemStatus = async (
   id: string,
   status: "not_sold" | "sold" | "sold_paid"
 ) => {
-  if (DEBUG) console.log("Updating item status:", id, status);
 
   try {
     const itemIndex = items.value.findIndex(item => item.id === id);
@@ -542,7 +532,7 @@ const updateItemStatus = async (
       items.value = updatedItems;
       currentStats.value = calculateStats(items.value);
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert("❌ Error updating status: " + err.message);
   }
@@ -552,7 +542,6 @@ const updateItemStatus = async (
 // This marks the item as available again while preserving its cumulative
 // sold counts so we can track how many versions have moved over time.
 const resetItemForNewVersion = async (id: string) => {
-  if (DEBUG) console.log('Resetting item for new version:', id);
   try {
     const itemIndex = items.value.findIndex(item => item.id === id);
     const existing = items.value[itemIndex];
@@ -576,7 +565,7 @@ const resetItemForNewVersion = async (id: string) => {
       items.value = updatedItems;
       currentStats.value = calculateStats(items.value);
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert('❌ Error resetting item: ' + err.message);
   }
@@ -584,7 +573,6 @@ const resetItemForNewVersion = async (id: string) => {
 
 // Handle deleting an item
 const deleteItem = async (id: string) => {
-  if (DEBUG) console.log('Deleting item:', id);
   try {
     const { error } = await supabase
       .from('items')
@@ -593,14 +581,13 @@ const deleteItem = async (id: string) => {
     if (error) throw error;
     items.value = items.value.filter(item => item.id !== id);
     currentStats.value = calculateStats(items.value);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert('❌ Error deleting item: ' + err.message);
   }
 };
 
 async function duplicateItem(item: Item) {
-  if (DEBUG) console.log('Duplicating item:', item.id);
   try {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
@@ -630,7 +617,7 @@ async function duplicateItem(item: Item) {
     const newItem: Item = mapRecordToItem(inserted);
     items.value = [newItem, ...items.value];
     currentStats.value = calculateStats(items.value);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     alert('❌ Error duplicating item: ' + err.message);
   }
