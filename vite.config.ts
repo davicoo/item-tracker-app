@@ -8,5 +8,9 @@ export default defineConfig({
   plugins: [vue(), tailwindcss()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   css: { postcss: './postcss.config.js' },
-  build: { rollupOptions: { external: ['tailwindcss'] } }
+  build: { rollupOptions: { external: ['tailwindcss'] } },
+  test: {
+    globals: true,
+    environment: 'jsdom'
+  }
 })
