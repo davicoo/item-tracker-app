@@ -1,31 +1,23 @@
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-900/50"
+    class="modal modal-open"
     @click.self="emit('close')"
   >
-    <div
-      class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700"
-    >
-      <div
-        class="flex items-center justify-between py-4 px-6 border-b border-gray-200 dark:border-neutral-700"
+    <div class="modal-box w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <button
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        @click="emit('close')"
       >
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
-          Sold Items Details
-        </h2>
-        <button
-          class="p-2 text-gray-500 rounded-full hover:bg-gray-100 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700"
-          @click="emit('close')"
-        >
-          <span class="sr-only">Close</span>
-          ✖
-        </button>
-      </div>
-
-      <div class="p-6">
+        ✕
+      </button>
+      <h2 class="mb-4 text-xl font-semibold">
+        Sold Items Details
+      </h2>
+      <div class="p-0">
         <div class="flex flex-wrap gap-4 mb-6">
           <select
             v-model="selectedMonth"
-            class="p-2 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
+            class="select select-bordered"
           >
             <option value="">
               All Months
@@ -40,7 +32,7 @@
           </select>
           <select
             v-model="selectedStore"
-            class="p-2 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
+            class="select select-bordered"
           >
             <option value="">
               All Stores
@@ -55,7 +47,7 @@
           </select>
           <select
             v-model="selectedCategory"
-            class="p-2 border border-gray-300 rounded-lg dark:bg-neutral-800 dark:border-neutral-700"
+            class="select select-bordered"
           >
             <option value="">
               All Categories
@@ -70,44 +62,44 @@
           </select>
         </div>
 
-        <h3 class="mb-2 text-lg font-semibold text-gray-800 dark:text-neutral-200">
+        <h3 class="mb-2 text-lg font-semibold">
           Sold Items
         </h3>
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 text-left dark:divide-neutral-700">
-            <thead class="bg-gray-50 dark:bg-neutral-700">
+          <table class="table w-full">
+            <thead>
               <tr>
-                <th class="px-3 py-2 font-medium text-gray-600 dark:text-neutral-200">
+                <th>
                   Item
                 </th>
-                <th class="px-3 py-2 font-medium text-gray-600 dark:text-neutral-200">
+                <th>
                   Date Sold
                 </th>
-                <th class="px-3 py-2 font-medium text-gray-600 dark:text-neutral-200">
+                <th>
                   Price
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+            <tbody>
               <tr
                 v-for="item in filteredSoldItems"
                 :key="item.id"
-                class="hover:bg-gray-50 dark:hover:bg-neutral-700"
+                class="hover"
               >
-                <td class="px-3 py-2">
+                <td>
                   {{ item.name }}
                 </td>
-                <td class="px-3 py-2">
+                <td>
                   {{ formatDate(item.dateAdded) }}
                 </td>
-                <td class="px-3 py-2">
+                <td>
                   {{ item.price || '-' }}
                 </td>
               </tr>
               <tr v-if="!filteredSoldItems.length">
                 <td
                   colspan="3"
-                  class="px-3 py-4 text-center text-gray-500 dark:text-neutral-400"
+                  class="text-center"
                 >
                   No sold items
                 </td>
@@ -116,10 +108,10 @@
           </table>
         </div>
 
-        <h3 class="mt-8 mb-2 text-lg font-semibold text-gray-800 dark:text-neutral-200">
+        <h3 class="mt-8 mb-2 text-lg font-semibold">
           Top Sold Items
         </h3>
-        <ul class="mb-6 list-disc ps-5 text-gray-700 dark:text-neutral-300">
+        <ul class="mb-6 list-disc ps-5">
           <li
             v-for="ti in topSoldItems"
             :key="ti.name"
@@ -128,19 +120,26 @@
           </li>
           <li
             v-if="!topSoldItems.length"
-            class="list-none text-gray-500 dark:text-neutral-400"
+            class="list-none text-gray-500"
           >
             No data
           </li>
         </ul>
 
-        <h3 class="mb-2 text-lg font-semibold text-gray-800 dark:text-neutral-200">
+        <h3 class="mb-2 text-lg font-semibold">
           Sales Chart
         </h3>
         <canvas
+          v-if="hasChartData"
           ref="chartCanvas"
           class="w-full h-64"
         />
+        <p
+          v-else
+          class="text-center text-gray-500"
+        >
+          No sales data
+        </p>
       </div>
     </div>
   </div>
@@ -224,8 +223,16 @@ const topSoldItems = computed(() => {
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chart: Chart | null = null;
 
+const hasChartData = computed(() => topSoldItems.value.length > 0);
+
 function renderChart() {
-  if (!chartCanvas.value) return;
+  if (!chartCanvas.value || !hasChartData.value) {
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+    return;
+  }
   const labels = topSoldItems.value.map(t => t.name);
   const data = topSoldItems.value.map(t => t.count);
   if (chart) chart.destroy();
