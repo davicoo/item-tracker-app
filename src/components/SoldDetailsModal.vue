@@ -129,17 +129,19 @@
         <h3 class="mb-2 text-lg font-semibold">
           Sales Chart
         </h3>
-        <canvas
-          v-if="hasChartData"
-          ref="chartCanvas"
-          class="w-full h-64"
-        />
-        <p
-          v-else
-          class="text-center text-gray-500"
-        >
-          No sales data
-        </p>
+        <div class="w-full h-64">
+          <canvas
+            v-if="hasChartData"
+            ref="chartCanvas"
+            class="w-full h-full"
+          />
+          <p
+            v-else
+            class="flex items-center justify-center h-full text-center text-gray-500"
+          >
+            No sales data
+          </p>
+        </div>
       </div>
     </div>
   </div>
