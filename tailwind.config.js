@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import preline from 'preline/plugin'
+import daisyui from 'daisyui'
 import plugin from 'tailwindcss/plugin'
 
 export default {
@@ -24,10 +25,14 @@ export default {
   },
   plugins: [
     preline,
+    daisyui,
     plugin(function({ addUtilities }) {
       addUtilities({
         '.outline-hidden': { outline: '0' }
       })
     })
   ],
+  daisyui: {
+    themes: ['cupcake', 'dark']
+  }
 }
