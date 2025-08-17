@@ -1,9 +1,9 @@
 <template>
   <div
-    class="modal modal-open"
+    class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50"
     @click.self="emit('close')"
   >
-    <div class="modal-box w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-lg p-4 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
       <button
         class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
         @click="emit('close')"
@@ -129,17 +129,19 @@
         <h3 class="mb-2 text-lg font-semibold">
           Sales Chart
         </h3>
-        <canvas
-          v-if="hasChartData"
-          ref="chartCanvas"
-          class="w-full h-64"
-        />
-        <p
-          v-else
-          class="text-center text-gray-500"
-        >
-          No sales data
-        </p>
+        <div class="w-full h-64">
+          <canvas
+            v-if="hasChartData"
+            ref="chartCanvas"
+            class="w-full h-full"
+          />
+          <p
+            v-else
+            class="flex items-center justify-center h-full text-center text-gray-500"
+          >
+            No sales data
+          </p>
+        </div>
       </div>
     </div>
   </div>
