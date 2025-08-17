@@ -1,9 +1,9 @@
 <template>
   <div
-    class="modal modal-open"
+    class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50"
     @click.self="emit('close')"
   >
-    <div class="modal-box w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-lg p-4 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
       <button
         class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
         @click="emit('close')"
