@@ -1,19 +1,20 @@
 <template>
-  <div
-    class="modal modal-open"
-    @click.self="emit('close')"
-  >
-    <div class="modal-box w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-      <button
-        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        @click="emit('close')"
-      >
-        ✕
-      </button>
-      <h2 class="mb-4 text-xl font-semibold">
-        Sold Items Details
-      </h2>
-      <div class="p-0">
+  <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
+    <div class="max-w-4xl mx-auto p-4 flex flex-col gap-6">
+      <div class="flex items-center justify-between">
+        <router-link
+          to="/app"
+          class="text-blue-600 hover:underline"
+        >
+          &larr; Back
+        </router-link>
+        <h1 class="text-2xl font-bold">
+          Sold Items Details
+        </h1>
+        <span />
+      </div>
+
+      <div class="bg-white rounded-lg p-4">
         <div class="flex flex-wrap gap-4 mb-6">
           <select
             v-model="selectedMonth"
@@ -69,15 +70,9 @@
           <table class="table w-full">
             <thead>
               <tr>
-                <th>
-                  Item
-                </th>
-                <th>
-                  Date Sold
-                </th>
-                <th>
-                  Price
-                </th>
+                <th>Item</th>
+                <th>Date Sold</th>
+                <th>Price</th>
               </tr>
             </thead>
             <tbody>
@@ -86,15 +81,9 @@
                 :key="item.id"
                 class="hover"
               >
-                <td>
-                  {{ item.name }}
-                </td>
-                <td>
-                  {{ formatDate(item.dateAdded) }}
-                </td>
-                <td>
-                  {{ item.price || '-' }}
-                </td>
+                <td>{{ item.name }}</td>
+                <td>{{ formatDate(item.dateAdded) }}</td>
+                <td>{{ item.price || '-' }}</td>
               </tr>
               <tr v-if="!filteredSoldItems.length">
                 <td
@@ -129,17 +118,19 @@
         <h3 class="mb-2 text-lg font-semibold">
           Sales Chart
         </h3>
-        <canvas
-          v-if="hasChartData"
-          ref="chartCanvas"
-          class="w-full h-64"
-        />
-        <p
-          v-else
-          class="text-center text-gray-500"
-        >
-          No sales data
-        </p>
+        <div class="w-full h-64">
+          <canvas
+            v-if="hasChartData"
+            ref="chartCanvas"
+            class="w-full h-full"
+          />
+          <p
+            v-else
+            class="flex items-center justify-center h-full text-center text-gray-500"
+          >
+            No sales data
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -147,18 +138,19 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import type { Item } from '../types/item';
+import { supabase } from './supabaseClient';
+import type { Item } from './types/item';
+import { mapRecordToItem } from './types/item';
 import Chart from 'chart.js/auto';
 
-const props = defineProps<{ items: Item[] }>();
-const emit = defineEmits(['close']);
+const items = ref<Item[]>([]);
 
 const selectedMonth = ref('');
 const selectedStore = ref('');
 const selectedCategory = ref('');
 
 const soldItems = computed(() =>
-  props.items.filter(i => i.status === 'sold' || i.status === 'sold_paid')
+  items.value.filter(i => i.status === 'sold' || i.status === 'sold_paid')
 );
 
 const months = computed(() => {
@@ -255,8 +247,24 @@ function renderChart() {
   });
 }
 
+async function fetchItems() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user.id;
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date_added', { ascending: false });
+  if (!error && data) {
+    items.value = data.map(mapRecordToItem);
+  }
+}
+
 watch(topSoldItems, renderChart);
-onMounted(renderChart);
+onMounted(async () => {
+  await fetchItems();
+  renderChart();
+});
 onUnmounted(() => {
   if (chart) chart.destroy();
 });
