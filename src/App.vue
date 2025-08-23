@@ -232,6 +232,11 @@
         :items="items"
         @close="showExportModal = false"
       />
+      <ContactModal
+        v-if="showContact"
+        :default-subject="contactSubject"
+        @close="showContact = false"
+      />
     </div>
   </div>
 </template>
@@ -246,6 +251,7 @@ import StatsDisplay from './components/StatsDisplay.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import SoldDetailsModal from './components/SoldDetailsModal.vue';
+import ContactModal from './components/ContactModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
 import { supabase } from './supabaseClient';
@@ -270,6 +276,8 @@ const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
 const showSoldDetails = ref(false);
+const showContact = ref(false);
+const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 
 function clearSearch() {
@@ -298,26 +306,20 @@ function goTo(path: string) {
   closeMenu();
 }
 
-async function sendContactEmail(subject: string) {
-  try {
-    await fetch('/.netlify/functions/sendEmail', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subject, body: '' })
-    });
-  } catch (err) {
-    console.error('Error sending email:', err);
-  }
-}
 
-async function reportIssue() {
-  await sendContactEmail('Issue Report');
+function openContact(subject: string) {
+  contactSubject.value = subject;
+  showContact.value = true;
   closeMenu();
 }
 
-async function requestFeature() {
-  await sendContactEmail('Feature Request');
-  closeMenu();
+function reportIssue() {
+  openContact('Issue Report');
+}
+
+function requestFeature() {
+  openContact('Feature Request');
+
 }
 
 async function handleSignOut() {
