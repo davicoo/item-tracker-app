@@ -6,7 +6,7 @@
           <img
             src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
             alt="ConsignTracker logo"
-            class="w-8 h-8 object-contain"
+            class="w-12 h-12 object-contain"
           >
           <h1 class="text-3xl font-bold leading-tight">
             ConsignTracker
@@ -37,19 +37,13 @@
               Export Data
             </button>
             <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
-              Profile
+              Settings
             </div>
             <button
               class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="goTo('/profile')"
+              @click="goTo('/settings')"
             >
-              Edit Profile Info
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="goTo('/profile')"
-            >
-              Change Shop Title & Logo
+              Settings
             </button>
             <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
               Contact
@@ -238,6 +232,11 @@
         :items="items"
         @close="showExportModal = false"
       />
+      <ContactModal
+        v-if="showContact"
+        :default-subject="contactSubject"
+        @close="showContact = false"
+      />
     </div>
   </div>
 </template>
@@ -252,6 +251,7 @@ import StatsDisplay from './components/StatsDisplay.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import SoldDetailsModal from './components/SoldDetailsModal.vue';
+import ContactModal from './components/ContactModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
 import { supabase } from './supabaseClient';
@@ -276,6 +276,8 @@ const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
 const showSoldDetails = ref(false);
+const showContact = ref(false);
+const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 
 function clearSearch() {
@@ -304,12 +306,18 @@ function goTo(path: string) {
   closeMenu();
 }
 
-function reportIssue() {
+function openContact(subject: string) {
+  contactSubject.value = subject;
+  showContact.value = true;
   closeMenu();
 }
 
+function reportIssue() {
+  openContact('Issue Report');
+}
+
 function requestFeature() {
-  closeMenu();
+  openContact('Feature Request');
 }
 
 async function handleSignOut() {
