@@ -15,7 +15,7 @@
         "test:e2e": "cypress run"
     },
     "dependencies": {
-        "@aws-sdk/client-ses": "^3.873.0",
+        "@aws-sdk/client-sesv2": "^3.873.0",
         "@hcaptcha/vue3-hcaptcha": "^1.3.0",
         "@supabase/supabase-js": "^2.49.8",
         "@tailwindcss/postcss": "^4.1.10",
@@ -26,6 +26,7 @@
         "gsap": "^3.13.0",
         "jspdf": "^2.5.1",
         "lodash": "^4.17.21",
+        "nodemailer": "^6.10.1",
         "preline": "^2.7.0",
         "three": "^0.178.0",
         "troisjs": "^0.3.4",

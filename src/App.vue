@@ -6,7 +6,7 @@
           <img
             src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
             alt="ConsignTracker logo"
-            class="w-12 h-12 object-contain"
+            class="h-[3.5rem] w-auto object-contain"
           >
           <h1 class="text-3xl font-bold leading-tight">
             ConsignTracker
@@ -306,7 +306,6 @@ function goTo(path: string) {
   closeMenu();
 }
 
-
 function openContact(subject: string) {
   contactSubject.value = subject;
   showContact.value = true;
@@ -359,7 +358,6 @@ const lowStockItems = computed(() =>
   items.value.filter(i => availableQuantity(i) < i.minQuantity)
 
 );
-
 
 
 // Fetch items from supabase

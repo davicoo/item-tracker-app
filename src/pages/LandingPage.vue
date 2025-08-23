@@ -1,11 +1,13 @@
 <template>
-  <div class="relative min-h-screen flex flex-col items-start justify-center px-8 md:px-16">
-    <header class="absolute top-0 left-0 w-full flex justify-between items-center p-4">
+
+  <div class="relative min-h-screen flex flex-col items-start justify-center px-10 md:px-24">
+    <header class="absolute top-0 left-0 w-full flex justify-between items-center py-4 px-6 md:px-24">
+
       <div class="flex items-center space-x-2 text-2xl font-bold leading-tight">
         <img
           src="/ugly_192px.png"
           alt="logo"
-          class="h-12 w-12 object-contain"
+          class="h-[3.5rem] w-auto object-contain"
         >
         <div>
           ConsignTracker

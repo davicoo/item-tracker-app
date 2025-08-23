@@ -44,7 +44,7 @@
           rows="4"
           class="w-full px-3 py-2 border rounded"
           required
-        ></textarea>
+        />
       </div>
       <button
         class="flex items-center justify-center bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition w-full disabled:opacity-50"
@@ -98,10 +98,19 @@ watch(
 async function handleSubmit() {
   sending.value = true
   try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    const token = import.meta.env.VITE_MAIL_TOKEN
+    if (token) headers['X-Mail-Token'] = token
+
     await fetch('/.netlify/functions/sendEmail', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: from.value, subject: subject.value, body: message.value })
+      headers,
+      body: JSON.stringify({
+        subject: subject.value,
+        html: message.value.replace(/\n/g, '<br>'),
+        text: message.value,
+        replyTo: from.value
+      })
     })
     emit('close')
   } catch (err) {
