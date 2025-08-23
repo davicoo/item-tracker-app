@@ -79,4 +79,3 @@ exports.handler = async (event) => {
     };
   }
 };
-

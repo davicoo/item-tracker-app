@@ -318,6 +318,7 @@ function reportIssue() {
 
 function requestFeature() {
   openContact('Feature Request');
+
 }
 
 async function handleSignOut() {
@@ -357,7 +358,6 @@ const lowStockItems = computed(() =>
   items.value.filter(i => availableQuantity(i) < i.minQuantity)
 
 );
-
 
 
 // Fetch items from supabase

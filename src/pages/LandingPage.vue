@@ -1,6 +1,8 @@
 <template>
+
   <div class="relative min-h-screen flex flex-col items-start justify-center px-10 md:px-24">
     <header class="absolute top-0 left-0 w-full flex justify-between items-center py-4 px-6 md:px-24">
+
       <div class="flex items-center space-x-2 text-2xl font-bold leading-tight">
         <img
           src="/ugly_192px.png"
