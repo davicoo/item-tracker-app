@@ -27,9 +27,10 @@ exports.handler = async (event) => {
       };
     }
 
-    if (process.env.MAIL_TOKEN) {
+    const mailToken = process.env.VITE_MAIL_TOKEN;
+    if (mailToken) {
       const incoming = event.headers['x-mail-token'] || event.headers['X-Mail-Token'];
-      if (incoming !== process.env.MAIL_TOKEN) {
+      if (incoming !== mailToken) {
         return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
       }
     }
