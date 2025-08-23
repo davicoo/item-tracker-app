@@ -16,16 +16,20 @@ exports.handler = async (event) => {
   }
 
   try {
+
     const { from, subject, body } = JSON.parse(event.body || '{}');
+
     const client = new SESClient({ region: process.env.AWS_REGION });
     const params = {
       Destination: { ToAddresses: ['info@uglystuff.ca'] },
       Message: {
+
         Body: { Text: { Data: `From: ${from || 'unknown'}\n\n${body || ''}` } },
         Subject: { Data: subject || 'Message' },
       },
       Source: 'postmaster@dwcstuff.ca',
       ReplyToAddresses: from ? [from] : [],
+
     };
     await client.send(new SendEmailCommand(params));
     return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };

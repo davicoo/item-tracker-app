@@ -306,6 +306,7 @@ function goTo(path: string) {
   closeMenu();
 }
 
+
 function openContact(subject: string) {
   contactSubject.value = subject;
   showContact.value = true;
@@ -318,6 +319,7 @@ function reportIssue() {
 
 function requestFeature() {
   openContact('Feature Request');
+
 }
 
 async function handleSignOut() {
