@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppPage from './App.vue';
-import UserProfile from './UserProfile.vue';
+import SettingsPage from './SettingsPage.vue';
 import { supabase } from './supabaseClient';
 
 const routes = [
@@ -20,7 +20,7 @@ const routes = [
     component: () => import('@/pages/SignupPage.vue'),
   },
   { path: '/app', name: 'App', component: AppPage },
-  { path: '/profile', name: 'Profile', component: UserProfile },
+  { path: '/settings', name: 'Settings', component: SettingsPage },
 ];
 
 const router = createRouter({
@@ -32,7 +32,7 @@ router.beforeEach(async (to, _from, next) => {
   const { data } = await supabase.auth.getSession();
   const isAuthenticated = !!data.session;
 
-  if (!isAuthenticated && (to.path === '/app' || to.path === '/profile')) {
+  if (!isAuthenticated && (to.path === '/app' || to.path === '/settings')) {
     next('/login');
   } else if (isAuthenticated && (to.path === '/login' || to.path === '/signup')) {
     next('/app');
