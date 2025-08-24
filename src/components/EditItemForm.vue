@@ -78,6 +78,16 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Past Sales</label>
+      <input
+        v-model.number="form.pastSales"
+        type="number"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
+        min="0"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
@@ -235,6 +245,7 @@ const form = ref({
   minQuantity: props.item.minQuantity,
   skuCodes: [...(props.item.skuCodes || [])],
   dateAdded: props.item.dateAdded.slice(0, 10),
+  pastSales: props.item.pastSales,
   tags: [...(props.item.tags || [])]
 });
 
@@ -288,6 +299,7 @@ watch(
       minQuantity: val.minQuantity,
       skuCodes: [...(val.skuCodes || [])],
       dateAdded: val.dateAdded.slice(0, 10),
+      pastSales: val.pastSales,
       tags: [...(val.tags || [])]
     };
     previewUrl.value = val.imageUrl;
@@ -377,7 +389,8 @@ async function handleSubmit() {
         fee_percent: form.value.feePercent,
         image_url: imageUrl,
         date_added: dateISO,
-        tags: form.value.tags
+        tags: form.value.tags,
+        past_sales: form.value.pastSales
       })
       .eq('id', props.item.id)
       .select()
