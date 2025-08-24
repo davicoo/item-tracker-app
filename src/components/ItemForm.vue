@@ -78,6 +78,16 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Past Sales</label>
+      <input
+        v-model.number="newItem.pastSales"
+        type="number"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
+        min="0"
+      >
+    </div>
+
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
