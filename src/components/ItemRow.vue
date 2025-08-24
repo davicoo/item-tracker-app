@@ -102,7 +102,7 @@
           class="text-purple-500 hover:text-purple-700 text-sm font-medium"
           @click="handleReset"
         >
-          New Version
+          Restock
         </button>
         <button
           class="text-red-500 hover:text-red-700 text-sm font-medium"

@@ -144,7 +144,7 @@
             class="text-purple-600 hover:underline text-sm"
             @click="handleReset"
           >
-            New Version
+            Restock
           </button>
           <button
             class="text-red-600 hover:underline text-sm"
