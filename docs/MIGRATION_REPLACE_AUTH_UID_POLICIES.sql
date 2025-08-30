@@ -1,21 +1,7 @@
--- SQL script to set up per-user items and storage
--- Enable UUID generation
-create extension if not exists "pgcrypto";
+-- Migration script to replace auth.uid() with (select auth.uid())
+-- in existing RLS policies. Run this against an existing Supabase project.
 
--- Create profiles table for user information
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  name text,
-  email text,
-  bio text,
-  shop_title text,
-  shop_logo_url text,
-  store_types text[],
-  sku_options text[]
-);
-
-alter table public.profiles enable row level security;
-
+-- Profiles policies
 drop policy "select own profile" on public.profiles;
 create policy "select own profile" on public.profiles
   for select using ((select auth.uid()) = id);
@@ -28,27 +14,7 @@ drop policy "update own profile" on public.profiles;
 create policy "update own profile" on public.profiles
   for update using ((select auth.uid()) = id);
 
--- Create items table with a user_id column
-create table if not exists public.items (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) on delete cascade,
-  name text not null,
-  details text not null,
-  status text not null default 'not_sold',
-  location text,
-  price numeric,
-  fee_percent numeric default 20,
-  quantity integer default 1,
-  sku_codes text[],
-  image_url text,
-  date_added timestamptz default now(),
-  tags text[],
-  sold_counts jsonb default '{}'::jsonb
-);
-
--- Restrict rows to their owners
-alter table public.items enable row level security;
-
+-- Items policies
 drop policy "select own items" on public.items;
 create policy "select own items" on public.items
   for select using ((select auth.uid()) = user_id);
@@ -65,11 +31,7 @@ drop policy "delete own items" on public.items;
 create policy "delete own items" on public.items
   for delete using ((select auth.uid()) = user_id);
 
--- Images bucket for uploads
-insert into storage.buckets (id, name, public)
-values ('images', 'images', false)
-on conflict (id) do nothing;
-
+-- Storage policies
 drop policy "user images" on storage.objects;
 create policy "user images" on storage.objects
   for all
@@ -80,11 +42,6 @@ create policy "user images" on storage.objects
     bucket_id = 'images' and (select auth.uid()) = split_part(name, '/', 1)::uuid
   );
 
--- Bucket for storing per-user stats
-insert into storage.buckets (id, name, public)
-values ('stats', 'stats', false)
-on conflict (id) do nothing;
-
 drop policy "user stats" on storage.objects;
 create policy "user stats" on storage.objects
   for all
@@ -94,3 +51,4 @@ create policy "user stats" on storage.objects
   with check (
     bucket_id = 'stats' and (select auth.uid()) = split_part(name, '/', 1)::uuid
   );
+
