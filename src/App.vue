@@ -36,6 +36,12 @@
             >
               Export Data
             </button>
+            <button
+              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              @click="goTo('/notes')"
+            >
+              Notes
+            </button>
             <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
               Settings
             </div>
