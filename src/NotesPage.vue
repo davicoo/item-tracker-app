@@ -224,7 +224,7 @@
 import { onMounted, ref, computed } from 'vue'
 import { supabase } from './supabaseClient'
 import type { Item } from './types/item'
-import type { Note } from './types/note'
+import { mapRecordToNote, type Note, type NoteRecord } from './types/note'
 
 const form = ref({
   title: '',
@@ -245,14 +245,34 @@ const showForm = ref(false)
 const editingNoteId = ref<string | null>(null)
 
 onMounted(async () => {
-  loadNotes()
+  await loadNotes()
   await fetchOptions()
   checkReminders()
 })
 
-function loadNotes() {
-  const raw = localStorage.getItem('notes')
-  notes.value = raw ? JSON.parse(raw) : []
+async function loadNotes() {
+  const { data: userData } = await supabase.auth.getUser()
+  const user = userData.user
+  if (!user) {
+    const raw = localStorage.getItem('notes')
+    notes.value = raw ? JSON.parse(raw) : []
+    return
+  }
+
+  const { data, error } = await supabase
+    .from<NoteRecord>('notes')
+    .select('*')
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error(error)
+    const raw = localStorage.getItem('notes')
+    notes.value = raw ? JSON.parse(raw) : []
+    return
+  }
+
+  notes.value = data ? data.map(mapRecordToNote) : []
+  saveNotes()
 }
 
 function saveNotes() {
@@ -322,17 +342,28 @@ function cancelForm() {
   showForm.value = false
 }
 
-function deleteNote(id: string) {
+async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
   saveNotes()
+
+  const { data: userData } = await supabase.auth.getUser()
+  const user = userData.user
+  if (user) {
+    const { error } = await supabase
+      .from('notes')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+    if (error) console.error(error)
+  }
 }
 
-function saveNote() {
+async function saveNote() {
   if (editingNoteId.value) {
     const index = notes.value.findIndex(n => n.id === editingNoteId.value)
     if (index === -1) return
     const existing = notes.value[index]
-    const finalize = (imageUrl?: string) => {
+    const finalize = async (imageUrl?: string) => {
       existing.title = form.value.title
       existing.itemType = form.value.itemType
       existing.sku = form.value.sku
@@ -344,19 +375,40 @@ function saveNote() {
       }
       saveNotes()
       cancelForm()
+
+      const { data: userData } = await supabase.auth.getUser()
+      const user = userData.user
+      if (user) {
+        const { error } = await supabase
+          .from('notes')
+          .update({
+            title: existing.title,
+            item_type: existing.itemType || null,
+            sku: existing.sku || null,
+            store: existing.store || null,
+            text: existing.text,
+            image_url: existing.imageUrl,
+            date: existing.date,
+          })
+          .eq('id', existing.id)
+          .eq('user_id', user.id)
+        if (error) console.error(error)
+      }
     }
     if (form.value.image) {
       const reader = new FileReader()
-      reader.onload = () => finalize(reader.result as string)
+      reader.onload = async () => {
+        await finalize(reader.result as string)
+      }
       reader.readAsDataURL(form.value.image)
     } else {
-      finalize()
+      await finalize()
     }
   } else {
     const id = crypto.randomUUID()
     const createdAt = new Date().toISOString()
 
-    const finalize = (imageUrl?: string) => {
+    const finalize = async (imageUrl?: string) => {
       const note: Note = {
         id,
         title: form.value.title,
@@ -371,14 +423,38 @@ function saveNote() {
       notes.value.push(note)
       saveNotes()
       cancelForm()
+
+      const { data: userData } = await supabase.auth.getUser()
+      const user = userData.user
+      if (user) {
+        const { error } = await supabase
+          .from('notes')
+          .insert([
+            {
+              id,
+              user_id: user.id,
+              title: note.title,
+              item_type: note.itemType || null,
+              sku: note.sku || null,
+              store: note.store || null,
+              text: note.text,
+              image_url: imageUrl,
+              date: note.date,
+              created_at: createdAt,
+            },
+          ])
+        if (error) console.error(error)
+      }
     }
 
     if (form.value.image) {
       const reader = new FileReader()
-      reader.onload = () => finalize(reader.result as string)
+      reader.onload = async () => {
+        await finalize(reader.result as string)
+      }
       reader.readAsDataURL(form.value.image)
     } else {
-      finalize()
+      await finalize()
     }
 
   }
