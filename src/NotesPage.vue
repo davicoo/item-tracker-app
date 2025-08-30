@@ -14,11 +14,13 @@
         <span />
       </div>
 
+
       <div
         v-if="showForm"
         class="bg-white rounded shadow p-4"
       >
         <form @submit.prevent="saveNote">
+
           <div class="mb-4">
             <label
               for="title"
@@ -197,6 +199,7 @@
           >
             Reminder: {{ formatDate(note.date) }}
           </div>
+
           <div class="flex gap-4 text-sm mt-2">
             <button
               class="text-blue-600 hover:underline"
@@ -237,6 +240,7 @@ const notes = ref<Note[]>([])
 const itemOptions = ref<string[]>([])
 const skuOptions = ref<string[]>([])
 const storeOptions = ref<string[]>([])
+
 const showForm = ref(false)
 const editingNoteId = ref<string | null>(null)
 
@@ -376,6 +380,7 @@ function saveNote() {
     } else {
       finalize()
     }
+
   }
 }
 
