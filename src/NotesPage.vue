@@ -251,8 +251,10 @@ onMounted(async () => {
 })
 
 async function loadNotes() {
-  const { data: userData } = await supabase.auth.getUser()
-  const user = userData.user
+
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData.session?.user
+
   if (!user) {
     const raw = localStorage.getItem('notes')
     notes.value = raw ? JSON.parse(raw) : []
@@ -280,8 +282,8 @@ function saveNotes() {
 }
 
 async function fetchOptions() {
-  const { data: userData } = await supabase.auth.getUser()
-  const user = userData.user
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData.session?.user
   if (!user) return
 
   const { data: items } = await supabase
@@ -346,8 +348,10 @@ async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
   saveNotes()
 
-  const { data: userData } = await supabase.auth.getUser()
-  const user = userData.user
+
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData.session?.user
+
   if (user) {
     const { error } = await supabase
       .from('notes')
@@ -376,8 +380,9 @@ async function saveNote() {
       saveNotes()
       cancelForm()
 
-      const { data: userData } = await supabase.auth.getUser()
-      const user = userData.user
+
+      const { data: sessionData } = await supabase.auth.getSession()
+      const user = sessionData.session?.user
       if (user) {
         const { error } = await supabase
           .from('notes')
@@ -424,8 +429,10 @@ async function saveNote() {
       saveNotes()
       cancelForm()
 
-      const { data: userData } = await supabase.auth.getUser()
-      const user = userData.user
+
+      const { data: sessionData } = await supabase.auth.getSession()
+      const user = sessionData.session?.user
+
       if (user) {
         const { error } = await supabase
           .from('notes')
