@@ -115,6 +115,8 @@ the auth integration works, how to restrict data per user, and how to update an
 existing Supabase project for per-user items. A ready-to-run SQL script is
 available at [docs/SUPABASE_SETUP.sql](docs/SUPABASE_SETUP.sql) to create the
 required table, policies, and storage buckets.
+Run [docs/SUPABASE_NOTES_SETUP.sql](docs/SUPABASE_NOTES_SETUP.sql) to create
+the `notes` table and policies so each user can manage only their own notes.
 If you've already created the `items` table, run
 [docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql](docs/MIGRATION_ADD_QUANTITY_AND_SKU.sql)
 to add the `quantity` and `sku_codes` columns.

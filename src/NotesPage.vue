@@ -347,8 +347,6 @@ function cancelForm() {
 async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
   saveNotes()
-
-
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData.session?.user
 
@@ -379,7 +377,6 @@ async function saveNote() {
       }
       saveNotes()
       cancelForm()
-
 
       const { data: sessionData } = await supabase.auth.getSession()
       const user = sessionData.session?.user
@@ -428,7 +425,6 @@ async function saveNote() {
       notes.value.push(note)
       saveNotes()
       cancelForm()
-
 
       const { data: sessionData } = await supabase.auth.getSession()
       const user = sessionData.session?.user
