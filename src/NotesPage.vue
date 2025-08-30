@@ -251,8 +251,10 @@ onMounted(async () => {
 })
 
 async function loadNotes() {
+
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData.session?.user
+
   if (!user) {
     const raw = localStorage.getItem('notes')
     notes.value = raw ? JSON.parse(raw) : []
@@ -345,9 +347,9 @@ function cancelForm() {
 async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
   saveNotes()
-
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData.session?.user
+
   if (user) {
     const { error } = await supabase
       .from('notes')
@@ -426,6 +428,7 @@ async function saveNote() {
 
       const { data: sessionData } = await supabase.auth.getSession()
       const user = sessionData.session?.user
+
       if (user) {
         const { error } = await supabase
           .from('notes')
