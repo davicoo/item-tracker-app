@@ -14,8 +14,13 @@
         <span />
       </div>
 
-      <div class="bg-white rounded shadow p-4">
-        <form @submit.prevent="addNote">
+
+      <div
+        v-if="showForm"
+        class="bg-white rounded shadow p-4"
+      >
+        <form @submit.prevent="saveNote">
+
           <div class="mb-4">
             <label
               for="title"
@@ -131,10 +136,30 @@
               required
             />
           </div>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Add Note
-          </button>
+          <div class="flex gap-2">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              {{ editingNoteId ? 'Save Note' : 'Add Note' }}
+            </button>
+            <button
+              type="button"
+              class="px-4 py-2 rounded border hover:bg-gray-100"
+              @click="cancelForm"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
+      </div>
+      <div
+        v-else
+        class="bg-white rounded shadow p-4 text-center"
+      >
+        <button
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          @click="startNewNote"
+        >
+          New Note
+        </button>
       </div>
 
       <div
@@ -174,6 +199,21 @@
           >
             Reminder: {{ formatDate(note.date) }}
           </div>
+
+          <div class="flex gap-4 text-sm mt-2">
+            <button
+              class="text-blue-600 hover:underline"
+              @click="startEdit(note)"
+            >
+              Edit
+            </button>
+            <button
+              class="text-red-600 hover:underline"
+              @click="deleteNote(note.id)"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -200,6 +240,9 @@ const notes = ref<Note[]>([])
 const itemOptions = ref<string[]>([])
 const skuOptions = ref<string[]>([])
 const storeOptions = ref<string[]>([])
+
+const showForm = ref(false)
+const editingNoteId = ref<string | null>(null)
 
 onMounted(async () => {
   loadNotes()
@@ -253,33 +296,91 @@ function resetForm() {
   form.value = { title: '', itemType: '', sku: '', store: '', text: '', image: null, date: '' }
 }
 
-function addNote() {
-  const id = crypto.randomUUID()
-  const createdAt = new Date().toISOString()
+function startNewNote() {
+  resetForm()
+  editingNoteId.value = null
+  showForm.value = true
+}
 
-  const finalize = (imageUrl?: string) => {
-    const note: Note = {
-      id,
-      title: form.value.title,
-      itemType: form.value.itemType,
-      sku: form.value.sku,
-      store: form.value.store,
-      text: form.value.text,
-      imageUrl,
-      date: form.value.date,
-      createdAt
-    }
-    notes.value.push(note)
-    saveNotes()
-    resetForm()
+function startEdit(note: Note) {
+  editingNoteId.value = note.id
+  form.value = {
+    title: note.title,
+    itemType: note.itemType,
+    sku: note.sku,
+    store: note.store,
+    text: note.text,
+    image: null,
+    date: note.date || ''
   }
+  showForm.value = true
+}
 
-  if (form.value.image) {
-    const reader = new FileReader()
-    reader.onload = () => finalize(reader.result as string)
-    reader.readAsDataURL(form.value.image)
+function cancelForm() {
+  resetForm()
+  editingNoteId.value = null
+  showForm.value = false
+}
+
+function deleteNote(id: string) {
+  notes.value = notes.value.filter(n => n.id !== id)
+  saveNotes()
+}
+
+function saveNote() {
+  if (editingNoteId.value) {
+    const index = notes.value.findIndex(n => n.id === editingNoteId.value)
+    if (index === -1) return
+    const existing = notes.value[index]
+    const finalize = (imageUrl?: string) => {
+      existing.title = form.value.title
+      existing.itemType = form.value.itemType
+      existing.sku = form.value.sku
+      existing.store = form.value.store
+      existing.text = form.value.text
+      existing.date = form.value.date
+      if (imageUrl !== undefined) {
+        existing.imageUrl = imageUrl
+      }
+      saveNotes()
+      cancelForm()
+    }
+    if (form.value.image) {
+      const reader = new FileReader()
+      reader.onload = () => finalize(reader.result as string)
+      reader.readAsDataURL(form.value.image)
+    } else {
+      finalize()
+    }
   } else {
-    finalize()
+    const id = crypto.randomUUID()
+    const createdAt = new Date().toISOString()
+
+    const finalize = (imageUrl?: string) => {
+      const note: Note = {
+        id,
+        title: form.value.title,
+        itemType: form.value.itemType,
+        sku: form.value.sku,
+        store: form.value.store,
+        text: form.value.text,
+        imageUrl,
+        date: form.value.date,
+        createdAt
+      }
+      notes.value.push(note)
+      saveNotes()
+      cancelForm()
+    }
+
+    if (form.value.image) {
+      const reader = new FileReader()
+      reader.onload = () => finalize(reader.result as string)
+      reader.readAsDataURL(form.value.image)
+    } else {
+      finalize()
+    }
+
   }
 }
 
