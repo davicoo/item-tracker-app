@@ -10,7 +10,7 @@
     </div>
     <div
       class="bg-white rounded-xl shadow-md p-4 text-center cursor-pointer"
-      @click="emit('show-sold-details')"
+      @click="goToDashboard"
     >
       <h2 class="text-sm text-gray-500 uppercase">
         Sold
@@ -67,13 +67,17 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import type { Stats } from '../utils/stats';
 
 const props = defineProps<{
   stats: Stats;
 }>();
 
-const emit = defineEmits(['show-sold-details']);
+const router = useRouter();
+const goToDashboard = () => {
+  router.push('/dashboard');
+};
 
 const showOutstanding = ref(false);
 const toggleOutstanding = () => {
