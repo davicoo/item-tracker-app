@@ -240,6 +240,7 @@ const itemOptions = ref<string[]>([])
 const skuOptions = ref<string[]>([])
 const storeOptions = ref<string[]>([])
 
+const isAuthenticated = ref(false)
 const showForm = ref(false)
 const editingNoteId = ref<string | null>(null)
 
@@ -253,6 +254,7 @@ async function loadNotes() {
 
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData.session?.user
+  isAuthenticated.value = !!user
 
   if (!user) {
     const raw = localStorage.getItem('notes')
@@ -276,14 +278,17 @@ async function loadNotes() {
 }
 
 function saveNotes() {
+  if (isAuthenticated.value) {
+    return
+  }
   try {
     localStorage.setItem('notes', JSON.stringify(notes.value))
   } catch (error) {
     console.error('Failed to save notes:', error)
     if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      // Browser storage may be full from prior data. Clear it and retry once.
+      // Browser storage may be full from prior data. Remove notes and retry once.
       try {
-        localStorage.clear()
+        localStorage.removeItem('notes')
         localStorage.setItem('notes', JSON.stringify(notes.value))
       } catch (retryError) {
         console.error('Retry after clearing storage failed:', retryError)
