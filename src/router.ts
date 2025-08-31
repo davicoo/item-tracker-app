@@ -23,6 +23,11 @@ const routes = [
   { path: '/app', name: 'App', component: AppPage },
   { path: '/settings', name: 'Settings', component: SettingsPage },
   { path: '/notes', name: 'Notes', component: NotesPage },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/pages/DashboardPage.vue'),
+  },
 ];
 
 const router = createRouter({
