@@ -20,7 +20,6 @@
         class="bg-white rounded shadow p-4"
       >
         <form @submit.prevent="saveNote">
-
           <div class="mb-4">
             <label
               for="title"
@@ -361,6 +360,8 @@ async function deleteNote(id: string) {
 }
 
 async function saveNote() {
+  const reminderDate = form.value.date || undefined
+
   if (editingNoteId.value) {
     const index = notes.value.findIndex(n => n.id === editingNoteId.value)
     if (index === -1) return
@@ -371,7 +372,7 @@ async function saveNote() {
       existing.sku = form.value.sku
       existing.store = form.value.store
       existing.text = form.value.text
-      existing.date = form.value.date
+      existing.date = reminderDate
       if (imageUrl !== undefined) {
         existing.imageUrl = imageUrl
       }
@@ -390,7 +391,7 @@ async function saveNote() {
             store: existing.store || null,
             text: existing.text,
             image_url: existing.imageUrl,
-            date: existing.date,
+            date: existing.date || null,
           })
           .eq('id', existing.id)
           .eq('user_id', user.id)
@@ -419,7 +420,7 @@ async function saveNote() {
         store: form.value.store,
         text: form.value.text,
         imageUrl,
-        date: form.value.date,
+        date: reminderDate,
         createdAt
       }
       notes.value.push(note)
@@ -442,7 +443,7 @@ async function saveNote() {
               store: note.store || null,
               text: note.text,
               image_url: imageUrl,
-              date: note.date,
+              date: reminderDate ?? null,
               created_at: createdAt,
             },
           ])
