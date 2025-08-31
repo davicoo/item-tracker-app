@@ -276,7 +276,21 @@ async function loadNotes() {
 }
 
 function saveNotes() {
-  localStorage.setItem('notes', JSON.stringify(notes.value))
+  try {
+    localStorage.setItem('notes', JSON.stringify(notes.value))
+  } catch (error) {
+    console.error('Failed to save notes:', error)
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      // Browser storage may be full from prior data. Clear it and retry once.
+      try {
+        localStorage.clear()
+        localStorage.setItem('notes', JSON.stringify(notes.value))
+      } catch (retryError) {
+        console.error('Retry after clearing storage failed:', retryError)
+        alert('Browser storage limit exceeded. Notes were not saved.')
+      }
+    }
+  }
 }
 
 async function fetchOptions() {

@@ -439,6 +439,19 @@ async function attemptSave() {
       await saveStats(stats);
     } catch (localError) {
       console.error('Error with localStorage fallback:', localError);
+      if (localError instanceof DOMException && localError.name === 'QuotaExceededError') {
+        // Storage may be filled with stale data. Clear it and retry once.
+        try {
+          localStorage.clear();
+          localStorage.setItem('itemTrackerItems', JSON.stringify(items.value));
+          const stats = calculateStats(items.value);
+          currentStats.value = stats;
+          await saveStats(stats);
+        } catch (retryError) {
+          console.error('Retry after clearing storage failed:', retryError);
+          alert('Browser storage is full. Items were not saved locally.');
+        }
+      }
     }
 
     return false;
