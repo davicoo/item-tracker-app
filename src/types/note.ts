@@ -26,7 +26,7 @@ export interface NoteRecord {
 
 export function mapRecordToNote(record: NoteRecord): Note {
   return {
-    id: record.id,
+    id: String(record.id),
     title: record.title,
     itemType: record.item_type || '',
     sku: record.sku || '',

@@ -266,9 +266,8 @@ async function loadNotes() {
     .eq('user_id', user.id)
 
   if (error) {
-    console.error(error)
-    const raw = localStorage.getItem('notes')
-    notes.value = raw ? JSON.parse(raw) : []
+    console.error('Failed to load notes from Supabase:', error)
+    alert('Could not load notes from the database.')
     return
   }
 
@@ -344,8 +343,6 @@ function cancelForm() {
 }
 
 async function deleteNote(id: string) {
-  notes.value = notes.value.filter(n => n.id !== id)
-  saveNotes()
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData.session?.user
 
@@ -355,8 +352,15 @@ async function deleteNote(id: string) {
       .delete()
       .eq('id', id)
       .eq('user_id', user.id)
-    if (error) console.error(error)
+    if (error) {
+      console.error('Failed to delete note in Supabase:', error)
+      alert('Failed to delete note from the database.')
+      return
+    }
   }
+
+  notes.value = notes.value.filter(n => n.id !== id)
+  saveNotes()
 }
 
 async function saveNote() {
@@ -367,6 +371,29 @@ async function saveNote() {
     if (index === -1) return
     const existing = notes.value[index]
     const finalize = async (imageUrl?: string) => {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const user = sessionData.session?.user
+      if (user) {
+        const { error } = await supabase
+          .from('notes')
+          .update({
+            title: form.value.title,
+            item_type: form.value.itemType || null,
+            sku: form.value.sku || null,
+            store: form.value.store || null,
+            text: form.value.text,
+            image_url: imageUrl,
+            date: reminderDate ?? null,
+          })
+          .eq('id', existing.id)
+          .eq('user_id', user.id)
+        if (error) {
+          console.error('Failed to update note in Supabase:', error)
+          alert('Failed to update note in the database.')
+          return
+        }
+      }
+
       existing.title = form.value.title
       existing.itemType = form.value.itemType
       existing.sku = form.value.sku
@@ -378,25 +405,6 @@ async function saveNote() {
       }
       saveNotes()
       cancelForm()
-
-      const { data: sessionData } = await supabase.auth.getSession()
-      const user = sessionData.session?.user
-      if (user) {
-        const { error } = await supabase
-          .from('notes')
-          .update({
-            title: existing.title,
-            item_type: existing.itemType || null,
-            sku: existing.sku || null,
-            store: existing.store || null,
-            text: existing.text,
-            image_url: existing.imageUrl,
-            date: existing.date || null,
-          })
-          .eq('id', existing.id)
-          .eq('user_id', user.id)
-        if (error) console.error(error)
-      }
     }
     if (form.value.image) {
       const reader = new FileReader()
@@ -408,12 +416,43 @@ async function saveNote() {
       await finalize()
     }
   } else {
-    const id = crypto.randomUUID()
-    const createdAt = new Date().toISOString()
+    const { data: sessionData } = await supabase.auth.getSession()
+    const user = sessionData.session?.user
 
     const finalize = async (imageUrl?: string) => {
+      if (user) {
+        const { data: inserted, error } = await supabase
+          .from('notes')
+          .insert([
+            {
+              user_id: user.id,
+              title: form.value.title,
+              item_type: form.value.itemType || null,
+              sku: form.value.sku || null,
+              store: form.value.store || null,
+              text: form.value.text,
+              image_url: imageUrl,
+              date: reminderDate ?? null,
+            },
+          ])
+          .select('*')
+          .single()
+        if (error) {
+          console.error('Failed to save note in Supabase:', error)
+          alert('Failed to save note to the database.')
+          return
+        }
+        const newNote = mapRecordToNote(inserted as NoteRecord)
+        notes.value.push(newNote)
+        saveNotes()
+        cancelForm()
+        return
+      }
+
+      const tempId = crypto.randomUUID()
+      const createdAt = new Date().toISOString()
       const note: Note = {
-        id,
+        id: tempId,
         title: form.value.title,
         itemType: form.value.itemType,
         sku: form.value.sku,
@@ -421,34 +460,11 @@ async function saveNote() {
         text: form.value.text,
         imageUrl,
         date: reminderDate,
-        createdAt
+        createdAt,
       }
       notes.value.push(note)
       saveNotes()
       cancelForm()
-
-      const { data: sessionData } = await supabase.auth.getSession()
-      const user = sessionData.session?.user
-
-      if (user) {
-        const { error } = await supabase
-          .from('notes')
-          .insert([
-            {
-              id,
-              user_id: user.id,
-              title: note.title,
-              item_type: note.itemType || null,
-              sku: note.sku || null,
-              store: note.store || null,
-              text: note.text,
-              image_url: imageUrl,
-              date: reminderDate ?? null,
-              created_at: createdAt,
-            },
-          ])
-        if (error) console.error(error)
-      }
     }
 
     if (form.value.image) {
