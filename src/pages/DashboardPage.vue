@@ -105,6 +105,7 @@ import { supabase } from '../supabaseClient';
 
 interface Sale {
   id: string;
+
   name: string;
   price: number;
   date: string;
