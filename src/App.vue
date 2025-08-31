@@ -81,13 +81,6 @@
 
       <StatsDisplay
         :stats="currentStats"
-        @show-sold-details="showSoldDetails = true"
-      />
-
-      <SoldDetailsModal
-        v-if="showSoldDetails"
-        :items="items"
-        @close="showSoldDetails = false"
       />
 
       <div
@@ -256,7 +249,6 @@ import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
-import SoldDetailsModal from './components/SoldDetailsModal.vue';
 import ContactModal from './components/ContactModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
@@ -281,7 +273,6 @@ const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
-const showSoldDetails = ref(false);
 const showContact = ref(false);
 const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
