@@ -1,5 +1,8 @@
 <template>
-  <div class="p-4 space-y-8">
+  <div
+    v-if="!loading"
+    class="p-4 space-y-8"
+  >
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-white rounded-xl shadow p-4">
         <h2 class="text-sm text-gray-500">
@@ -88,24 +91,63 @@
       </ul>
     </section>
   </div>
+  <p
+    v-else
+    class="p-4 text-center"
+  >
+    Loading...
+  </p>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { supabase } from '../supabaseClient';
 
 interface Sale {
-  id: number;
+  id: string;
+
   name: string;
   price: number;
   date: string;
 }
 
-const sales = ref<Sale[]>([
-  { id: 1, name: 'Widget', price: 25, date: '2024-05-10' },
-  { id: 2, name: 'Gadget', price: 35, date: '2024-05-21' },
-  { id: 3, name: 'Widget', price: 30, date: '2024-06-02' },
-  { id: 4, name: 'Thing', price: 20, date: '2024-06-15' },
-]);
+const sales = ref<Sale[]>([]);
+const loading = ref(true);
+
+function parsePrice(price: string | null): number {
+  if (!price) return 0;
+  const num = parseFloat(String(price).replace(/[^0-9.]/g, ''));
+  return isNaN(num) ? 0 : num;
+}
+
+async function fetchSales() {
+  loading.value = true;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData.session?.user.id;
+    const { data, error } = await supabase
+      .from('items')
+      .select('id, name, price, date_added')
+      .eq('user_id', userId)
+      .in('status', ['sold', 'sold_paid'])
+      .order('date_added', { ascending: false });
+
+    if (error) throw error;
+    sales.value = (data || []).map((r) => ({
+      id: r.id as string,
+      name: r.name as string,
+      price: parsePrice(r.price as string | null),
+      date: r.date_added as string,
+    }));
+  } catch (err) {
+    console.error('Error fetching sales:', err);
+    sales.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(fetchSales);
 
 const totalItemsSold = computed(() => sales.value.length);
 
