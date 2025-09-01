@@ -359,9 +359,13 @@ async function sendInvite() {
   inviting.value = true
   inviteResult.value = null
   try {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    const token = import.meta.env.VITE_MAIL_TOKEN
-    if (token) headers['X-Mail-Token'] = token
+    const { data: sessionData } = await supabase.auth.getSession()
+    const session = sessionData.session
+    if (!session) throw new Error('No session')
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`
+    }
     const res = await fetch('/.netlify/functions/inviteStore', {
       method: 'POST',
       headers,

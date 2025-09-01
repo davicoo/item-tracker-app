@@ -84,11 +84,13 @@ async function fetchItems() {
 
 async function markSold(item: Item) {
   await supabase.from('items').update({ status: 'sold' }).eq('id', item.id)
+  const { data: sessionData } = await supabase.auth.getSession()
+  const session = sessionData.session
   await fetch('/.netlify/functions/notifyItemSold', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(import.meta.env.VITE_MAIL_TOKEN ? { 'X-Mail-Token': import.meta.env.VITE_MAIL_TOKEN } : {})
+      Authorization: session ? `Bearer ${session.access_token}` : ''
     },
     body: JSON.stringify({ email: item.owner_email, itemName: item.name })
   })

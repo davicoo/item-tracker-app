@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
 
 const baseHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Mail-Token',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Content-Type': 'application/json',
 };
@@ -29,11 +30,26 @@ exports.handler = async (event) => {
       };
     }
 
-    if (process.env.MAIL_TOKEN) {
-      const incoming = event.headers['x-mail-token'] || event.headers['X-Mail-Token'];
-      if (incoming !== process.env.MAIL_TOKEN) {
-        return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
-      }
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceKey) {
+      return {
+        statusCode: 500,
+        headers: baseHeaders,
+        body: JSON.stringify({ error: 'Missing Supabase configuration' }),
+      };
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
+    }
+    const accessToken = authHeader.split(' ')[1];
+    const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+    const caller = userData?.user;
+    if (userError || !caller || caller.user_metadata?.role !== 'store') {
+      return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 
     const host = process.env.SES_HOST;

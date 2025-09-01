@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 // CORS headers for browser calls
 const baseHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Mail-Token',
+  'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Content-Type': 'application/json',
 };
@@ -25,13 +25,6 @@ exports.handler = async (event) => {
         headers: baseHeaders,
         body: JSON.stringify({ error: 'Missing subject/body' }),
       };
-    }
-
-    if (process.env.MAIL_TOKEN) {
-      const incoming = event.headers['x-mail-token'] || event.headers['X-Mail-Token'];
-      if (incoming !== process.env.MAIL_TOKEN) {
-        return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
-      }
     }
 
     const host = process.env.SES_HOST;

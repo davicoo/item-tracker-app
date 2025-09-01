@@ -99,9 +99,6 @@ async function handleSubmit() {
   sending.value = true
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    const token = import.meta.env.VITE_MAIL_TOKEN
-    if (token) headers['X-Mail-Token'] = token
-
     await fetch('/.netlify/functions/sendEmail', {
       method: 'POST',
       headers,
