@@ -20,6 +20,11 @@ const routes = [
     name: 'Signup',
     component: () => import('@/pages/SignupPage.vue'),
   },
+  {
+    path: '/store/login',
+    name: 'StoreLogin',
+    component: () => import('@/pages/StoreLoginPage.vue'),
+  },
   { path: '/app', name: 'App', component: AppPage },
   { path: '/settings', name: 'Settings', component: SettingsPage },
   { path: '/notes', name: 'Notes', component: NotesPage },

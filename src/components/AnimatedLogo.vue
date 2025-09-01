@@ -86,7 +86,7 @@ onMounted(() => {
 
   loader.setCrossOrigin('anonymous')
   loader.load(
-    'https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images/uglysmall.png',
+    '/ugly_192px.png',
     (tex) => {
       texture.value = tex
       tex.needsUpdate = true

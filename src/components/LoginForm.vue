@@ -2,7 +2,7 @@
   <div class="max-w-sm mx-auto mt-12 p-4 bg-white rounded shadow">
     <div class="flex flex-col items-center mb-4">
       <img
-        src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//1749825362414.png"
+        src="/ugly_192px.png"
         alt="ConsignTracker logo"
         class="w-24 h-24 mb-2"
       >
@@ -60,6 +60,7 @@
           {{ isSignup ? 'Sign Up' : 'Login' }}
         </button>
         <button
+          v-if="props.allowSignup"
           type="button"
           class="text-blue-500"
           @click="toggleMode"
@@ -68,7 +69,7 @@
         </button>
       </div>
       <p class="text-center text-sm text-gray-600">
-        <span v-if="isSignup">Enter your email and a desired password, then click <strong>Sign Up</strong> to create an account.</span>
+        <span v-if="props.allowSignup && isSignup">Enter your email and a desired password, then click <strong>Sign Up</strong> to create an account.</span>
         <span v-else>Enter your email and password to log in.</span>
       </p>
       <div class="text-center">
@@ -112,9 +113,13 @@ import { useRouter } from 'vue-router';
 import { supabase } from '../supabaseClient';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
-const props = withDefaults(defineProps<{ startSignup?: boolean }>(), {
-  startSignup: undefined,
-});
+const props = withDefaults(
+  defineProps<{ startSignup?: boolean; allowSignup?: boolean }>(),
+  {
+    startSignup: undefined,
+    allowSignup: true,
+  },
+);
 
 const email = ref('');
 const password = ref('');
@@ -131,8 +136,12 @@ if (!siteKey) {
 }
 
 onMounted(() => {
-  const cookieDefault = !document.cookie.includes('returningUser=true');
-  isSignup.value = props.startSignup ?? cookieDefault;
+  if (props.allowSignup) {
+    const cookieDefault = !document.cookie.includes('returningUser=true');
+    isSignup.value = props.startSignup ?? cookieDefault;
+  } else {
+    isSignup.value = false;
+  }
   // Initialize Preline plugins like toggle password
   (window as any).HSStaticMethods?.autoInit();
 });
@@ -187,6 +196,7 @@ async function handleSignup() {
 }
 
 function toggleMode() {
+  if (!props.allowSignup) return;
   isSignup.value = !isSignup.value;
   setReturningUserCookie();
 }

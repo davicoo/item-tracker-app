@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center space-x-2 flex-1">
           <img
-            src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
+            src="/ugly_192px.png"
             alt="ConsignTracker logo"
             class="h-[3.5rem] w-auto object-contain"
           >
