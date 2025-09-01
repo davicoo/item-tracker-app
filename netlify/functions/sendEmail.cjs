@@ -39,9 +39,9 @@ exports.handler = async (event) => {
     const user = process.env.SES_USER;
     const pass = process.env.SES_PASS;
     const from = process.env.MAIL_FROM;
-    const to = process.env.MAIL_TO || 'info@uglystuff.ca';
+    const to = process.env.MAIL_TO;
 
-    if (!host || !user || !pass || !from) {
+    if (!host || !user || !pass || !from || !to) {
       return {
         statusCode: 500,
         headers: baseHeaders,
