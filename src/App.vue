@@ -4,9 +4,10 @@
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center space-x-2 flex-1">
           <img
-            src="/ugly_192px.png"
+            src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
             alt="ConsignTracker logo"
             class="h-[3.5rem] w-auto object-contain"
+            @error="(e) => (e.target as HTMLImageElement).src = '/ugly_192px.png'"
           >
           <h1 class="text-3xl font-bold leading-tight">
             ConsignTracker

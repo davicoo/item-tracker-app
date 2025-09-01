@@ -2,9 +2,10 @@
   <div class="max-w-sm mx-auto mt-12 p-4 bg-white rounded shadow">
     <div class="flex flex-col items-center mb-4">
       <img
-        src="/ugly_192px.png"
+        src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
         alt="ConsignTracker logo"
         class="w-24 h-24 mb-2"
+        @error="(e) => (e.target as HTMLImageElement).src = '/ugly_192px.png'"
       >
       <h2 class="text-2xl font-bold text-center leading-tight">
         ConsignTracker
