@@ -56,6 +56,7 @@ exports.handler = async (event) => {
       caller?.app_metadata?.roles ||
       [caller?.user_metadata?.role, caller?.app_metadata?.role].filter(Boolean);
     if (userError || !caller || !roles.includes('store')) {
+
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 

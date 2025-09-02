@@ -164,6 +164,7 @@ async function handleLogin() {
     password: password.value,
     options: {
       captchaToken: captchaToken.value,
+      data: { role: 'admin' },
     },
   });
   if (err) {
@@ -186,6 +187,7 @@ async function handleSignup() {
     options: {
       captchaToken: captchaToken.value,
       data: { role: 'admin', roles: ['admin'] },
+
     },
   });
   if (err) {
