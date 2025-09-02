@@ -6,7 +6,7 @@
           src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
           alt="logo"
           class="h-[3.5rem] w-auto object-contain"
-          @error="(e) => (e.target as HTMLImageElement).src = '/ugly_192px.png'"
+          @error="handleLogoError"
         >
         <div>
           ConsignTracker
@@ -62,7 +62,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -81,5 +81,9 @@ function handleGetStarted() {
   } else {
     router.push('/signup')
   }
+}
+
+function handleLogoError(e: Event) {
+  (e.target as HTMLImageElement).src = '/ugly_192px.png'
 }
 </script>
