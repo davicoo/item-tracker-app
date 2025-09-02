@@ -30,8 +30,11 @@ exports.handler = async (event) => {
       };
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const serviceKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_KEY;
     if (!supabaseUrl || !serviceKey) {
       return {
         statusCode: 500,
@@ -48,7 +51,8 @@ exports.handler = async (event) => {
     const accessToken = authHeader.split(' ')[1];
     const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
     const caller = userData?.user;
-    if (userError || !caller || caller.user_metadata?.role !== 'store') {
+    const role = caller?.user_metadata?.role || caller?.app_metadata?.role;
+    if (userError || !caller || role !== 'store') {
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 
