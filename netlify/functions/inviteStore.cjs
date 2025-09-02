@@ -28,8 +28,11 @@ exports.handler = async (event) => {
     }
 
     // Create store user in Supabase
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const serviceKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_KEY;
     if (!supabaseUrl || !serviceKey) {
       return {
         statusCode: 500,
