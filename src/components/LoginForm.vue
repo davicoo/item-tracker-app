@@ -187,7 +187,6 @@ async function handleSignup() {
     options: {
       captchaToken: captchaToken.value,
       data: { role: 'admin', roles: ['admin'] },
-
     },
   });
   if (err) {

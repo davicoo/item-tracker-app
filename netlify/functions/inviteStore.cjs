@@ -1,4 +1,3 @@
-const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 
 const baseHeaders = {
@@ -17,9 +16,9 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, name, password, loginUrl } = JSON.parse(event.body || '{}');
+    const { email, name, loginUrl } = JSON.parse(event.body || '{}');
 
-    if (!email || !password || !loginUrl) {
+    if (!email || !loginUrl) {
       return {
         statusCode: 400,
         headers: baseHeaders,
@@ -51,66 +50,34 @@ exports.handler = async (event) => {
     const accessToken = authHeader.split(' ')[1];
     const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
     const caller = userData?.user;
-    const roles =
-      caller?.user_metadata?.roles ||
-      caller?.app_metadata?.roles ||
-      [caller?.user_metadata?.role, caller?.app_metadata?.role].filter(Boolean);
+
+    const roles = require('./_auth.cjs').getRoles(caller);
     if (userError || !caller || !roles.includes('admin')) {
 
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
-    const { error: createError } = await supabase.auth.admin.createUser({
+    const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
       email,
-      password,
-      email_confirm: true,
-      user_metadata: { name, role: 'store', roles: ['store'] },
-    });
-    if (createError) {
-      console.error('Error creating user:', createError);
+
+      {
+        data: { name, role: 'store', roles: ['store'] },
+        redirectTo: loginUrl,
+      },
+    );
+    if (inviteError) {
+      console.error('Error inviting user:', inviteError);
+
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'User creation failed', detail: createError.message }),
+        body: JSON.stringify({ error: 'User invite failed', detail: inviteError.message }),
       };
     }
-
-    // Send invite email
-    const host = process.env.SES_HOST;
-    const port = Number(process.env.SES_PORT) || 465;
-    const user = process.env.SES_USER;
-    const pass = process.env.SES_PASS;
-    const from = process.env.MAIL_FROM;
-
-    if (!host || !user || !pass || !from) {
-      return {
-        statusCode: 500,
-        headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing mail server configuration' }),
-      };
-    }
-
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    });
-
-    const subject = `Your store login for ${name || email}`;
-    const html = `<p>Hello ${name || ''},</p><p>Your store account has been created.</p><p><strong>Email:</strong> ${email}<br><strong>Password:</strong> ${password}</p><p><a href="${loginUrl}">Log in here</a></p>`;
-
-    const info = await transporter.sendMail({
-      from,
-      to: email,
-      subject,
-      html,
-      text: html.replace(/<[^>]+>/g, ' '),
-    });
 
     return {
       statusCode: 200,
       headers: baseHeaders,
-      body: JSON.stringify({ ok: true, messageId: info.messageId }),
+      body: JSON.stringify({ ok: true }),
     };
   } catch (err) {
     console.error('Error inviting store:', err);

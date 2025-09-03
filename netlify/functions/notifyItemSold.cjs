@@ -51,10 +51,7 @@ exports.handler = async (event) => {
     const accessToken = authHeader.split(' ')[1];
     const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
     const caller = userData?.user;
-    const roles =
-      caller?.user_metadata?.roles ||
-      caller?.app_metadata?.roles ||
-      [caller?.user_metadata?.role, caller?.app_metadata?.role].filter(Boolean);
+    const roles = require('./_auth.cjs').getRoles(caller);
     if (userError || !caller || !roles.includes('store')) {
 
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
