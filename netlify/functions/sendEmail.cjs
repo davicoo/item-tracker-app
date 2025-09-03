@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 
 // CORS headers for browser calls
 const baseHeaders = {
@@ -27,15 +27,11 @@ exports.handler = async (event) => {
       };
     }
 
-    const host = process.env.SES_HOST;
-    const port = Number(process.env.SES_PORT) || 465;
-    const user = process.env.SES_USER;
-    const pass = process.env.SES_PASS;
+    const region = process.env.AWS_REGION || process.env.SES_REGION;
     const from = process.env.MAIL_FROM;
-
     const to = process.env.MAIL_TO;
 
-    if (!host || !user || !pass || !from || !to) {
+    if (!region || !from || !to) {
       return {
         statusCode: 500,
         headers: baseHeaders,
@@ -43,26 +39,28 @@ exports.handler = async (event) => {
       };
     }
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
+    const ses = new SESv2Client({ region });
+    const command = new SendEmailCommand({
+      FromEmailAddress: from,
+      Destination: { ToAddresses: [to] },
+      ReplyToAddresses: replyTo ? [replyTo] : undefined,
+      Content: {
+        Simple: {
+          Subject: { Data: subject },
+          Body: {
+            Html: html ? { Data: html } : undefined,
+            Text: { Data: (text ?? html)?.replace(/<[^>]+>/g, ' ') },
+          },
+        },
+      },
     });
 
-    const info = await transporter.sendMail({
-      from,
-      to,
-      subject,
-      html,
-      text: text ?? html.replace(/<[^>]+>/g, ' '),
-      replyTo,
-    });
+    const info = await ses.send(command);
 
     return {
       statusCode: 200,
       headers: baseHeaders,
-      body: JSON.stringify({ ok: true, messageId: info.messageId }),
+      body: JSON.stringify({ ok: true, messageId: info.$metadata?.requestId }),
     };
   } catch (err) {
     console.error('Error sending email:', err);

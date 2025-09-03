@@ -338,28 +338,22 @@ async function sendInvite() {
   inviting.value = true
   inviteResult.value = null
   try {
-    const { data: sessionData } = await supabase.auth.getSession()
-    const session = sessionData.session
-    if (!session) throw new Error('No session')
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`
-    }
     const res = await fetch('/.netlify/functions/inviteStore', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ ...invite.value, loginUrl: window.location.origin + '/store/login' })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...invite.value, signupUrl: window.location.origin + '/store/signup' })
     })
     const data = await res.json()
     if (res.ok && data.ok) {
-      inviteResult.value = { ok: true, message: 'Invite sent' }
+      inviteResult.value = { ok: true, message: 'Email sent' }
+
       invite.value = { name: '', email: '' }
     } else {
-      inviteResult.value = { ok: false, message: data.error || 'Failed to send invite' }
+      inviteResult.value = { ok: false, message: data.error || 'Failed to send email' }
     }
   } catch (err) {
     console.error('Error sending invite:', err)
-    inviteResult.value = { ok: false, message: 'Failed to send invite' }
+    inviteResult.value = { ok: false, message: 'Failed to send email' }
   } finally {
     inviting.value = false
   }
