@@ -26,6 +26,11 @@ const routes = [
     component: () => import('@/pages/StoreLoginPage.vue'),
   },
   {
+    path: '/store/signup',
+    name: 'StoreSignup',
+    component: () => import('@/pages/StoreSignupPage.vue'),
+  },
+  {
     path: '/store',
     name: 'StoreDashboard',
     component: () => import('@/pages/StoreDashboardPage.vue'),
@@ -49,7 +54,7 @@ router.beforeEach(async (to, _from, next) => {
   const { data } = await supabase.auth.getSession();
   const isAuthenticated = !!data.session;
 
-  if (to.path.startsWith('/store') && to.path !== '/store/login') {
+  if (to.path.startsWith('/store') && !['/store/login', '/store/signup'].includes(to.path)) {
     if (!isAuthenticated) {
       next('/store/login');
     } else {

@@ -1,7 +1,7 @@
 <template>
   <LoginForm
-    :start-signup="false"
-    :allow-signup="false"
+    :start-signup="true"
+    :allow-signup="true"
     role="store"
   />
 </template>

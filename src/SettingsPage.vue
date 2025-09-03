@@ -170,23 +170,6 @@
             class="w-full px-3 py-2 border rounded"
           >
         </div>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">Temp Password</label>
-          <div class="flex">
-            <input
-              v-model="invite.password"
-              type="text"
-              class="flex-1 px-3 py-2 border rounded-l"
-            >
-            <button
-              type="button"
-              class="bg-gray-200 px-3 rounded-r hover:bg-gray-300"
-              @click="generatePassword"
-            >
-              Generate
-            </button>
-          </div>
-        </div>
         <button
           class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           :disabled="inviting"
@@ -235,7 +218,7 @@ const tempStores = ref<string[]>([])
 const tempSkus = ref<string[]>([])
 const newStore = ref('')
 const newSku = ref('')
-const invite = ref({ name: '', email: '', password: '' })
+const invite = ref({ name: '', email: '' })
 const inviting = ref(false)
 const inviteResult = ref<{ ok: boolean; message: string } | null>(null)
 
@@ -351,36 +334,25 @@ async function saveCatalog() {
   }
 }
 
-function generatePassword() {
-  invite.value.password = Math.random().toString(36).slice(-8)
-}
-
 async function sendInvite() {
   inviting.value = true
   inviteResult.value = null
   try {
-    const { data: sessionData } = await supabase.auth.getSession()
-    const session = sessionData.session
-    if (!session) throw new Error('No session')
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`
-    }
     const res = await fetch('/.netlify/functions/inviteStore', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ ...invite.value, loginUrl: window.location.origin + '/store/login' })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...invite.value, signupUrl: window.location.origin + '/store/signup' })
     })
     const data = await res.json()
     if (res.ok && data.ok) {
-      inviteResult.value = { ok: true, message: 'Invite sent' }
-      invite.value = { name: '', email: '', password: '' }
+      inviteResult.value = { ok: true, message: 'Email sent' }
+      invite.value = { name: '', email: '' }
     } else {
-      inviteResult.value = { ok: false, message: data.error || 'Failed to send invite' }
+      inviteResult.value = { ok: false, message: data.error || 'Failed to send email' }
     }
   } catch (err) {
     console.error('Error sending invite:', err)
-    inviteResult.value = { ok: false, message: 'Failed to send invite' }
+    inviteResult.value = { ok: false, message: 'Failed to send email' }
   } finally {
     inviting.value = false
   }

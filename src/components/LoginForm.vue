@@ -115,10 +115,11 @@ import { supabase } from '../supabaseClient';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
 const props = withDefaults(
-  defineProps<{ startSignup?: boolean; allowSignup?: boolean }>(),
+  defineProps<{ startSignup?: boolean; allowSignup?: boolean; role?: string }>(),
   {
     startSignup: undefined,
     allowSignup: true,
+    role: 'admin',
   },
 );
 
@@ -169,8 +170,9 @@ async function handleLogin() {
   if (err) {
     error.value = err.message;
   } else {
+    await supabase.auth.updateUser({ data: { role: props.role, roles: [props.role] } });
     setReturningUserCookie();
-    router.push('/app');
+    router.push(props.role === 'store' ? '/store' : '/app');
   }
   captcha.value?.reset();
   captchaToken.value = '';
@@ -184,6 +186,7 @@ async function handleSignup() {
     password: password.value,
     options: {
       captchaToken: captchaToken.value,
+      data: { role: props.role, roles: [props.role] },
     },
   });
   if (err) {

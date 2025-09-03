@@ -1,9 +1,8 @@
-const nodemailer = require('nodemailer');
-const { createClient } = require('@supabase/supabase-js');
+const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 
 const baseHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Content-Type': 'application/json',
 };
@@ -17,9 +16,9 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, name, password, loginUrl } = JSON.parse(event.body || '{}');
+    const { email, name, signupUrl } = JSON.parse(event.body || '{}');
 
-    if (!email || !password || !loginUrl) {
+    if (!email || !signupUrl) {
       return {
         statusCode: 400,
         headers: baseHeaders,
@@ -27,53 +26,11 @@ exports.handler = async (event) => {
       };
     }
 
-    // Create store user in Supabase
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceKey) {
-      return {
-        statusCode: 500,
-        headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing Supabase configuration' }),
-      };
-    }
-
-    const supabase = createClient(supabaseUrl, serviceKey);
-
-    // Verify caller's session
-    const authHeader = event.headers.authorization || event.headers.Authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
-    }
-    const accessToken = authHeader.split(' ')[1];
-    const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
-    const caller = userData?.user;
-    if (userError || !caller || caller.user_metadata?.role !== 'admin') {
-      return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
-    }
-    const { error: createError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { name, role: 'store' },
-    });
-    if (createError) {
-      console.error('Error creating user:', createError);
-      return {
-        statusCode: 500,
-        headers: baseHeaders,
-        body: JSON.stringify({ error: 'User creation failed', detail: createError.message }),
-      };
-    }
-
-    // Send invite email
-    const host = process.env.SES_HOST;
-    const port = Number(process.env.SES_PORT) || 465;
-    const user = process.env.SES_USER;
-    const pass = process.env.SES_PASS;
+    const region = process.env.AWS_REGION || process.env.SES_REGION;
     const from = process.env.MAIL_FROM;
+    const template = process.env.SES_TEMPLATE_INVITE || 'store-invite';
 
-    if (!host || !user || !pass || !from) {
+    if (!region || !from) {
       return {
         statusCode: 500,
         headers: baseHeaders,
@@ -81,31 +38,28 @@ exports.handler = async (event) => {
       };
     }
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
+    const ses = new SESv2Client({ region });
+
+    const command = new SendEmailCommand({
+      FromEmailAddress: from,
+      Destination: { ToAddresses: [email] },
+      Content: {
+        Template: {
+          TemplateName: template,
+          TemplateData: JSON.stringify({ name: name || '', signupUrl }),
+        },
+      },
     });
 
-    const subject = `Your store login for ${name || email}`;
-    const html = `<p>Hello ${name || ''},</p><p>Your store account has been created.</p><p><strong>Email:</strong> ${email}<br><strong>Password:</strong> ${password}</p><p><a href="${loginUrl}">Log in here</a></p>`;
-
-    const info = await transporter.sendMail({
-      from,
-      to: email,
-      subject,
-      html,
-      text: html.replace(/<[^>]+>/g, ' '),
-    });
+    await ses.send(command);
 
     return {
       statusCode: 200,
       headers: baseHeaders,
-      body: JSON.stringify({ ok: true, messageId: info.messageId }),
+      body: JSON.stringify({ ok: true }),
     };
   } catch (err) {
-    console.error('Error inviting store:', err);
+    console.error('Error sending invite:', err);
     return {
       statusCode: 500,
       headers: baseHeaders,
@@ -113,4 +67,3 @@ exports.handler = async (event) => {
     };
   }
 };
-
