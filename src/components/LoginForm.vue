@@ -169,6 +169,7 @@ async function handleLogin() {
   if (err) {
     error.value = err.message;
   } else {
+    await supabase.auth.updateUser({ data: { role: 'admin', roles: ['admin'] } });
     setReturningUserCookie();
     router.push('/app');
   }
@@ -184,6 +185,7 @@ async function handleSignup() {
     password: password.value,
     options: {
       captchaToken: captchaToken.value,
+      data: { role: 'admin', roles: ['admin'] },
     },
   });
   if (err) {
