@@ -50,12 +50,15 @@ exports.handler = async (event) => {
     const accessToken = authHeader.split(' ')[1];
     const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
     const caller = userData?.user;
+
     const roles = require('./_auth.cjs').getRoles(caller);
     if (userError || !caller || !roles.includes('admin')) {
+
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
     const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
       email,
+
       {
         data: { name, role: 'store', roles: ['store'] },
         redirectTo: loginUrl,
@@ -63,6 +66,7 @@ exports.handler = async (event) => {
     );
     if (inviteError) {
       console.error('Error inviting user:', inviteError);
+
       return {
         statusCode: 500,
         headers: baseHeaders,
