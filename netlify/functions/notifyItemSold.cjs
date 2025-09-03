@@ -53,6 +53,7 @@ exports.handler = async (event) => {
     const caller = userData?.user;
     const roles = require('./_auth.cjs').getRoles(caller);
     if (userError || !caller || !roles.includes('store')) {
+      
       return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 

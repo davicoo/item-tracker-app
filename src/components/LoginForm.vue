@@ -165,11 +165,13 @@ async function handleLogin() {
     password: password.value,
     options: {
       captchaToken: captchaToken.value,
+      data: { role: 'admin' },
     },
   });
   if (err) {
     error.value = err.message;
   } else {
+
     await supabase.auth.updateUser({ data: { role: props.role, roles: [props.role] } });
     setReturningUserCookie();
     router.push(props.role === 'store' ? '/store' : '/app');
@@ -187,6 +189,7 @@ async function handleSignup() {
     options: {
       captchaToken: captchaToken.value,
       data: { role: props.role, roles: [props.role] },
+
     },
   });
   if (err) {

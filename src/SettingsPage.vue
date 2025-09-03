@@ -346,6 +346,7 @@ async function sendInvite() {
     const data = await res.json()
     if (res.ok && data.ok) {
       inviteResult.value = { ok: true, message: 'Email sent' }
+
       invite.value = { name: '', email: '' }
     } else {
       inviteResult.value = { ok: false, message: data.error || 'Failed to send email' }

@@ -1,3 +1,4 @@
+
 const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 
 const baseHeaders = {
@@ -19,6 +20,7 @@ exports.handler = async (event) => {
     const { email, name, signupUrl } = JSON.parse(event.body || '{}');
 
     if (!email || !signupUrl) {
+
       return {
         statusCode: 400,
         headers: baseHeaders,
@@ -26,15 +28,17 @@ exports.handler = async (event) => {
       };
     }
 
+
     const region = process.env.AWS_REGION || process.env.SES_REGION;
     const from = process.env.MAIL_FROM;
     const template = process.env.SES_TEMPLATE_INVITE || 'store-invite';
 
     if (!region || !from) {
+
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing mail server configuration' }),
+        body: JSON.stringify({ error: 'User invite failed', detail: inviteError.message }),
       };
     }
 
@@ -52,7 +56,7 @@ exports.handler = async (event) => {
     });
 
     await ses.send(command);
-
+    
     return {
       statusCode: 200,
       headers: baseHeaders,
