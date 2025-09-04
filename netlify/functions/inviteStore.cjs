@@ -34,11 +34,13 @@ exports.handler = async (event) => {
     const template = process.env.SES_TEMPLATE_INVITE || 'store-invite';
 
     if (!region || !from) {
-
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'User invite failed', detail: inviteError.message }),
+        body: JSON.stringify({
+          error: 'User invite failed',
+          detail: 'Missing AWS configuration',
+        }),
       };
     }
 
@@ -64,10 +66,15 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error('Error sending invite:', err);
+    const status = err.name === 'AccessDeniedException' ? 403 : 500;
     return {
-      statusCode: 500,
+      statusCode: status,
       headers: baseHeaders,
-      body: JSON.stringify({ ok: false, error: err.name || 'INVITE_FAILED', detail: err.message }),
+      body: JSON.stringify({
+        ok: false,
+        error: err.name || 'INVITE_FAILED',
+        detail: err.message,
+      }),
     };
   }
 };
