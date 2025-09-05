@@ -1,5 +1,5 @@
 
-const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
+const { createClient } = require('@supabase/supabase-js');
 
 const baseHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,10 +17,8 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, name, signupUrl } = JSON.parse(event.body || '{}');
-
+    const { email, signupUrl } = JSON.parse(event.body || '{}');
     if (!email || !signupUrl) {
-
       return {
         statusCode: 400,
         headers: baseHeaders,
@@ -28,47 +26,47 @@ exports.handler = async (event) => {
       };
     }
 
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const serviceKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_SERVICE_KEY ||
+      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
-    const region = process.env.AWS_REGION || process.env.SES_REGION;
-    const from = process.env.MAIL_FROM;
-    const template = process.env.SES_TEMPLATE_INVITE || 'store-invite';
-
-    if (!region || !from) {
+    if (!supabaseUrl || !serviceKey) {
       return {
         statusCode: 500,
         headers: baseHeaders,
+        body: JSON.stringify({ error: 'Missing Supabase service role key' }),
+      };
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
+    const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
+      redirectTo: signupUrl,
+      data: { role: 'store', roles: ['store'] },
+    });
+
+    if (error) {
+      return {
+        statusCode: error.status || 500,
+        headers: baseHeaders,
         body: JSON.stringify({
-          error: 'User invite failed',
-          detail: 'Missing AWS configuration',
+          ok: false,
+          error: error.name || 'INVITE_FAILED',
+          detail: error.message,
         }),
       };
     }
 
-    const ses = new SESv2Client({ region });
-
-    const command = new SendEmailCommand({
-      FromEmailAddress: from,
-      Destination: { ToAddresses: [email] },
-      Content: {
-        Template: {
-          TemplateName: template,
-          TemplateData: JSON.stringify({ name: name || '', signupUrl }),
-        },
-      },
-    });
-
-    await ses.send(command);
-    
     return {
       statusCode: 200,
       headers: baseHeaders,
-      body: JSON.stringify({ ok: true }),
+      body: JSON.stringify({ ok: true, user: data?.user }),
     };
   } catch (err) {
     console.error('Error sending invite:', err);
-    const status = err.name === 'AccessDeniedException' ? 403 : 500;
     return {
-      statusCode: status,
+      statusCode: 500,
       headers: baseHeaders,
       body: JSON.stringify({
         ok: false,
