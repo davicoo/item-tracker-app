@@ -82,6 +82,13 @@
 
       <StatsDisplay
         :stats="currentStats"
+        @show-sold-details="showSoldDetails = true"
+      />
+
+      <SoldDetailsModal
+        v-if="showSoldDetails"
+        :items="items"
+        @close="showSoldDetails = false"
       />
 
       <div
@@ -248,6 +255,7 @@ import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
+import SoldDetailsModal from './components/SoldDetailsModal.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import ContactModal from './components/ContactModal.vue';
@@ -277,6 +285,7 @@ const showExportModal = ref(false);
 const showContact = ref(false);
 const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
+const showSoldDetails = ref(false);
 
 function clearSearch() {
   searchQuery.value = '';

@@ -109,6 +109,24 @@
         </div>
 
         <h3 class="mt-8 mb-2 text-lg font-semibold">
+          Sales by Store
+        </h3>
+        <ul class="mb-6 list-disc ps-5">
+          <li
+            v-for="s in storeSales"
+            :key="s.store"
+          >
+            {{ s.store }} - {{ s.count }} sold (${{ s.revenue.toFixed(2) }})
+          </li>
+          <li
+            v-if="!storeSales.length"
+            class="list-none text-gray-500"
+          >
+            No data
+          </li>
+        </ul>
+
+        <h3 class="mb-2 text-lg font-semibold">
           Top Sold Items
         </h3>
         <ul class="mb-6 list-disc ps-5">
@@ -220,6 +238,26 @@ const topSoldItems = computed(() => {
   return Array.from(map, ([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
+});
+
+function parsePrice(price: string | undefined): number {
+  if (!price) return 0;
+  const num = parseFloat(String(price).replace(/[^0-9.]/g, ''));
+  return isNaN(num) ? 0 : num;
+}
+
+const storeSales = computed(() => {
+  const map = new Map<string, { count: number; revenue: number }>();
+  for (const item of filteredSoldItems.value) {
+    const key = item.location || 'Unknown';
+    const count = totalSoldFor(item);
+    const price = parsePrice(item.price);
+    const entry = map.get(key) || { count: 0, revenue: 0 };
+    entry.count += count;
+    entry.revenue += count * price;
+    map.set(key, entry);
+  }
+  return Array.from(map, ([store, data]) => ({ store, ...data }));
 });
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
