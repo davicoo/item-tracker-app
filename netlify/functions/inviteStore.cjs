@@ -33,6 +33,7 @@ exports.handler = async (event) => {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const serviceKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
+
       process.env.SUPABASE_SERVICE_KEY;
 
     if (!supabaseUrl || !serviceKey) {
@@ -41,6 +42,7 @@ exports.handler = async (event) => {
         statusCode: 500,
         headers: baseHeaders,
         body: JSON.stringify({ ok: false, error: 'Server misconfigured' }),
+
       };
     }
 
