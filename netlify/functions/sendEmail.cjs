@@ -9,10 +9,13 @@ const baseHeaders = {
 };
 
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
+  const method = (event.httpMethod || '').toUpperCase();
+
+  if (method === 'OPTIONS') {
     return { statusCode: 200, headers: baseHeaders, body: '' };
   }
-  if (event.httpMethod !== 'POST') {
+
+  if (method !== 'POST') {
     return { statusCode: 405, headers: baseHeaders, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
@@ -27,7 +30,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const region = process.env.AWS_REGION || process.env.SES_REGION;
+    const region = process.env.AWS_REGION;
     const from = process.env.MAIL_FROM;
     const to = process.env.MAIL_TO;
 
