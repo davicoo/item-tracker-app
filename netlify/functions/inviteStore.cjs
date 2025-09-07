@@ -1,5 +1,6 @@
 
 const { createClient } = require('@supabase/supabase-js');
+const { getRoles } = require('./_auth.cjs');
 
 const baseHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,6 +27,17 @@ exports.handler = async (event) => {
       };
     }
 
+    const authHeader = event.headers?.authorization || event.headers?.Authorization;
+    if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+      console.warn('Missing or malformed Authorization header');
+      return {
+        statusCode: 401,
+        headers: baseHeaders,
+        body: JSON.stringify({ error: 'Unauthorized' }),
+      };
+    }
+    const accessToken = authHeader.split(' ')[1];
+
     const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const serviceKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -43,9 +55,28 @@ exports.handler = async (event) => {
     }
 
     const supabase = createClient(supabaseUrl, serviceKey);
+    const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+    if (userError || !userData?.user) {
+      console.warn('Invalid access token', userError);
+      return {
+        statusCode: 401,
+        headers: baseHeaders,
+        body: JSON.stringify({ error: 'Unauthorized' }),
+      };
+    }
+
+    const roles = getRoles(userData.user);
+    if (!roles.includes('admin') && !roles.includes('store')) {
+      console.warn('User lacks required role', roles);
+      return {
+        statusCode: 403,
+        headers: baseHeaders,
+        body: JSON.stringify({ error: 'Forbidden' }),
+      };
+    }
+
     const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
       redirectTo: signupUrl,
-      data: { role: 'store', roles: ['store'] },
     });
 
     if (error) {
@@ -60,6 +91,7 @@ exports.handler = async (event) => {
       };
     }
 
+    console.info('Invite sent to', email);
     return {
       statusCode: 200,
       headers: baseHeaders,
