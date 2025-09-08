@@ -150,41 +150,6 @@
           </div>
         </template>
       </div>
-      <div class="bg-white rounded shadow p-4">
-        <h2 class="text-xl font-semibold mb-2">
-          Invite Store Owner
-        </h2>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">Store Name</label>
-          <input
-            v-model="invite.name"
-            type="text"
-            class="w-full px-3 py-2 border rounded"
-          >
-        </div>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">Email</label>
-          <input
-            v-model="invite.email"
-            type="email"
-            class="w-full px-3 py-2 border rounded"
-          >
-        </div>
-        <button
-          class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          :disabled="inviting"
-          @click="sendInvite"
-        >
-          {{ inviting ? 'Sending...' : 'Send Invite' }}
-        </button>
-        <p
-          v-if="inviteResult"
-          class="mt-2 text-sm"
-          :class="inviteResult.ok ? 'text-green-600' : 'text-red-600'"
-        >
-          {{ inviteResult.message }}
-        </p>
-      </div>
     </div>
   </div>
 </template>
@@ -218,9 +183,6 @@ const tempStores = ref<string[]>([])
 const tempSkus = ref<string[]>([])
 const newStore = ref('')
 const newSku = ref('')
-const invite = ref({ name: '', email: '' })
-const inviting = ref(false)
-const inviteResult = ref<{ ok: boolean; message: string } | null>(null)
 
 async function fetchProfile() {
   const { data: userData } = await supabase.auth.getUser()
@@ -334,30 +296,6 @@ async function saveCatalog() {
   }
 }
 
-async function sendInvite() {
-  inviting.value = true
-  inviteResult.value = null
-  try {
-    const res = await fetch('/.netlify/functions/inviteStore', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...invite.value, signupUrl: window.location.origin + '/store/signup' })
-    })
-    const data = await res.json()
-    if (res.ok && data.ok) {
-      inviteResult.value = { ok: true, message: 'Email sent' }
-
-      invite.value = { name: '', email: '' }
-    } else {
-      inviteResult.value = { ok: false, message: data.error || 'Failed to send email' }
-    }
-  } catch (err) {
-    console.error('Error sending invite:', err)
-    inviteResult.value = { ok: false, message: 'Failed to send email' }
-  } finally {
-    inviting.value = false
-  }
-}
 </script>
 
 <style scoped>
