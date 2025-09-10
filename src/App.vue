@@ -575,9 +575,10 @@ const resetItemForNewVersion = async (id: string) => {
     const existing = items.value[itemIndex];
     const newPastSales = (existing?.pastSales || 0) + 1;
     const now = new Date().toISOString();
+    const newSaleDates = [...(existing?.saleDates || []), now];
     const { data, error } = await supabase
       .from('items')
-      .update({ status: 'not_sold', date_added: now, past_sales: newPastSales })
+      .update({ status: 'not_sold', date_added: now, past_sales: newPastSales, sold_dates: newSaleDates })
       .eq('id', id)
       .select()
       .single();
@@ -589,6 +590,7 @@ const resetItemForNewVersion = async (id: string) => {
         status: 'not_sold',
         dateAdded: data.date_added,
         pastSales: newPastSales,
+        saleDates: newSaleDates,
       };
       items.value = updatedItems;
       currentStats.value = calculateStats(items.value);

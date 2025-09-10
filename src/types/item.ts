@@ -15,6 +15,8 @@ export interface Item {
   soldCounts?: Record<string, number>;
   /** Total number of times this item has been sold in the past */
   pastSales: number;
+  /** Dates when this item was sold */
+  saleDates: string[];
   status: "not_sold" | "sold" | "sold_paid";
   dateAdded: string;
   location: string;
@@ -42,6 +44,7 @@ export interface ItemRecord {
   sku_codes?: string[] | string | null;
   sold_counts?: Record<string, number> | string | null;
   past_sales?: number | string;
+  sold_dates?: string[] | string | null;
   status: "not_sold" | "sold" | "sold_paid";
   date_added: string;
   location: string;
@@ -81,6 +84,22 @@ export function mapRecordToItem(record: ItemRecord): Item {
     }
   }
 
+  let saleDates: string[] = [];
+  if (Array.isArray(record.sold_dates)) {
+    saleDates = record.sold_dates;
+  } else if (typeof record.sold_dates === 'string') {
+    try {
+      const parsed = JSON.parse(record.sold_dates);
+      if (Array.isArray(parsed)) {
+        saleDates = parsed;
+      } else if (record.sold_dates) {
+        saleDates = record.sold_dates.split(',').map((s: string) => s.trim()).filter(Boolean);
+      }
+    } catch {
+      saleDates = record.sold_dates.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+
   return {
     id: record.id,
     userId: record.user_id,
@@ -110,7 +129,7 @@ export function mapRecordToItem(record: ItemRecord): Item {
     price: record.price,
     feePercent: typeof record.fee_percent === 'number' ? record.fee_percent : 20,
     tags,
-
+    saleDates,
   };
 }
 

@@ -88,6 +88,31 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Sale Dates</label>
+      <div
+        v-for="(d, idx) in form.saleDates"
+        :key="idx"
+        class="flex items-center mb-2"
+      >
+        <DatePicker v-model="form.saleDates[idx]" class="flex-1" />
+        <button
+          type="button"
+          class="ml-2 text-red-600"
+          @click="removeSaleDate(idx)"
+        >
+          ✕
+        </button>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        @click="addSaleDate"
+      >
+        Add Sale Date
+      </button>
+    </div>
+
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
       <input
         v-model="skuInput"
@@ -246,6 +271,7 @@ const form = ref({
   skuCodes: [...(props.item.skuCodes || [])],
   dateAdded: props.item.dateAdded.slice(0, 10),
   pastSales: props.item.pastSales,
+  saleDates: props.item.saleDates.map(d => d.slice(0, 10)),
   tags: [...(props.item.tags || [])]
 });
 
@@ -300,6 +326,7 @@ watch(
       skuCodes: [...(val.skuCodes || [])],
       dateAdded: val.dateAdded.slice(0, 10),
       pastSales: val.pastSales,
+      saleDates: val.saleDates.map(d => d.slice(0, 10)),
       tags: [...(val.tags || [])]
     };
     previewUrl.value = val.imageUrl;
@@ -326,6 +353,14 @@ function onCropped(file: File) {
   selectedFile.value = file;
   previewUrl.value = URL.createObjectURL(file);
   showCropper.value = false;
+}
+
+function addSaleDate() {
+  form.value.saleDates.push(new Date().toISOString().slice(0, 10));
+}
+
+function removeSaleDate(index: number) {
+  form.value.saleDates.splice(index, 1);
 }
 
 function addTag() {
@@ -375,6 +410,16 @@ async function handleSubmit() {
       return;
     }
 
+    const saleDatesISO: string[] = [];
+    for (const d of form.value.saleDates) {
+      const iso = toISODate(d);
+      if (!iso) {
+        alert('❌ Invalid sale date. Please select valid dates.');
+        return;
+      }
+      saleDatesISO.push(iso);
+    }
+
     const { data: updated, error } = await supabase
       .from('items')
       .update({
@@ -390,7 +435,8 @@ async function handleSubmit() {
         image_url: imageUrl,
         date_added: dateISO,
         tags: form.value.tags,
-        past_sales: form.value.pastSales
+        past_sales: form.value.pastSales,
+        sold_dates: saleDatesISO
       })
       .eq('id', props.item.id)
       .select()
