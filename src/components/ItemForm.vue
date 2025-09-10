@@ -216,7 +216,8 @@ const newItem = ref({
   minQuantity: 0,
   skuCodes: [] as string[],
   soldCounts: {} as Record<string, number>,
-  pastSales: 0
+  pastSales: 0,
+  saleDates: [] as string[]
 });
 
 const loading = ref(false);
@@ -324,7 +325,8 @@ const handleSubmit = async () => {
         date_added: new Date().toISOString(),
         tags: [],
         sold_counts: newItem.value.soldCounts,
-        past_sales: newItem.value.pastSales
+        past_sales: newItem.value.pastSales,
+        sold_dates: newItem.value.saleDates
       }
     ])
     .select()
@@ -346,7 +348,8 @@ const handleSubmit = async () => {
       minQuantity: 0,
       skuCodes: [],
       soldCounts: {},
-      pastSales: 0
+      pastSales: 0,
+      saleDates: []
     };
     selectedFile.value = null;
     previewUrl.value = '';

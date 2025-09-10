@@ -73,7 +73,10 @@
                   Item
                 </th>
                 <th>
-                  Date Sold
+                  Sale Dates
+                </th>
+                <th>
+                  Days Between Last Sales
                 </th>
                 <th>
                   Price
@@ -90,17 +93,25 @@
                   {{ item.name }}
                 </td>
                 <td>
-                  {{ formatDate(item.dateAdded) }}
+                  <div v-if="item.saleDates && item.saleDates.length">
+                    <div
+                      v-for="(d, i) in item.saleDates"
+                      :key="i"
+                    >
+                      {{ formatDate(d) }}
+                    </div>
+                  </div>
+                  <span v-else>-</span>
+                </td>
+                <td>
+                  {{ daysBetweenLastSales(item.saleDates) }}
                 </td>
                 <td>
                   {{ item.price || '-' }}
                 </td>
               </tr>
               <tr v-if="!filteredSoldItems.length">
-                <td
-                  colspan="3"
-                  class="text-center"
-                >
+                <td colspan="4" class="text-center">
                   No sold items
                 </td>
               </tr>
@@ -181,10 +192,16 @@ const soldItems = computed(() =>
   props.items.filter(i => i.status === 'sold' || i.status === 'sold_paid')
 );
 
+function lastSaleDate(item: Item): string {
+  return item.saleDates && item.saleDates.length
+    ? item.saleDates[item.saleDates.length - 1]
+    : item.dateAdded;
+}
+
 const months = computed(() => {
   const set = new Set<string>();
   for (const item of soldItems.value) {
-    const d = new Date(item.dateAdded);
+    const d = new Date(lastSaleDate(item));
     if (!isNaN(d.getTime())) {
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       set.add(key);
@@ -211,7 +228,7 @@ const categories = computed(() => {
 
 const filteredSoldItems = computed(() => {
   return soldItems.value.filter(item => {
-    const d = new Date(item.dateAdded);
+    const d = new Date(lastSaleDate(item));
     const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const matchMonth = !selectedMonth.value || selectedMonth.value === monthKey;
     const matchStore = !selectedStore.value || item.location === selectedStore.value;
@@ -239,6 +256,15 @@ const topSoldItems = computed(() => {
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 });
+
+function daysBetweenLastSales(dates: string[] | undefined): string {
+  if (!dates || dates.length < 2) return '-';
+  const sorted = [...dates].sort();
+  const last = new Date(sorted[sorted.length - 1]);
+  const prev = new Date(sorted[sorted.length - 2]);
+  const diff = last.getTime() - prev.getTime();
+  return Math.round(diff / (1000 * 60 * 60 * 24)).toString();
+}
 
 function parsePrice(price: string | undefined): number {
   if (!price) return 0;

@@ -11,6 +11,7 @@ describe('availableQuantity', () => {
     minQuantity: 0,
     skuCodes: [],
     pastSales: 0,
+    saleDates: [],
     status: 'not_sold',
     dateAdded: '',
     location: '',
