@@ -2,6 +2,7 @@
 create table if not exists public.notes (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
+  folder_id uuid references public.folders(id) on delete cascade,
   title text not null,
   item_type text,
   sku text,
