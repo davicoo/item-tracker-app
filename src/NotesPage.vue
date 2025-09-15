@@ -1,37 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
-    <div class="max-w-screen-lg mx-auto p-4">
-      <div class="flex gap-6">
-        <aside class="w-48">
-          <div class="bg-white rounded shadow p-4 mb-4">
-            <h2 class="text-lg font-semibold mb-2">Folders</h2>
-            <ul>
-              <li
-                :class="['cursor-pointer mb-1', activeFolderId === null ? 'font-bold' : '']"
-                @click="activeFolderId = null"
-              >
-                All Notes
-              </li>
-              <li
-                v-for="folder in folders"
-                :key="folder.id"
-                :class="['cursor-pointer mb-1', folder.id === activeFolderId ? 'font-bold' : '']"
-                @click="activeFolderId = folder.id"
-              >
-                {{ folder.name }}
-              </li>
-            </ul>
-            <button
-              type="button"
-              class="text-sm text-blue-600 hover:underline mt-2"
-              @click="createFolder"
-            >
-              + New Folder
-            </button>
-          </div>
-        </aside>
-        <div class="flex-1 flex flex-col gap-6">
-          <div class="flex items-center justify-between">
+    <div class="max-w-screen-lg mx-auto p-4 flex flex-col gap-6">
+      <div class="flex items-center justify-between">
         <router-link
           to="/app"
           class="text-blue-600 hover:underline"
@@ -44,7 +14,6 @@
         <span />
       </div>
 
-
       <div
         v-if="showForm"
         class="bg-white rounded shadow p-4"
@@ -52,116 +21,15 @@
         <form @submit.prevent="saveNote">
           <div class="mb-4">
             <label
-              for="title"
+              for="text"
               class="block text-sm mb-1"
-            >Title</label>
-            <input
-              id="title"
-              v-model="form.title"
+            >Note</label>
+            <textarea
+              id="text"
+              v-model="form.text"
               class="w-full px-3 py-2 border rounded"
-              type="text"
               required
-            >
-          </div>
-          <div class="mb-4">
-            <label
-              for="folder"
-              class="block text-sm mb-1"
-            >Folder</label>
-            <select
-              id="folder"
-              v-model="form.folderId"
-              class="w-full px-3 py-2 border rounded"
-            >
-              <option value="">
-                --Select Folder--
-              </option>
-              <option
-                v-for="folder in folders"
-                :key="folder.id"
-                :value="folder.id"
-              >
-                {{ folder.name }}
-              </option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="itemType"
-              class="block text-sm mb-1"
-            >Item</label>
-            <select
-              id="itemType"
-              v-model="form.itemType"
-              class="w-full px-3 py-2 border rounded"
-            >
-              <option value="">
-                --Select Item--
-              </option>
-              <option
-                v-for="opt in itemOptions"
-                :key="opt"
-                :value="opt"
-              >
-                {{ opt }}
-              </option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="sku"
-              class="block text-sm mb-1"
-            >SKU</label>
-            <select
-              id="sku"
-              v-model="form.sku"
-              class="w-full px-3 py-2 border rounded"
-            >
-              <option value="">
-                --Select SKU--
-              </option>
-              <option
-                v-for="sku in skuOptions"
-                :key="sku"
-                :value="sku"
-              >
-                {{ sku }}
-              </option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="store"
-              class="block text-sm mb-1"
-            >Store</label>
-            <select
-              id="store"
-              v-model="form.store"
-              class="w-full px-3 py-2 border rounded"
-            >
-              <option value="">
-                --Select Store--
-              </option>
-              <option
-                v-for="store in storeOptions"
-                :key="store"
-                :value="store"
-              >
-                {{ store }}
-              </option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="date"
-              class="block text-sm mb-1"
-            >Reminder Date</label>
-            <input
-              id="date"
-              v-model="form.date"
-              type="date"
-              class="w-full px-3 py-2 border rounded"
-            >
+            />
           </div>
           <div class="mb-4">
             <label
@@ -177,15 +45,15 @@
           </div>
           <div class="mb-4">
             <label
-              for="text"
+              for="date"
               class="block text-sm mb-1"
-            >Note</label>
-            <textarea
-              id="text"
-              v-model="form.text"
+            >Reminder Date</label>
+            <input
+              id="date"
+              v-model="form.date"
+              type="date"
               class="w-full px-3 py-2 border rounded"
-              required
-            />
+            >
           </div>
           <div class="flex gap-2">
             <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
@@ -225,20 +93,12 @@
           :key="note.id"
           class="border-b last:border-b-0 pb-4 mb-4"
         >
-          <div class="flex justify-between mb-2">
-            <h3 class="font-bold">
-              {{ note.title }}
-            </h3>
-            <span class="text-sm text-gray-500">{{ formatDate(note.createdAt) }}</span>
+          <div class="mb-2 text-sm text-gray-500">
+            {{ formatDate(note.createdAt) }}
           </div>
           <p class="mb-2">
             {{ note.text }}
           </p>
-          <div class="text-sm text-gray-600 mb-2">
-            <span v-if="note.itemType">Item: {{ note.itemType }} </span>
-            <span v-if="note.sku">| SKU: {{ note.sku }} </span>
-            <span v-if="note.store">| Store: {{ note.store }}</span>
-          </div>
           <img
             v-if="note.imageUrl"
             :src="note.imageUrl"
@@ -269,127 +129,29 @@
       </div>
     </div>
   </div>
-  </div>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { supabase } from './supabaseClient'
-import type { Item } from './types/item'
 import { mapRecordToNote, type Note, type NoteRecord } from './types/note'
-import { mapRecordToFolder, type Folder, type FolderRecord } from './types/folder'
 
 const form = ref({
-  title: '',
-  folderId: '',
-  itemType: '',
-  sku: '',
-  store: '',
   text: '',
   image: null as File | null,
   date: ''
 })
 
 const notes = ref<Note[]>([])
-const folders = ref<Folder[]>([])
-const activeFolderId = ref<string | null>(null)
-const itemOptions = ref<string[]>([])
-const skuOptions = ref<string[]>([])
-const storeOptions = ref<string[]>([])
 
 const isAuthenticated = ref(false)
 const showForm = ref(false)
 const editingNoteId = ref<string | null>(null)
 
 onMounted(async () => {
-  await loadFolders()
   await loadNotes()
-  await fetchOptions()
   checkReminders()
 })
-
-async function loadFolders() {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const user = sessionData.session?.user
-  isAuthenticated.value = !!user
-
-  if (!user) {
-    const raw = localStorage.getItem('folders')
-    folders.value = raw ? JSON.parse(raw) : []
-    return
-  }
-
-  const { data, error } = await supabase
-    .from<FolderRecord>('folders')
-    .select('*')
-    .eq('user_id', user.id)
-
-  if (error) {
-    console.error('Failed to load folders from Supabase:', error)
-    alert('Could not load folders from the database.')
-    return
-  }
-
-  folders.value = data ? data.map(mapRecordToFolder) : []
-  saveFolders()
-}
-
-function saveFolders() {
-  if (isAuthenticated.value) {
-    return
-  }
-  try {
-    localStorage.setItem('folders', JSON.stringify(folders.value))
-  } catch (error) {
-    console.error('Failed to save folders:', error)
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      try {
-        localStorage.removeItem('folders')
-        localStorage.setItem('folders', JSON.stringify(folders.value))
-      } catch (retryError) {
-        console.error('Retry after clearing storage failed:', retryError)
-        alert('Browser storage limit exceeded. Folders were not saved.')
-      }
-    }
-  }
-}
-
-async function createFolder() {
-  const name = prompt('Folder name?')
-  if (!name) return
-
-  const { data: sessionData } = await supabase.auth.getSession()
-  const user = sessionData.session?.user
-
-  if (user) {
-    const { data: inserted, error } = await supabase
-      .from('folders')
-      .insert([{ user_id: user.id, name }])
-      .select('*')
-      .single()
-    if (error) {
-      console.error('Failed to create folder in Supabase:', error)
-      alert('Failed to create folder in the database.')
-      return
-    }
-    const folder = mapRecordToFolder(inserted as FolderRecord)
-    folders.value.push(folder)
-    saveFolders()
-    activeFolderId.value = folder.id
-    return
-  }
-
-  const id = crypto.randomUUID()
-  const folder: Folder = {
-    id,
-    name,
-    createdAt: new Date().toISOString(),
-  }
-  folders.value.push(folder)
-  saveFolders()
-  activeFolderId.value = id
-}
 
 async function loadNotes() {
 
@@ -439,33 +201,6 @@ function saveNotes() {
   }
 }
 
-async function fetchOptions() {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const user = sessionData.session?.user
-  if (!user) return
-
-  const { data: items } = await supabase
-    .from<Item>('items')
-    .select('name')
-    .eq('user_id', user.id)
-
-  if (items) {
-    const names = new Set(items.map(i => i.name))
-    itemOptions.value = Array.from(names)
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('store_types, sku_options')
-    .eq('id', user.id)
-    .single()
-
-  if (profile) {
-    storeOptions.value = (profile.store_types as string[]) || []
-    skuOptions.value = (profile.sku_options as string[]) || []
-  }
-}
-
 function handleImage(e: Event) {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
@@ -474,11 +209,6 @@ function handleImage(e: Event) {
 
 function resetForm() {
   form.value = {
-    title: '',
-    folderId: activeFolderId.value || '',
-    itemType: '',
-    sku: '',
-    store: '',
     text: '',
     image: null,
     date: ''
@@ -494,11 +224,6 @@ function startNewNote() {
 function startEdit(note: Note) {
   editingNoteId.value = note.id
   form.value = {
-    title: note.title,
-    folderId: note.folderId || '',
-    itemType: note.itemType,
-    sku: note.sku,
-    store: note.store,
     text: note.text,
     image: null,
     date: note.date || ''
@@ -547,11 +272,6 @@ async function saveNote() {
         const { error } = await supabase
           .from('notes')
           .update({
-            folder_id: form.value.folderId || null,
-            title: form.value.title,
-            item_type: form.value.itemType || null,
-            sku: form.value.sku || null,
-            store: form.value.store || null,
             text: form.value.text,
             image_url: imageUrl,
             date: reminderDate ?? null,
@@ -565,11 +285,6 @@ async function saveNote() {
         }
       }
 
-      existing.title = form.value.title
-      existing.folderId = form.value.folderId || undefined
-      existing.itemType = form.value.itemType
-      existing.sku = form.value.sku
-      existing.store = form.value.store
       existing.text = form.value.text
       existing.date = reminderDate
       if (imageUrl !== undefined) {
@@ -598,11 +313,6 @@ async function saveNote() {
           .insert([
             {
               user_id: user.id,
-              folder_id: form.value.folderId || null,
-              title: form.value.title,
-              item_type: form.value.itemType || null,
-              sku: form.value.sku || null,
-              store: form.value.store || null,
               text: form.value.text,
               image_url: imageUrl,
               date: reminderDate ?? null,
@@ -626,11 +336,6 @@ async function saveNote() {
       const createdAt = new Date().toISOString()
       const note: Note = {
         id: tempId,
-        folderId: form.value.folderId || undefined,
-        title: form.value.title,
-        itemType: form.value.itemType,
-        sku: form.value.sku,
-        store: form.value.store,
         text: form.value.text,
         imageUrl,
         date: reminderDate,
@@ -656,7 +361,6 @@ async function saveNote() {
 
 const sortedNotes = computed(() =>
   [...notes.value]
-    .filter(n => !activeFolderId.value || n.folderId === activeFolderId.value)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 )
 
@@ -672,7 +376,7 @@ function checkReminders() {
     .split('T')[0]
   for (const note of notes.value) {
     if (note.date === tomorrow) {
-      alert(`Reminder for tomorrow: ${note.title}`)
+      alert(`Reminder for tomorrow: ${note.text}`)
     }
   }
 }
