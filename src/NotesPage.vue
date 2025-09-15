@@ -30,6 +30,7 @@
               class="w-full px-3 py-2 border rounded"
               required
             />
+
           </div>
           <div class="mb-4">
             <label
