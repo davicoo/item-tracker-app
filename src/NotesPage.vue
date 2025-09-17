@@ -30,7 +30,6 @@
               class="w-full px-3 py-2 border rounded"
               required
             />
-
           </div>
           <div class="mb-4">
             <label
@@ -83,12 +82,48 @@
       </div>
 
       <div
+        v-if="isLoading && !notes.length"
+        class="bg-white rounded shadow p-4 text-center text-gray-500"
+      >
+        Loading notes...
+      </div>
+
+      <div
         v-if="notes.length"
         class="bg-white rounded shadow p-4"
       >
-        <h2 class="text-xl font-semibold mb-4">
-          Saved Notes
-        </h2>
+        <div class="flex items-center gap-2 mb-4">
+          <h2 class="text-xl font-semibold">
+            Saved Notes
+          </h2>
+          <div
+            v-if="isLoading"
+            class="flex items-center gap-1 text-sm text-gray-500"
+            aria-live="polite"
+          >
+            <svg
+              class="w-4 h-4 animate-spin text-gray-400"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
+            <span>Syncing…</span>
+          </div>
+        </div>
         <div
           v-for="note in sortedNotes"
           :key="note.id"
@@ -148,57 +183,167 @@ const notes = ref<Note[]>([])
 const isAuthenticated = ref(false)
 const showForm = ref(false)
 const editingNoteId = ref<string | null>(null)
+const isLoading = ref(true)
+const currentUserId = ref<string | null>(null)
 
-onMounted(async () => {
-  await loadNotes()
-  checkReminders()
+const NOTES_STORAGE_KEY = 'notes'
+const LAST_USER_STORAGE_KEY = 'notes:last-user'
+const GUEST_MARKER = 'guest'
+
+onMounted(() => {
+  hydrateNotesFromCache()
+  loadNotes().then(() => {
+    checkReminders()
+  })
 })
 
+function hydrateNotesFromCache() {
+  try {
+    const cachedUserId = resolveStoredUserId(localStorage.getItem(LAST_USER_STORAGE_KEY))
+    currentUserId.value = cachedUserId
+    isAuthenticated.value = !!cachedUserId
+    notes.value = loadNotesFromCache(cachedUserId)
+  } catch (error) {
+    console.warn('Failed to hydrate cached notes:', error)
+    currentUserId.value = null
+    isAuthenticated.value = false
+    notes.value = []
+  }
+}
+
+function resolveStoredUserId(raw: string | null): string | null {
+  if (!raw || raw === GUEST_MARKER) {
+    return null
+  }
+  return raw
+}
+
+function cacheKeyForUser(userId: string | null) {
+  return userId ? `${NOTES_STORAGE_KEY}:${userId}` : NOTES_STORAGE_KEY
+}
+
+function normalizeCachedNote(candidate: unknown): Note | null {
+  if (!candidate || typeof candidate !== 'object') {
+    return null
+  }
+  const record = candidate as Record<string, unknown>
+  if (typeof record.id !== 'string' || typeof record.text !== 'string' || typeof record.createdAt !== 'string') {
+    return null
+  }
+  const note: Note = {
+    id: record.id,
+    text: record.text,
+    createdAt: record.createdAt,
+  }
+  if (typeof record.imageUrl === 'string') {
+    note.imageUrl = record.imageUrl
+  }
+  if (typeof record.date === 'string') {
+    note.date = record.date
+  }
+  return note
+}
+
+function loadNotesFromCache(userId: string | null) {
+  try {
+    const raw = localStorage.getItem(cacheKeyForUser(userId))
+    if (!raw) {
+      return []
+    }
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+    return parsed
+      .map(normalizeCachedNote)
+      .filter((note): note is Note => note !== null)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  } catch (error) {
+    console.warn('Failed to read cached notes:', error)
+    return []
+  }
+}
+
+function persistNotesToCache(userId: string | null, noteList: Note[]) {
+  const key = cacheKeyForUser(userId)
+  try {
+    localStorage.setItem(key, JSON.stringify(noteList))
+  } catch (error) {
+    console.error(`Failed to save notes to ${key}:`, error)
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      try {
+        localStorage.removeItem(key)
+        localStorage.setItem(key, JSON.stringify(noteList))
+      } catch (retryError) {
+        console.error(`Retry after clearing storage key ${key} failed:`, retryError)
+        alert('Browser storage limit exceeded. Notes were not saved locally.')
+      }
+    }
+  }
+}
+
+function updateLastUserCache(userId: string | null) {
+  try {
+    if (userId) {
+      localStorage.setItem(LAST_USER_STORAGE_KEY, userId)
+    } else {
+      localStorage.setItem(LAST_USER_STORAGE_KEY, GUEST_MARKER)
+    }
+  } catch (error) {
+    console.warn('Failed to persist last user id:', error)
+  }
+}
 async function loadNotes() {
+  isLoading.value = true
+  const cachedUserId = currentUserId.value
 
-  const { data: sessionData } = await supabase.auth.getSession()
-  const user = sessionData.session?.user
-  isAuthenticated.value = !!user
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+    if (sessionError) {
+      throw sessionError
+    }
 
-  if (!user) {
-    const raw = localStorage.getItem('notes')
-    notes.value = raw ? JSON.parse(raw) : []
-    return
+    const user = sessionData.session?.user ?? null
+    currentUserId.value = user?.id ?? null
+    isAuthenticated.value = !!user
+    updateLastUserCache(currentUserId.value)
+
+    if (currentUserId.value !== cachedUserId) {
+      notes.value = loadNotesFromCache(currentUserId.value)
+    }
+
+    if (!user) {
+      return
+    }
+
+    const { data, error } = await supabase
+      .from<NoteRecord>('notes')
+      .select('id, text, image_url, date, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Failed to load notes from Supabase:', error)
+      alert('Could not load notes from the database.')
+      return
+    }
+
+    const loadedNotes = (data ?? []).map(mapRecordToNote)
+    notes.value = loadedNotes
+    saveNotes()
+  } catch (error) {
+    console.error('Unexpected error while loading notes:', error)
+    alert('Could not load notes. Please try again.')
+  } finally {
+    isLoading.value = false
   }
-
-  const { data, error } = await supabase
-    .from<NoteRecord>('notes')
-    .select('*')
-    .eq('user_id', user.id)
-
-  if (error) {
-    console.error('Failed to load notes from Supabase:', error)
-    alert('Could not load notes from the database.')
-    return
-  }
-
-  notes.value = data ? data.map(mapRecordToNote) : []
-  saveNotes()
 }
 
 function saveNotes() {
-  if (isAuthenticated.value) {
-    return
-  }
   try {
-    localStorage.setItem('notes', JSON.stringify(notes.value))
+    persistNotesToCache(currentUserId.value, notes.value)
   } catch (error) {
-    console.error('Failed to save notes:', error)
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      // Browser storage may be full from prior data. Remove notes and retry once.
-      try {
-        localStorage.removeItem('notes')
-        localStorage.setItem('notes', JSON.stringify(notes.value))
-      } catch (retryError) {
-        console.error('Retry after clearing storage failed:', retryError)
-        alert('Browser storage limit exceeded. Notes were not saved.')
-      }
-    }
+    console.error('Failed to persist notes locally:', error)
   }
 }
 
@@ -239,15 +384,14 @@ function cancelForm() {
 }
 
 async function deleteNote(id: string) {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const user = sessionData.session?.user
+  const userId = currentUserId.value
 
-  if (user) {
+  if (isAuthenticated.value && userId) {
     const { error } = await supabase
       .from('notes')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
     if (error) {
       console.error('Failed to delete note in Supabase:', error)
       alert('Failed to delete note from the database.')
@@ -267,9 +411,8 @@ async function saveNote() {
     if (index === -1) return
     const existing = notes.value[index]
     const finalize = async (imageUrl?: string) => {
-      const { data: sessionData } = await supabase.auth.getSession()
-      const user = sessionData.session?.user
-      if (user) {
+      const userId = currentUserId.value
+      if (isAuthenticated.value && userId) {
         const { error } = await supabase
           .from('notes')
           .update({
@@ -278,7 +421,7 @@ async function saveNote() {
             date: reminderDate ?? null,
           })
           .eq('id', existing.id)
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
         if (error) {
           console.error('Failed to update note in Supabase:', error)
           alert('Failed to update note in the database.')
@@ -286,11 +429,15 @@ async function saveNote() {
         }
       }
 
-      existing.text = form.value.text
-      existing.date = reminderDate
-      if (imageUrl !== undefined) {
-        existing.imageUrl = imageUrl
+      const updatedNote: Note = {
+        ...existing,
+        text: form.value.text,
+        date: reminderDate,
       }
+      if (imageUrl !== undefined) {
+        updatedNote.imageUrl = imageUrl
+      }
+      notes.value.splice(index, 1, updatedNote)
       saveNotes()
       cancelForm()
     }
@@ -304,22 +451,22 @@ async function saveNote() {
       await finalize()
     }
   } else {
-    const { data: sessionData } = await supabase.auth.getSession()
-    const user = sessionData.session?.user
+    const userId = currentUserId.value
 
     const finalize = async (imageUrl?: string) => {
-      if (user) {
+      if (isAuthenticated.value && userId) {
         const { data: inserted, error } = await supabase
           .from('notes')
           .insert([
             {
-              user_id: user.id,
+
+              user_id: userId,
               text: form.value.text,
               image_url: imageUrl,
               date: reminderDate ?? null,
             },
           ])
-          .select('*')
+          .select('id, text, image_url, date, created_at')
           .single()
         if (error) {
           console.error('Failed to save note in Supabase:', error)
@@ -327,7 +474,7 @@ async function saveNote() {
           return
         }
         const newNote = mapRecordToNote(inserted as NoteRecord)
-        notes.value.push(newNote)
+        notes.value = [newNote, ...notes.value]
         saveNotes()
         cancelForm()
         return
@@ -338,11 +485,15 @@ async function saveNote() {
       const note: Note = {
         id: tempId,
         text: form.value.text,
-        imageUrl,
-        date: reminderDate,
         createdAt,
       }
-      notes.value.push(note)
+      if (imageUrl) {
+        note.imageUrl = imageUrl
+      }
+      if (reminderDate) {
+        note.date = reminderDate
+      }
+      notes.value = [note, ...notes.value]
       saveNotes()
       cancelForm()
     }
