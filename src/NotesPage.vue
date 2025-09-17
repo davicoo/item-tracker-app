@@ -293,7 +293,6 @@ function updateLastUserCache(userId: string | null) {
     console.warn('Failed to persist last user id:', error)
   }
 }
-
 async function loadNotes() {
   isLoading.value = true
   const cachedUserId = currentUserId.value
@@ -460,6 +459,7 @@ async function saveNote() {
           .from('notes')
           .insert([
             {
+
               user_id: userId,
               text: form.value.text,
               image_url: imageUrl,
