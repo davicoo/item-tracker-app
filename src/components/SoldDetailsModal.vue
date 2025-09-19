@@ -3,10 +3,12 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-[--overlay-bg] px-4 py-6 backdrop-blur-sm"
     @click.self="emit('close')"
   >
+
     <div class="relative flex w-full max-w-5xl max-h-[min(90vh,900px)] flex-col overflow-hidden rounded-3xl border border-[--ui-border-color] bg-white/95 shadow-2xl shadow-primary-900/15 backdrop-blur">
       <button
         type="button"
         class="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-full border border-transparent bg-white/80 text-caption shadow-sm shadow-primary-500/15 transition hover:bg-primary-50/80 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
         @click="emit('close')"
       >
         <span class="sr-only">Close</span>
@@ -145,6 +147,7 @@
             </table>
           </div>
         </div>
+      </div>
 
         <div class="mt-10 grid gap-6 lg:grid-cols-2">
           <div class="rounded-2xl border border-[--ui-border-color] bg-white/95 p-6 shadow-sm shadow-primary-500/10">

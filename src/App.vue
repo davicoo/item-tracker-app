@@ -28,6 +28,7 @@
             <button
               type="button"
               class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-white/80 px-4 py-2 text-sm font-semibold text-title shadow-sm shadow-gray-950/10 transition hover:border-primary-300 hover:bg-primary-50/60 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
               @click="toggleMenu"
             >
               <svg
@@ -46,6 +47,7 @@
             <div
               v-if="showMenu"
               class="absolute right-0 z-[70] mt-3 w-72 rounded-2xl border border-[--ui-border-color] bg-white/95 p-3 shadow-2xl shadow-primary-900/20 backdrop-blur"
+
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
                 Tools
@@ -171,6 +173,7 @@
 
       <section class="relative overflow-hidden rounded-3xl border border-[--ui-border-color] bg-white/90 p-6 shadow-lg shadow-primary-500/10 backdrop-blur">
         <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.rose.200/40),transparent_55%)]" />
+
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-2xl font-semibold text-title">
@@ -183,6 +186,7 @@
           <button
             type="button"
             class="inline-flex items-center gap-2 rounded-full bg-primary-50/60 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-500/20 transition hover:bg-primary-100/80 hover:text-primary-800"
+
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -259,6 +263,7 @@
         <button
           type="button"
           class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-xl shadow-emerald-600/30 transition hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200"
+
           @click="showForm = true"
         >
           <svg

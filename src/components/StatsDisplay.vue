@@ -73,6 +73,9 @@
           {{ paidPercentLabel }}% of sold items paid
         </p>
       </div>
+      <p class="mt-2 text-xs text-caption">
+        {{ paidPercentLabel }}% of sold items paid
+      </p>
     </div>
     <button
       type="button"
@@ -97,6 +100,7 @@
           {{ revenuePercentLabel }}% collected
         </p>
         <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold">
+
           {{ toggleHint }}
           <svg
             class="size-4 transition-transform duration-300"
