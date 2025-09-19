@@ -212,7 +212,7 @@
             v-if="hasChartData"
             ref="chartCanvas"
             class="h-full w-full"
-          />
+          ></canvas>
           <p
             v-else
             class="flex h-full items-center justify-center text-center text-sm text-caption"
