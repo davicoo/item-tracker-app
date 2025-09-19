@@ -1,180 +1,224 @@
 <template>
   <div
-    class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[--overlay-bg] px-4 py-6 backdrop-blur-sm"
     @click.self="emit('close')"
   >
-    <div class="bg-white rounded-lg p-4 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+    <div class="relative flex w-full max-w-5xl max-h-[min(90vh,900px)] flex-col overflow-hidden rounded-3xl border border-[--ui-border-color] bg-white/95 shadow-2xl shadow-primary-900/15 backdrop-blur">
       <button
-        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        type="button"
+        class="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-full border border-transparent bg-white/80 text-caption shadow-sm shadow-primary-500/15 transition hover:bg-primary-50/80 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         @click="emit('close')"
       >
-        ✕
+        <span class="sr-only">Close</span>
+        <svg
+          class="size-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M6 6l12 12M6 18 18 6" />
+        </svg>
       </button>
-      <h2 class="mb-4 text-xl font-semibold">
-        Sold Items Details
-      </h2>
-      <div class="p-0">
-        <div class="flex flex-wrap gap-4 mb-6">
-          <select
-            v-model="selectedMonth"
-            class="select select-bordered"
-          >
-            <option value="">
-              All Months
-            </option>
-            <option
-              v-for="m in months"
-              :key="m"
-              :value="m"
-            >
-              {{ formatMonth(m) }}
-            </option>
-          </select>
-          <select
-            v-model="selectedStore"
-            class="select select-bordered"
-          >
-            <option value="">
-              All Stores
-            </option>
-            <option
-              v-for="s in stores"
-              :key="s"
-              :value="s"
-            >
-              {{ s }}
-            </option>
-          </select>
-          <select
-            v-model="selectedCategory"
-            class="select select-bordered"
-          >
-            <option value="">
-              All Categories
-            </option>
-            <option
-              v-for="c in categories"
-              :key="c"
-              :value="c"
-            >
-              {{ c }}
-            </option>
-          </select>
-        </div>
 
-        <h3 class="mb-2 text-lg font-semibold">
-          Sold Items
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="table w-full">
-            <thead>
-              <tr>
-                <th>
-                  Item
-                </th>
-                <th>
-                  Sale Dates
-                </th>
-                <th>
-                  Days Between Last Sales
-                </th>
-                <th>
-                  Price
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="item in filteredSoldItems"
-                :key="item.id"
-                class="hover"
-              >
-                <td>
-                  {{ item.name }}
-                </td>
-                <td>
-                  <div v-if="item.saleDates && item.saleDates.length">
-                    <div
-                      v-for="(d, i) in item.saleDates"
-                      :key="i"
-                    >
-                      {{ formatDate(d) }}
-                    </div>
-                  </div>
-                  <span v-else>-</span>
-                </td>
-                <td>
-                  {{ daysBetweenLastSales(item.saleDates) }}
-                </td>
-                <td>
-                  {{ item.price || '-' }}
-                </td>
-              </tr>
-              <tr v-if="!filteredSoldItems.length">
-                <td colspan="4" class="text-center">
-                  No sold items
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 class="mt-8 mb-2 text-lg font-semibold">
-          Sales by Store
-        </h3>
-        <ul class="mb-6 list-disc ps-5">
-          <li
-            v-for="s in storeSales"
-            :key="s.store"
-          >
-            {{ s.store }} - {{ s.count }} sold (${{ s.revenue.toFixed(2) }})
-          </li>
-          <li
-            v-if="!storeSales.length"
-            class="list-none text-gray-500"
-          >
-            No data
-          </li>
-        </ul>
-
-        <h3 class="mb-2 text-lg font-semibold">
-          Top Sold Items
-        </h3>
-        <ul class="mb-6 list-disc ps-5">
-          <li
-            v-for="ti in topSoldItems"
-            :key="ti.name"
-          >
-            {{ ti.name }} - {{ ti.count }}
-          </li>
-          <li
-            v-if="!topSoldItems.length"
-            class="list-none text-gray-500"
-          >
-            No data
-          </li>
-        </ul>
-
-        <h3 class="mb-2 text-lg font-semibold">
-          Sales Chart
-        </h3>
-        <div class="w-full h-64">
-          <canvas
-            v-if="hasChartData"
-            ref="chartCanvas"
-            class="w-full h-full"
-          />
-          <p
-            v-else
-            class="flex items-center justify-center h-full text-center text-gray-500"
-          >
-            No sales data
+      <div class="relative flex-1 overflow-y-auto px-6 py-8 sm:px-10">
+        <div class="max-w-3xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
+            Sales Overview
           </p>
+          <h2 class="mt-2 text-3xl font-semibold text-title">
+            Sold Items Details
+          </h2>
+          <p class="mt-3 text-sm text-caption">
+            Analyze performance across months, stores, and categories to understand how inventory is moving.
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-3">
+          <label class="flex flex-col gap-2 text-sm text-caption">
+            <span class="font-medium text-caption">Month</span>
+            <select
+              v-model="selectedMonth"
+              class="w-full rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            >
+              <option value="">
+                All Months
+              </option>
+              <option
+                v-for="m in months"
+                :key="m"
+                :value="m"
+              >
+                {{ formatMonth(m) }}
+              </option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-2 text-sm text-caption">
+            <span class="font-medium text-caption">Store</span>
+            <select
+              v-model="selectedStore"
+              class="w-full rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            >
+              <option value="">
+                All Stores
+              </option>
+              <option
+                v-for="s in stores"
+                :key="s"
+                :value="s"
+              >
+                {{ s }}
+              </option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-2 text-sm text-caption">
+            <span class="font-medium text-caption">Category</span>
+            <select
+              v-model="selectedCategory"
+              class="w-full rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            >
+              <option value="">
+                All Categories
+              </option>
+              <option
+                v-for="c in categories"
+                :key="c"
+                :value="c"
+              >
+                {{ c }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="mt-10 overflow-hidden rounded-2xl border border-[--ui-border-color] bg-white shadow-sm shadow-primary-500/10">
+          <div class="border-b border-[--ui-border-color] bg-gradient-to-r from-primary-50 via-white to-primary-50 px-6 py-4">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-caption">
+              Sold Items
+            </h3>
+          </div>
+          <div class="max-h-[320px] overflow-auto">
+            <table class="min-w-full divide-y divide-[--ui-border-color]">
+              <thead class="bg-white">
+                <tr class="text-left text-xs font-semibold uppercase tracking-[0.2em] text-caption">
+                  <th class="px-6 py-3">Item</th>
+                  <th class="px-6 py-3">Sale Dates</th>
+                  <th class="px-6 py-3">Days Between Last Sales</th>
+                  <th class="px-6 py-3">Price</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[--ui-border-color]">
+                <tr
+                  v-for="item in filteredSoldItems"
+                  :key="item.id"
+                  class="transition hover:bg-primary-50/60"
+                >
+                  <td class="px-6 py-4 text-sm font-medium text-title">
+                    {{ item.name }}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-[--body-text-color]">
+                    <div v-if="item.saleDates && item.saleDates.length" class="space-y-1">
+                      <div
+                        v-for="(d, i) in item.saleDates"
+                        :key="i"
+                      >
+                        {{ formatDate(d) }}
+                      </div>
+                    </div>
+                    <span v-else class="text-caption">-</span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-[--body-text-color]">
+                    {{ daysBetweenLastSales(item.saleDates) }}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-[--body-text-color]">
+                    {{ item.price || '-' }}
+                  </td>
+                </tr>
+                <tr v-if="!filteredSoldItems.length">
+                  <td colspan="4" class="px-6 py-12 text-center text-sm text-caption">
+                    No sold items match the selected filters.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-2xl border border-[--ui-border-color] bg-white/95 p-6 shadow-sm shadow-primary-500/10">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-caption">
+              Sales by Store
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm text-[--body-text-color]">
+              <li
+                v-for="s in storeSales"
+                :key="s.store"
+                class="flex items-center justify-between rounded-card bg-primary-50/60 px-4 py-3 text-sm"
+              >
+                <span class="font-medium text-title">{{ s.store }}</span>
+                <span class="text-caption">{{ s.count }} sold · ${{ s.revenue.toFixed(2) }}</span>
+              </li>
+              <li
+                v-if="!storeSales.length"
+                class="rounded-card bg-primary-50/60 px-4 py-3 text-sm text-caption"
+              >
+                No store data available.
+              </li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-[--ui-border-color] bg-white/95 p-6 shadow-sm shadow-primary-500/10">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-caption">
+              Top Sold Items
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm text-[--body-text-color]">
+              <li
+                v-for="ti in topSoldItems"
+                :key="ti.name"
+                class="flex items-center justify-between rounded-card bg-rose-50/60 px-4 py-3 text-sm"
+              >
+                <span class="font-medium text-title">{{ ti.name }}</span>
+                <span class="text-caption">{{ ti.count }} sold</span>
+              </li>
+              <li
+                v-if="!topSoldItems.length"
+                class="rounded-card bg-rose-50/60 px-4 py-3 text-sm text-caption"
+              >
+                No top sellers yet.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-10 rounded-2xl border border-dashed border-[--ui-border-color] bg-gradient-to-br from-primary-50 via-white to-rose-50 p-6 shadow-inner shadow-primary-500/10">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-caption">
+              Sales Chart
+            </h3>
+            <p class="text-xs text-caption">
+              Visualize month-over-month sales momentum.
+            </p>
+          </div>
+          <div class="mt-6 h-64 rounded-card bg-white/90 p-4 shadow-inner shadow-primary-500/10">
+            <canvas
+              v-if="hasChartData"
+              ref="chartCanvas"
+              class="h-full w-full"
+            />
+            <p
+              v-else
+              class="flex h-full items-center justify-center text-center text-sm text-caption"
+            >
+              No sales data available for the selected filters.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';

@@ -1,89 +1,211 @@
 <template>
-  <div class="min-h-screen bg-gray-100 text-gray-900 font-sans">
-    <div class="flex flex-col gap-6 px-4 pt-6 pb-6 max-w-screen-xl mx-auto overflow-y-auto">
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center space-x-2 flex-1">
-          <img
-            src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
-            alt="ConsignTracker logo"
-            class="h-[3.5rem] w-auto object-contain"
-            @error="(e) => (e.target as HTMLImageElement).src = '/ugly_192px.png'"
-          >
-          <h1 class="text-3xl font-bold leading-tight">
-            ConsignTracker
-            <span class="block text-sm font-normal">by UglyStuff.ca</span>
-          </h1>
-        </div>
-        <div
-          ref="menuRef"
-          class="relative"
-        >
-          <button
-            class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95 transition"
-            @click="toggleMenu"
-          >
-            ☰ Menu
-          </button>
+  <div class="min-h-screen bg-gradient-to-br from-slate-900/5 via-white to-rose-100/40 font-sans">
+    <div class="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-8 lg:px-12">
+      <div class="relative z-30 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/90 p-6 shadow-lg shadow-primary-500/10 backdrop-blur">
+        <div class="flex flex-wrap items-center justify-between gap-6">
+          <div class="flex flex-1 items-center gap-4">
+            <div class="flex size-14 items-center justify-center rounded-2xl bg-[--ui-soft-bg] shadow-inner shadow-gray-950/10">
+              <img
+                src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
+                alt="ConsignTracker logo"
+                class="h-12 w-auto rounded-none object-contain shadow-none"
+                @error="(e) => (e.target as HTMLImageElement).src = '/ugly_192px.png'"
+              >
+            </div>
+            <div>
+              <h1 class="text-3xl font-semibold text-title">
+                ConsignTracker
+              </h1>
+              <p class="text-sm text-caption">
+                by UglyStuff.ca
+              </p>
+            </div>
+          </div>
           <div
-            v-if="showMenu"
-            class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50"
+            ref="menuRef"
+            class="relative"
           >
-            <div class="px-4 py-2 text-xs font-semibold text-gray-500">
-              Tools
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-white/80 px-4 py-2 text-sm font-semibold text-title shadow-sm shadow-gray-950/10 transition hover:border-primary-300 hover:bg-primary-50/60 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              @click="toggleMenu"
+            >
+              <svg
+                class="size-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <span>Menu</span>
+            </button>
+            <div
+              v-if="showMenu"
+              class="absolute right-0 z-[70] mt-3 w-72 rounded-2xl border border-[--ui-border-color] bg-white/95 p-3 shadow-2xl shadow-primary-900/20 backdrop-blur"
+            >
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+                Tools
+              </div>
+              <button
+                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                @click="openExport"
+              >
+                <span>Export Data</span>
+                <svg
+                  class="size-4 text-caption"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <button
+                class="mt-1 flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                @click="goTo('/notes')"
+              >
+                <span>Notes</span>
+                <svg
+                  class="size-4 text-caption"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+                Settings
+              </div>
+              <button
+                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                @click="goTo('/settings')"
+              >
+                <span>Settings</span>
+                <svg
+                  class="size-4 text-caption"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+                Contact
+              </div>
+              <button
+                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                @click="reportIssue"
+              >
+                <span>Report an Issue</span>
+                <svg
+                  class="size-4 text-caption"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <button
+                class="mt-1 flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                @click="requestFeature"
+              >
+                <span>Request a Feature</span>
+                <svg
+                  class="size-4 text-caption"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+                Sign Out
+              </div>
+              <button
+                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-danger-600 transition hover:bg-danger-50"
+                @click="handleSignOut"
+              >
+                <span>Sign Out</span>
+                <svg
+                  class="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
             </div>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="openExport"
-            >
-              Export Data
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="goTo('/notes')"
-            >
-              Notes
-            </button>
-            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
-              Settings
-            </div>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="goTo('/settings')"
-            >
-              Settings
-            </button>
-            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
-              Contact
-            </div>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="reportIssue"
-            >
-              Report an Issue
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              @click="requestFeature"
-            >
-              Request a Feature
-            </button>
-            <div class="px-4 py-2 text-xs font-semibold text-gray-500 border-t">
-              Sign Out
-            </div>
-            <button
-              class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
-              @click="handleSignOut"
-            >
-              Sign Out
-            </button>
           </div>
         </div>
       </div>
 
-      <StatsDisplay
-        :stats="currentStats"
-        @show-sold-details="showSoldDetails = true"
-      />
+      <section class="relative overflow-hidden rounded-3xl border border-[--ui-border-color] bg-white/90 p-6 shadow-lg shadow-primary-500/10 backdrop-blur">
+        <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.rose.200/40),transparent_55%)]" />
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 class="text-2xl font-semibold text-title">
+              Dashboard Snapshot
+            </h2>
+            <p class="text-sm text-caption">
+              Monitor sales, payments, and outstanding totals at a glance.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-full bg-primary-50/60 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-500/20 transition hover:bg-primary-100/80 hover:text-primary-800"
+            @click="showSoldDetails = true"
+          >
+            View sold breakdown
+            <svg
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+        <div class="mt-6">
+          <StatsDisplay
+            :stats="currentStats"
+            @show-sold-details="showSoldDetails = true"
+          />
+        </div>
+      </section>
 
       <SoldDetailsModal
         v-if="showSoldDetails"
@@ -93,7 +215,7 @@
 
       <div
         v-if="lowStockItems.length"
-        class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded mb-4"
+        class="mb-4 flex items-center gap-3 rounded-card border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 shadow-sm shadow-warning-500/10"
       >
         ⚠️ {{ lowStockItems.length }} item(s) need restocking
       </div>
@@ -102,14 +224,14 @@
       <!-- Show server error if any -->
       <div
         v-if="serverError"
-        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+        class="mb-4 flex items-center gap-3 rounded-card border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700 shadow-sm shadow-danger-500/10"
       >
         {{ serverError }}
       </div>
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
+        class="fixed inset-0 z-40 flex items-center justify-center bg-[--overlay-bg] backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -120,7 +242,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-40"
+        class="fixed inset-0 z-40 flex items-center justify-center bg-[--overlay-bg] backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
@@ -132,67 +254,81 @@
     
       <div
         v-if="!showForm"
-        class="mb-6"
+        class="mb-6 flex justify-end sm:justify-start"
       >
         <button
-          class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition"
+          type="button"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-xl shadow-emerald-600/30 transition hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200"
           @click="showForm = true"
         >
+          <svg
+            class="size-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
           Add New Item
         </button>
       </div>
     
-      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 flex-wrap">
-        <label
-          for="view"
-          class="mr-2 text-sm text-gray-700"
-        >View:</label>
-        <select
-          id="view"
-          v-model="layout"
-          class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-        >
-          <option value="grid">
-            Grid
-          </option>
-          <option value="table">
-            Table
-          </option>
-        </select>
-        <template v-if="layout === 'grid'">
+      <div class="flex flex-col flex-wrap items-center gap-3 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] p-4 shadow-sm shadow-gray-950/10 sm:flex-row sm:justify-between">
+        <div class="flex flex-wrap items-center gap-3">
           <label
-            for="columns"
-            class="ml-4 mr-2 text-sm text-gray-700"
-          >Columns:</label>
+            for="view"
+            class="text-sm font-medium text-caption"
+          >View</label>
           <select
-            id="columns"
-            v-model.number="columns"
-            class="px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            id="view"
+            v-model="layout"
+            class="rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           >
-            <option :value="1">
-              1 column
+            <option value="grid">
+              Grid
             </option>
-            <option :value="2">
-              2 columns
-            </option>
-            <option :value="3">
-              3 columns
+            <option value="table">
+              Table
             </option>
           </select>
-        </template>
+          <template v-if="layout === 'grid'">
+            <label
+              for="columns"
+              class="text-sm font-medium text-caption"
+            >Columns</label>
+            <select
+              id="columns"
+              v-model.number="columns"
+              class="rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            >
+              <option :value="1">
+                1 column
+              </option>
+              <option :value="2">
+                2 columns
+              </option>
+              <option :value="3">
+                3 columns
+              </option>
+            </select>
+          </template>
+        </div>
       </div>
 
 
-      <div class="mb-4 flex flex-col sm:flex-row sm:items-end sm:space-x-2 space-y-2 sm:space-y-0">
+      <div class="flex flex-col gap-3 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] p-4 shadow-sm shadow-gray-950/10 sm:flex-row sm:items-center sm:justify-between">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search"
-          class="flex-1 px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          class="flex-1 rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         >
         <button
           v-if="searchQuery"
-          class="border border-gray-300 rounded px-2 py-1 bg-gray-100"
+          class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-[--ui-bg] px-3 py-2 text-sm font-medium text-caption transition hover:border-primary-300 hover:text-primary-600"
           @click="clearSearch"
         >
           Clear
@@ -201,7 +337,7 @@
 
       <div
         v-if="isLoading"
-        class="text-center py-8"
+        class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] py-12 text-center text-sm text-caption shadow-inner shadow-gray-950/5"
       >
         Loading items...
       </div>
@@ -287,6 +423,15 @@ const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 const showSoldDetails = ref(false);
 
+const isOverlayOpen = computed(() =>
+  showSoldDetails.value ||
+  showForm.value ||
+  editingItem.value !== null ||
+  showExportModal.value ||
+  showContact.value ||
+  !!selectedImage.value
+);
+
 function clearSearch() {
   searchQuery.value = '';
 }
@@ -346,7 +491,12 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside);
+  document.body.classList.remove('overflow-hidden');
 });
+
+watch(isOverlayOpen, value => {
+  document.body.classList.toggle('overflow-hidden', value);
+}, { immediate: true });
 
 const filteredItems = computed(() => {
   let results = items.value;
