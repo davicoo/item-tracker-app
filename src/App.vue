@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-[--ui-soft-bg] font-sans">
+  <div class="min-h-screen bg-gradient-to-br from-slate-900/5 via-white to-rose-100/40 font-sans">
     <div class="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-8 lg:px-12">
-      <div class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/80 p-6 shadow-sm shadow-gray-950/10 backdrop-blur">
+      <div class="relative z-30 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/90 p-6 shadow-lg shadow-primary-500/10 backdrop-blur">
         <div class="flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-1 items-center gap-4">
             <div class="flex size-14 items-center justify-center rounded-2xl bg-[--ui-soft-bg] shadow-inner shadow-gray-950/10">
@@ -27,7 +27,8 @@
           >
             <button
               type="button"
-              class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm font-semibold text-title shadow-sm shadow-gray-950/5 transition hover:border-primary-300 hover:text-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-white/80 px-4 py-2 text-sm font-semibold text-title shadow-sm shadow-gray-950/10 transition hover:border-primary-300 hover:bg-primary-50/60 hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
               @click="toggleMenu"
             >
               <svg
@@ -45,7 +46,8 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 z-50 mt-3 w-64 rounded-2xl border border-[--ui-border-color] bg-[--ui-bg] p-3 shadow-xl shadow-gray-950/20"
+              class="absolute right-0 z-[70] mt-3 w-72 rounded-2xl border border-[--ui-border-color] bg-white/95 p-3 shadow-2xl shadow-primary-900/20 backdrop-blur"
+
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
                 Tools
@@ -169,7 +171,9 @@
         </div>
       </div>
 
-      <section class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/80 p-6 shadow-sm shadow-gray-950/10 backdrop-blur">
+      <section class="relative overflow-hidden rounded-3xl border border-[--ui-border-color] bg-white/90 p-6 shadow-lg shadow-primary-500/10 backdrop-blur">
+        <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.rose.200/40),transparent_55%)]" />
+
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-2xl font-semibold text-title">
@@ -181,7 +185,8 @@
           </div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition hover:text-primary-500"
+            class="inline-flex items-center gap-2 rounded-full bg-primary-50/60 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-500/20 transition hover:bg-primary-100/80 hover:text-primary-800"
+
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -257,7 +262,8 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-btn bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-950/20 transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-xl shadow-emerald-600/30 transition hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200"
+
           @click="showForm = true"
         >
           <svg
@@ -422,6 +428,15 @@ const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 const showSoldDetails = ref(false);
 
+const isOverlayOpen = computed(() =>
+  showSoldDetails.value ||
+  showForm.value ||
+  editingItem.value !== null ||
+  showExportModal.value ||
+  showContact.value ||
+  !!selectedImage.value
+);
+
 function clearSearch() {
   searchQuery.value = '';
 }
@@ -481,7 +496,12 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside);
+  document.body.classList.remove('overflow-hidden');
 });
+
+watch(isOverlayOpen, value => {
+  document.body.classList.toggle('overflow-hidden', value);
+}, { immediate: true });
 
 const filteredItems = computed(() => {
   let results = items.value;

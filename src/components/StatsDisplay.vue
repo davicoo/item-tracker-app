@@ -1,65 +1,77 @@
 <template>
   <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <div class="rounded-card border border-[--ui-border-color] bg-[--ui-bg]/95 p-6 shadow-sm shadow-gray-950/10 backdrop-blur">
-      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-caption">
-        Inventory
-      </p>
-      <p class="mt-4 text-3xl font-semibold text-title">
-        {{ props.stats.items }}
-      </p>
-      <p class="mt-2 text-sm text-caption">
-        Active items in stock
-      </p>
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-500 via-sky-600 to-indigo-600 p-6 text-white shadow-xl shadow-sky-900/30">
+      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,theme(colors.white/0.3),transparent_55%)]" />
+      <div class="relative">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+          Inventory
+        </p>
+        <p class="mt-4 text-3xl font-semibold">
+          {{ props.stats.items }}
+        </p>
+        <p class="mt-2 text-sm text-white/80">
+          Active items in stock
+        </p>
+      </div>
     </div>
     <button
       type="button"
-      class="group rounded-card border border-[--ui-border-color] bg-[--ui-bg] p-6 text-left shadow-sm shadow-gray-950/10 transition hover:border-primary-300 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+      class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-fuchsia-500 via-purple-500 to-indigo-500 p-6 text-left text-white shadow-xl shadow-fuchsia-900/30 transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-200"
       @click="emit('show-sold-details')"
     >
-      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-caption">
-        Sold
-      </p>
-      <p class="mt-4 flex items-baseline gap-2 text-3xl font-semibold text-title">
-        {{ props.stats.sold }}
-        <span class="text-sm font-medium text-caption">items</span>
-      </p>
-      <div class="mt-5 h-2 w-full rounded-full bg-primary-100">
-        <div
-          class="h-2 rounded-full bg-primary-500 transition-all duration-500"
-          :style="{ width: soldPercent + '%' }"
-        />
+      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,theme(colors.white/0.25),transparent_55%)]" />
+      <div class="relative">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+          Sold
+        </p>
+        <p class="mt-4 flex items-baseline gap-2 text-3xl font-semibold">
+          {{ props.stats.sold }}
+          <span class="text-sm font-medium text-white/70">items</span>
+        </p>
+        <div class="mt-5 h-2 w-full rounded-full bg-white/30">
+          <div
+            class="h-2 rounded-full bg-white transition-all duration-500"
+            :style="{ width: soldPercent + '%' }"
+          />
+        </div>
+        <p class="mt-2 text-xs text-white/80">
+          {{ soldPercentLabel }}% of inventory sold
+        </p>
+        <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
+          View sold insights
+          <svg
+            class="size-4 transition-transform duration-300 group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
       </div>
-      <p class="mt-2 text-xs text-caption">
-        {{ soldPercentLabel }}% of inventory sold
-      </p>
-      <span class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary-600">
-        View sold insights
-        <svg
-          class="size-4 transition-transform duration-300 group-hover:translate-x-1"
-          fill="none"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      </span>
     </button>
-    <div class="rounded-card border border-[--ui-border-color] bg-[--ui-bg] p-6 shadow-sm shadow-gray-950/10">
-      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-caption">
-        Paid
-      </p>
-      <p class="mt-4 flex items-baseline gap-2 text-3xl font-semibold text-title">
-        {{ props.stats.sold_paid }}
-        <span class="text-sm font-medium text-caption">items</span>
-      </p>
-      <div class="mt-5 h-2 w-full rounded-full bg-success-100">
-        <div
-          class="h-2 rounded-full bg-success-500 transition-all duration-500"
-          :style="{ width: paidPercent + '%' }"
-        />
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-6 text-white shadow-xl shadow-emerald-900/30">
+      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,theme(colors.white/0.25),transparent_55%)]" />
+      <div class="relative">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+          Paid
+        </p>
+        <p class="mt-4 flex items-baseline gap-2 text-3xl font-semibold">
+          {{ props.stats.sold_paid }}
+          <span class="text-sm font-medium text-white/70">items</span>
+        </p>
+        <div class="mt-5 h-2 w-full rounded-full bg-white/30">
+          <div
+            class="h-2 rounded-full bg-white transition-all duration-500"
+            :style="{ width: paidPercent + '%' }"
+          />
+        </div>
+        <p class="mt-2 text-xs text-white/80">
+          {{ paidPercentLabel }}% of sold items paid
+        </p>
       </div>
       <p class="mt-2 text-xs text-caption">
         {{ paidPercentLabel }}% of sold items paid
@@ -67,12 +79,12 @@
     </div>
     <button
       type="button"
-      class="relative overflow-hidden rounded-card bg-gradient-to-br from-secondary-600 via-primary-600 to-primary-500 p-6 text-left text-white shadow-lg shadow-primary-950/20 transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+      class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-6 text-left text-white shadow-xl shadow-amber-900/30 transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200"
       @click="toggleOutstanding"
     >
-      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.white/0.35),transparent_55%)] opacity-70" />
+      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.white/0.35),transparent_55%)] opacity-80" />
       <div class="relative">
-        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
           {{ displayTitle }}
         </p>
         <p class="mt-4 text-3xl font-semibold">
@@ -87,7 +99,8 @@
         <p class="mt-2 text-xs text-white/80">
           {{ revenuePercentLabel }}% collected
         </p>
-        <span class="mt-4 inline-flex items-center gap-2 text-sm font-medium">
+        <span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold">
+
           {{ toggleHint }}
           <svg
             class="size-4 transition-transform duration-300"
