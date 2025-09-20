@@ -1,243 +1,264 @@
 <template>
-  <div class="relative z-50 bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-10 overflow-y-auto max-h-[90vh]">
-    <h2 class="text-xl font-semibold mb-4">
-      Edit Item
-    </h2>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
-      <input
-        v-model="form.name"
-        type="text"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        placeholder="Enter item name"
-      >
+  <div class="relative w-full max-w-2xl rounded-3xl border border-primary-100 bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 px-6 py-8 shadow-2xl shadow-primary-900/20 backdrop-blur-2xl ring-1 ring-white/70 sm:px-10 max-h-[calc(100vh-4rem)] overflow-y-auto">
+    <div class="flex flex-col gap-2 border-b border-primary-100/70 pb-6">
+      <span class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">Update Inventory</span>
+      <h2 class="text-2xl font-semibold text-title text-primary-900">
+        Edit Item
+      </h2>
+      <p class="text-sm text-primary-600">
+        Adjust stock levels, pricing, and sale history to keep your catalog accurate.
+      </p>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-      <input
-        v-model="form.location"
-        list="storeOptionsList"
-        type="text"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        placeholder="Enter item location"
-      >
-      <datalist id="storeOptionsList">
-        <option
-          v-for="store in storeOptions"
-          :key="store"
-          :value="store"
-        />
-      </datalist>
-    </div>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      <label class="flex flex-col gap-2 text-sm text-primary-600 sm:col-span-2">
+        <span class="font-medium text-primary-800">Item Name</span>
+        <input
+          v-model="form.name"
+          type="text"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          placeholder="Enter item name"
+        >
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Price</label>
-      <input
-        v-model="displayPrice"
-        type="text"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        placeholder="Enter item price"
-      >
-    </div>
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Location</span>
+        <input
+          v-model="form.location"
+          list="storeOptionsList"
+          type="text"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          placeholder="Enter item location"
+        >
+        <datalist id="storeOptionsList">
+          <option
+            v-for="store in storeOptions"
+            :key="store"
+            :value="store"
+          />
+        </datalist>
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Shop Fee %</label>
-      <input
-        v-model.number="form.feePercent"
-        type="number"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        min="0"
-        step="0.1"
-      >
-    </div>
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Price</span>
+        <input
+          v-model="displayPrice"
+          type="text"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          placeholder="Enter item price"
+        >
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-      <input
-        v-model.number="form.quantity"
-        type="number"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        min="1"
-      >
-    </div>
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Shop Fee %</span>
+        <input
+          v-model.number="form.feePercent"
+          type="number"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          min="0"
+          step="0.1"
+        >
+      </label>
 
-    <div class="mb-4">
-      <label
-        class="block text-sm font-medium text-gray-700 mb-1"
-        for="edit_min_quantity"
-      >Restock Alert Level</label>
-      <input
-        id="edit_min_quantity"
-        v-model.number="form.minQuantity"
-        type="number"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        min="0"
-      >
-    </div>
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Quantity</span>
+        <input
+          v-model.number="form.quantity"
+          type="number"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          min="1"
+        >
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Past Sales</label>
-      <input
-        v-model.number="form.pastSales"
-        type="number"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        min="0"
-      >
-    </div>
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Restock Alert Level</span>
+        <input
+          id="edit_min_quantity"
+          v-model.number="form.minQuantity"
+          type="number"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          min="0"
+        >
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Sale Dates</label>
-      <div
-        v-for="(d, idx) in form.saleDates"
-        :key="idx"
-        class="flex items-center mb-2"
-      >
-        <DatePicker v-model="form.saleDates[idx]" class="flex-1" />
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Past Sales</span>
+        <input
+          v-model.number="form.pastSales"
+          type="number"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          min="0"
+        >
+      </label>
+
+      <div class="sm:col-span-2">
+        <span class="block text-sm font-medium text-primary-800">Sale Dates</span>
+        <div
+          v-for="(d, idx) in form.saleDates"
+          :key="idx"
+          class="mt-2 flex flex-col gap-3 rounded-card border border-primary-100 bg-white/90 p-3 shadow-inner shadow-primary-900/5 sm:flex-row sm:items-center"
+        >
+          <DatePicker
+            v-model="form.saleDates[idx]"
+            class="flex-1"
+          />
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-full bg-danger-50 px-4 py-2 text-sm font-semibold text-danger-600 transition hover:bg-danger-100"
+            @click="removeSaleDate(idx)"
+          >
+            Remove
+          </button>
+        </div>
         <button
           type="button"
-          class="ml-2 text-red-600"
-          @click="removeSaleDate(idx)"
+          class="mt-3 inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/90 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-900/10 transition hover:bg-primary-50/80"
+          @click="addSaleDate"
         >
-          ✕
+          Add Sale Date
         </button>
       </div>
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary"
-        @click="addSaleDate"
-      >
-        Add Sale Date
-      </button>
-    </div>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">SKU Codes</label>
-      <input
-        v-model="skuInput"
-        list="skuOptionsList"
-        type="text"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        placeholder="ABC123, ABC124"
-      >
-      <datalist id="skuOptionsList">
-        <option
-          v-for="sku in skuOptions"
-          :key="sku"
-          :value="sku"
+      <label class="flex flex-col gap-2 text-sm text-primary-600 sm:col-span-2">
+        <span class="font-medium text-primary-800">SKU Codes</span>
+        <input
+          v-model="skuInput"
+          list="skuOptionsList"
+          type="text"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          placeholder="ABC123, ABC124"
+        >
+        <datalist id="skuOptionsList">
+          <option
+            v-for="sku in skuOptions"
+            :key="sku"
+            :value="sku"
+          />
+        </datalist>
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm text-primary-600">
+        <span class="font-medium text-primary-800">Date Added</span>
+        <DatePicker
+          v-model="form.dateAdded"
+          placeholder="Select day"
         />
-      </datalist>
-    </div>
+      </label>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Date Added</label>
-      <DatePicker
-        v-model="form.dateAdded"
-        placeholder="Select day"
-      />
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
-      <input
-        type="file"
-        accept="image/*"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        @change="onFileChange"
-      >
-      <div
-        v-if="previewUrl"
-        class="mt-2"
-      >
-        <img
-          :src="previewUrl"
-          alt="Preview"
-          class="mt-2 rounded max-w-full max-h-40 object-contain"
-        >
-        <button
-          class="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-          @click="editImage"
-        >
-          Edit Image
-        </button>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Item Details</label>
-      <textarea
-        v-model="form.details"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        rows="3"
-        placeholder="Enter item details"
-      />
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-      <select
-        v-model="form.status"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-      >
-        <option
-          v-for="option in statusOptions"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-      <div class="flex flex-wrap mb-2">
-        <span
-          v-for="(tag, idx) in form.tags"
-          :key="idx"
-          class="bg-gray-200 rounded-full px-2 py-1 text-sm mr-2 mb-2 flex items-center"
-        >
-          {{ tag }}
-          <button
-            class="ml-1 text-red-500"
-            @click="removeTag(idx)"
+      <div class="sm:col-span-2">
+        <label class="flex flex-col gap-2 text-sm text-primary-600">
+          <span class="font-medium text-primary-800">Image</span>
+          <input
+            type="file"
+            accept="image/*"
+            class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            @change="onFileChange"
           >
-            ✕
+        </label>
+        <div
+          v-if="previewUrl"
+          class="mt-3 rounded-card border border-primary-100 bg-white/90 p-3 shadow-inner shadow-primary-900/5"
+        >
+          <img
+            :src="previewUrl"
+            alt="Preview"
+            class="max-h-48 w-full rounded-card object-contain"
+          >
+          <button
+            class="mt-3 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-900/20 transition hover:from-primary-500 hover:via-indigo-500 hover:to-secondary-500"
+            @click="editImage"
+          >
+            Edit Image
           </button>
-        </span>
+        </div>
       </div>
-      <input
-        v-model="tagInput"
-        type="text"
-        class="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-purple-500 mb-4"
-        placeholder="Add tag and press Enter"
-        @keyup.enter.prevent="addTag"
-      >
+
+      <label class="flex flex-col gap-2 text-sm text-primary-600 sm:col-span-2">
+        <span class="font-medium text-primary-800">Item Details</span>
+        <textarea
+          v-model="form.details"
+          class="min-h-24 rounded-2xl border border-primary-100 bg-white/90 px-4 py-3 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          rows="3"
+          placeholder="Enter item details"
+        />
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm text-primary-600 sm:col-span-2">
+        <span class="font-medium text-primary-800">Status</span>
+        <select
+          v-model="form.status"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+        >
+          <option
+            v-for="option in statusOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </label>
+
+      <div class="sm:col-span-2">
+        <span class="block text-sm font-medium text-primary-800">Tags</span>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <template v-if="form.tags.length">
+            <span
+              v-for="(tag, idx) in form.tags"
+              :key="idx"
+              class="inline-flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 shadow-sm shadow-primary-900/10"
+            >
+              {{ tag }}
+              <button
+                type="button"
+                class="text-primary-500 transition hover:text-danger-500"
+                @click="removeTag(idx)"
+              >
+                ✕
+              </button>
+            </span>
+          </template>
+          <span
+            v-else
+            class="rounded-full bg-white/90 px-3 py-1 text-xs text-primary-500"
+          >
+            No tags added yet.
+          </span>
+        </div>
+        <input
+          v-model="tagInput"
+          type="text"
+          class="mt-3 rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          placeholder="Add tag and press Enter"
+          @keyup.enter.prevent="addTag"
+        >
+      </div>
     </div>
 
-    <div class="flex gap-3 mt-4">
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
       <button
-        class="bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold px-4 py-2 rounded-md shadow hover:opacity-90 active:scale-95 transition w-full disabled:opacity-50"
+        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
         :disabled="loading"
         @click="handleSubmit"
       >
         Update Item
       </button>
       <button
-        class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300 transition w-full"
+        class="inline-flex flex-1 items-center justify-center rounded-full border border-primary-100 bg-white/90 px-6 py-3 text-sm font-semibold text-primary-700 shadow-md shadow-primary-900/10 transition hover:bg-primary-50/80 disabled:opacity-60"
         :disabled="loading"
         @click="$emit('cancel')"
       >
         Cancel
       </button>
     </div>
+
     <div
       v-if="loading"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      class="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-[--overlay-bg]"
     >
-      <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent" />
+      <div class="h-12 w-12 animate-spin rounded-full border-4 border-white/80 border-t-transparent" />
     </div>
+
     <ImageCropper
       :src="cropperSrc"
       :visible="showCropper"
@@ -459,4 +480,3 @@ async function handleSubmit() {
 <style scoped>
 /* Add any component-specific styles here */
 </style>
-
