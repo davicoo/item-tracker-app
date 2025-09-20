@@ -54,12 +54,12 @@
         <input
           v-model.number="form.feePercent"
           type="number"
+
           class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           min="0"
           step="0.1"
         >
       </label>
-
       <label class="flex flex-col gap-2 text-sm text-primary-600">
         <span class="font-medium text-primary-800">Quantity</span>
         <input

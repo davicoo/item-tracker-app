@@ -26,6 +26,7 @@
           Sold
         </p>
         <p class="mt-4 flex items-baseline gap-2 text-4xl font-semibold text-primary-900">
+
           {{ props.stats.sold }}
           <span class="text-sm font-medium text-primary-600">items</span>
         </p>

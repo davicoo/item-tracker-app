@@ -7,6 +7,7 @@
       <span class="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full bg-primary-200/30 blur-3xl" />
       <button
         class="absolute right-5 top-5 inline-flex size-9 items-center justify-center rounded-full border border-white/60 bg-white/85 text-primary-600 shadow-sm shadow-primary-900/10 backdrop-blur transition hover:bg-primary-50/80 hover:text-primary-700"
+
         @click="emit('close')"
       >
         <span class="sr-only">Close</span>

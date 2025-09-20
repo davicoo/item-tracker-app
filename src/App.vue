@@ -13,6 +13,7 @@
         <span class="pointer-events-none absolute -right-28 -top-36 h-[20rem] w-[20rem] rounded-full bg-primary-200/40 blur-[150px]" />
         <span class="pointer-events-none absolute -left-28 bottom-2 h-72 w-72 rounded-full bg-secondary-200/45 blur-[130px]" />
         <div class="relative z-[460] flex flex-wrap items-center justify-between gap-6">
+
           <div class="flex flex-1 items-center gap-4">
             <div class="flex size-16 items-center justify-center rounded-[30px] bg-white/80 shadow-[0_18px_40px_-28px_rgba(71,80,255,0.9)] backdrop-blur">
               <img
@@ -138,6 +139,7 @@
               </button>
               <button
                 class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="requestFeature"
               >
                 <span>Request a Feature</span>
@@ -182,6 +184,7 @@
       <section class="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-white/92 via-primary-50/55 to-white/90 p-9 shadow-[0_42px_120px_-64px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl">
         <span class="pointer-events-none absolute -left-28 top-0 h-64 w-64 rounded-full bg-primary-200/45 blur-[150px]" />
         <span class="pointer-events-none absolute -right-20 bottom-6 h-60 w-60 rounded-full bg-secondary-200/40 blur-[140px]" />
+
         <div class="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-2xl font-semibold text-title text-primary-900">
@@ -194,6 +197,7 @@
           <button
             type="button"
             class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.85)] transition hover:-translate-y-0.5 hover:shadow-[0_34px_80px_-36px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -270,6 +274,7 @@
         <button
           type="button"
           class="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-8 py-3.5 text-base font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+
           @click="showForm = true"
         >
           <svg
@@ -286,7 +291,7 @@
           Add New Item
         </button>
       </div>
-    
+   
       <div class="flex flex-col flex-wrap items-center gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:justify-between">
         <div class="flex flex-wrap items-center gap-3">
           <label
@@ -329,8 +334,10 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
 
       <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+
         <input
           v-model="searchQuery"
           type="text"
