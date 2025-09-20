@@ -10,7 +10,9 @@
       <span class="pointer-events-none absolute -left-20 top-12 h-48 w-48 rounded-full bg-secondary-200/25 blur-[120px]" />
       <button
         type="button"
+
         class="absolute right-5 top-5 inline-flex size-9 items-center justify-center rounded-full border border-white/60 bg-white/85 text-primary-600 shadow-sm shadow-primary-900/10 backdrop-blur transition hover:bg-primary-50/80 hover:text-primary-700"
+
         @click="emit('close')"
       >
         <span class="sr-only">Close</span>
@@ -31,8 +33,7 @@
         <span class="font-medium text-primary-800">Your Email</span>
         <input
           v-model="from"
-          type="email"
-          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          type="email"          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           required
         >
       </label>
@@ -42,6 +43,7 @@
           v-model="subject"
           type="text"
           class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           required
         >
       </label>
@@ -56,6 +58,7 @@
       </label>
       <button
         class="mt-2 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+
         :disabled="sending"
       >
         <svg

@@ -79,6 +79,7 @@
               </button>
               <button
                 class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="goTo('/notes')"
               >
                 <span>Notes</span>
@@ -121,6 +122,7 @@
               </div>
               <button
                 class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="reportIssue"
               >
                 <span>Report an Issue</span>
@@ -138,6 +140,7 @@
               </button>
               <button
                 class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="requestFeature"
               >
                 <span>Request a Feature</span>
@@ -194,6 +197,7 @@
           <button
             type="button"
             class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_25px_60px_-35px_rgba(86,96,255,0.8)] transition hover:translate-y-[1px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -270,6 +274,7 @@
         <button
           type="button"
           class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_28px_70px_-40px_rgba(76,81,255,0.8)] drop-shadow-[0_10px_30px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-[0_34px_90px_-40px_rgba(76,81,255,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+
           @click="showForm = true"
         >
           <svg
@@ -329,6 +334,7 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
 
       <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
         <input

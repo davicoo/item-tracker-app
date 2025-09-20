@@ -1,5 +1,6 @@
 <template>
   <div
+
     class="fixed inset-0 z-[420] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
     @click.self="emit('close')"
   >
@@ -7,6 +8,7 @@
       <span class="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full bg-primary-200/30 blur-3xl" />
       <button
         class="absolute right-5 top-5 inline-flex size-9 items-center justify-center rounded-full border border-white/60 bg-white/85 text-primary-600 shadow-sm shadow-primary-900/10 backdrop-blur transition hover:bg-primary-50/80 hover:text-primary-700"
+
         @click="emit('close')"
       >
         <span class="sr-only">Close</span>
@@ -30,7 +32,9 @@
       <select
         id="format"
         v-model="format"
+
         class="mt-2 w-full rounded-btn border border-primary-100 bg-white/90 px-3 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
       >
         <option value="pdf">
           PDF
@@ -46,7 +50,9 @@
         </option>
       </select>
       <button
+
         class="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+
         :disabled="exporting"
         @click="handleExport"
       >
