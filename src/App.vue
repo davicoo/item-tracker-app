@@ -1,10 +1,12 @@
 <template>
   <div class="min-h-screen bg-[--ui-soft-bg] font-sans">
     <div class="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-8 lg:px-12">
-      <div class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/80 p-6 shadow-sm shadow-gray-950/10 backdrop-blur">
-        <div class="flex flex-wrap items-center justify-between gap-6">
+      <div class="relative overflow-hidden rounded-3xl border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-6 shadow-xl shadow-primary-500/10">
+        <span class="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary-300/30 blur-3xl" />
+        <span class="pointer-events-none absolute -left-16 bottom-0 h-52 w-52 rounded-full bg-secondary-300/25 blur-[120px]" />
+        <div class="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-1 items-center gap-4">
-            <div class="flex size-14 items-center justify-center rounded-2xl bg-[--ui-soft-bg] shadow-inner shadow-gray-950/10">
+            <div class="flex size-14 items-center justify-center rounded-2xl bg-white/70 shadow-inner shadow-primary-900/10 backdrop-blur">
               <img
                 src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
                 alt="ConsignTracker logo"
@@ -13,21 +15,21 @@
               >
             </div>
             <div>
-              <h1 class="text-3xl font-semibold text-title">
+              <h1 class="text-3xl font-semibold text-title text-primary-900">
                 ConsignTracker
               </h1>
-              <p class="text-sm text-caption">
+              <p class="text-sm text-caption text-primary-600">
                 by UglyStuff.ca
               </p>
             </div>
           </div>
           <div
             ref="menuRef"
-            class="relative"
+            class="relative z-50"
           >
             <button
               type="button"
-              class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm font-semibold text-title shadow-sm shadow-gray-950/5 transition hover:border-primary-300 hover:text-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              class="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-semibold text-primary-700 shadow-lg shadow-primary-900/10 backdrop-blur transition hover:border-primary-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
               @click="toggleMenu"
             >
               <svg
@@ -45,9 +47,9 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 z-50 mt-3 w-64 rounded-2xl border border-[--ui-border-color] bg-[--ui-bg] p-3 shadow-xl shadow-gray-950/20"
+              class="absolute right-0 z-50 mt-3 w-72 overflow-hidden rounded-2xl border border-primary-100 bg-[--ui-bg] p-3 shadow-2xl shadow-primary-900/20"
             >
-              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
               </div>
               <button
@@ -85,7 +87,7 @@
                 </svg>
               </button>
               <div class="my-2 h-px bg-[--ui-border-color]" />
-              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Settings
               </div>
               <button
@@ -106,7 +108,7 @@
                 </svg>
               </button>
               <div class="my-2 h-px bg-[--ui-border-color]" />
-              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Contact
               </div>
               <button
@@ -144,7 +146,7 @@
                 </svg>
               </button>
               <div class="my-2 h-px bg-[--ui-border-color]" />
-              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-caption">
+              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-danger-500">
                 Sign Out
               </div>
               <button
@@ -169,19 +171,19 @@
         </div>
       </div>
 
-      <section class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg]/80 p-6 shadow-sm shadow-gray-950/10 backdrop-blur">
+      <section class="rounded-3xl border border-primary-100 bg-gradient-to-br from-white via-primary-50/40 to-white p-6 shadow-lg shadow-primary-500/10">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 class="text-2xl font-semibold text-title">
+            <h2 class="text-2xl font-semibold text-title text-primary-900">
               Dashboard Snapshot
             </h2>
-            <p class="text-sm text-caption">
+            <p class="text-sm text-caption text-primary-600">
               Monitor sales, payments, and outstanding totals at a glance.
             </p>
           </div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition hover:text-primary-500"
+            class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-primary-600 shadow-sm shadow-primary-900/10 transition hover:bg-white"
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -230,7 +232,7 @@
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 z-40 flex items-center justify-center bg-[--overlay-bg] backdrop-blur-sm"
+        class="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -241,7 +243,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 z-40 flex items-center justify-center bg-[--overlay-bg] backdrop-blur-sm"
+        class="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
@@ -257,7 +259,7 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-btn bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-950/20 transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 ring-1 ring-inset ring-white/20 transition hover:translate-y-0.5 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
           @click="showForm = true"
         >
           <svg
@@ -275,16 +277,16 @@
         </button>
       </div>
     
-      <div class="flex flex-col flex-wrap items-center gap-3 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] p-4 shadow-sm shadow-gray-950/10 sm:flex-row sm:justify-between">
+      <div class="flex flex-col flex-wrap items-center gap-3 rounded-3xl border border-primary-100 bg-gradient-to-r from-white via-primary-50/60 to-white p-4 shadow-lg shadow-primary-500/10 sm:flex-row sm:justify-between">
         <div class="flex flex-wrap items-center gap-3">
           <label
             for="view"
-            class="text-sm font-medium text-caption"
+            class="text-sm font-medium text-primary-600"
           >View</label>
           <select
             id="view"
             v-model="layout"
-            class="rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            class="rounded-btn border border-primary-100 bg-white/70 px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           >
             <option value="grid">
               Grid
@@ -296,12 +298,12 @@
           <template v-if="layout === 'grid'">
             <label
               for="columns"
-              class="text-sm font-medium text-caption"
+              class="text-sm font-medium text-primary-600"
             >Columns</label>
             <select
               id="columns"
               v-model.number="columns"
-              class="rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              class="rounded-btn border border-primary-100 bg-white/70 px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
             >
               <option :value="1">
                 1 column
@@ -318,16 +320,16 @@
       </div>
 
 
-      <div class="flex flex-col gap-3 rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] p-4 shadow-sm shadow-gray-950/10 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 rounded-3xl border border-primary-100 bg-white/80 p-4 shadow-lg shadow-primary-500/10 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search"
-          class="flex-1 rounded-btn border border-[--ui-border-color] bg-[--ui-soft-bg] px-4 py-2 text-sm text-[--body-text-color] shadow-sm shadow-gray-950/5 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          class="flex-1 rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         >
         <button
           v-if="searchQuery"
-          class="inline-flex items-center gap-2 rounded-btn border border-[--ui-border-color] bg-[--ui-bg] px-3 py-2 text-sm font-medium text-caption transition hover:border-primary-300 hover:text-primary-600"
+          class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/80 px-4 py-2 text-sm font-medium text-primary-600 shadow-sm shadow-primary-500/10 transition hover:bg-white"
           @click="clearSearch"
         >
           Clear
@@ -336,7 +338,7 @@
 
       <div
         v-if="isLoading"
-        class="rounded-3xl border border-[--ui-border-color] bg-[--ui-bg] py-12 text-center text-sm text-caption shadow-inner shadow-gray-950/5"
+        class="rounded-3xl border border-primary-100 bg-white/70 py-12 text-center text-sm text-primary-600 shadow-inner shadow-primary-900/10"
       >
         Loading items...
       </div>
@@ -422,6 +424,16 @@ const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 const showSoldDetails = ref(false);
 
+const blockingOverlayActive = computed(
+  () =>
+    showForm.value ||
+    Boolean(editingItem.value) ||
+    showSoldDetails.value ||
+    showExportModal.value ||
+    showContact.value ||
+    Boolean(selectedImage.value)
+);
+
 function clearSearch() {
   searchQuery.value = '';
 }
@@ -481,7 +493,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside);
+  document.body.classList.remove('overflow-hidden');
 });
+
+watch(
+  blockingOverlayActive,
+  value => {
+    document.body.classList.toggle('overflow-hidden', value);
+  },
+  { immediate: true }
+);
 
 const filteredItems = computed(() => {
   let results = items.value;
