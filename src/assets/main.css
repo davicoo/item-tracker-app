@@ -7,11 +7,12 @@
 
 
 :root {
-  --ui-bg: rgba(255, 255, 255, 0.92);
-  --ui-soft-bg: #f1f4ff;
-  --ui-panel-bg: rgba(255, 255, 255, 0.82);
+  --ui-bg: rgba(255, 255, 255, 0.985);
+  --ui-soft-bg: #e7e7ff;
+  --ui-panel-bg: rgba(255, 255, 255, 0.92);
   --body-text-color: #1d2147;
-  --overlay-bg: rgba(18, 21, 46, 0.58);
+  --overlay-bg: rgba(18, 21, 46, 0.72);
+
 }
 
 

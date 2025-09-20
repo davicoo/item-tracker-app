@@ -1,5 +1,7 @@
 <template>
-  <div class="relative w-full max-w-2xl rounded-3xl border border-primary-100 bg-[--ui-bg] px-6 py-8 shadow-2xl shadow-primary-900/20 sm:px-10">
+
+  <div class="relative w-full max-w-2xl rounded-3xl border border-primary-100 bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 px-6 py-8 shadow-2xl shadow-primary-900/20 sm:px-10">
+
     <div class="flex flex-col gap-2 border-b border-primary-100/70 pb-6">
       <span class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">Update Inventory</span>
       <h2 class="text-2xl font-semibold text-title text-primary-900">
@@ -16,7 +18,8 @@
         <input
           v-model="form.name"
           type="text"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           placeholder="Enter item name"
         >
       </label>
@@ -27,7 +30,7 @@
           v-model="form.location"
           list="storeOptionsList"
           type="text"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           placeholder="Enter item location"
         >
         <datalist id="storeOptionsList">
@@ -44,7 +47,7 @@
         <input
           v-model="displayPrice"
           type="text"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           placeholder="Enter item price"
         >
       </label>
@@ -54,7 +57,8 @@
         <input
           v-model.number="form.feePercent"
           type="number"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           min="0"
           step="0.1"
         >
@@ -65,7 +69,9 @@
         <input
           v-model.number="form.quantity"
           type="number"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           min="1"
         >
       </label>
@@ -76,7 +82,9 @@
           id="edit_min_quantity"
           v-model.number="form.minQuantity"
           type="number"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           min="0"
         >
       </label>
@@ -86,7 +94,9 @@
         <input
           v-model.number="form.pastSales"
           type="number"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           min="0"
         >
       </label>
@@ -96,7 +106,9 @@
         <div
           v-for="(d, idx) in form.saleDates"
           :key="idx"
-          class="mt-2 flex flex-col gap-3 rounded-card border border-primary-100 bg-white/70 p-3 shadow-inner shadow-primary-900/5 sm:flex-row sm:items-center"
+
+          class="mt-2 flex flex-col gap-3 rounded-card border border-primary-100 bg-white/90 p-3 shadow-inner shadow-primary-900/5 sm:flex-row sm:items-center"
+
         >
           <DatePicker
             v-model="form.saleDates[idx]"
@@ -112,7 +124,9 @@
         </div>
         <button
           type="button"
-          class="mt-3 inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-900/10 transition hover:bg-white"
+
+          class="mt-3 inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/90 px-4 py-2 text-sm font-semibold text-primary-700 shadow-sm shadow-primary-900/10 transition hover:bg-primary-50/80"
+
           @click="addSaleDate"
         >
           Add Sale Date
@@ -125,7 +139,9 @@
           v-model="skuInput"
           list="skuOptionsList"
           type="text"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           placeholder="ABC123, ABC124"
         >
         <datalist id="skuOptionsList">
@@ -151,13 +167,17 @@
           <input
             type="file"
             accept="image/*"
-            class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+            class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
             @change="onFileChange"
           >
         </label>
         <div
           v-if="previewUrl"
-          class="mt-3 rounded-card border border-primary-100 bg-white/70 p-3 shadow-inner shadow-primary-900/5"
+
+          class="mt-3 rounded-card border border-primary-100 bg-white/90 p-3 shadow-inner shadow-primary-900/5"
+
         >
           <img
             :src="previewUrl"
@@ -165,7 +185,9 @@
             class="max-h-48 w-full rounded-card object-contain"
           >
           <button
-            class="mt-3 inline-flex items-center justify-center rounded-full bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-900/20 transition hover:bg-primary-500"
+
+            class="mt-3 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-900/20 transition hover:from-primary-500 hover:via-indigo-500 hover:to-secondary-500"
+
             @click="editImage"
           >
             Edit Image
@@ -177,7 +199,9 @@
         <span class="font-medium text-primary-800">Item Details</span>
         <textarea
           v-model="form.details"
-          class="min-h-24 rounded-2xl border border-primary-100 bg-white/70 px-4 py-3 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="min-h-24 rounded-2xl border border-primary-100 bg-white/90 px-4 py-3 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           rows="3"
           placeholder="Enter item details"
         />
@@ -187,7 +211,9 @@
         <span class="font-medium text-primary-800">Status</span>
         <select
           v-model="form.status"
-          class="rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
         >
           <option
             v-for="option in statusOptions"
@@ -220,7 +246,9 @@
           </template>
           <span
             v-else
-            class="rounded-full bg-white/70 px-3 py-1 text-xs text-primary-500"
+
+            class="rounded-full bg-white/90 px-3 py-1 text-xs text-primary-500"
+
           >
             No tags added yet.
           </span>
@@ -228,7 +256,9 @@
         <input
           v-model="tagInput"
           type="text"
-          class="mt-3 rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="mt-3 rounded-btn border border-primary-100 bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
           placeholder="Add tag and press Enter"
           @keyup.enter.prevent="addTag"
         >
@@ -237,14 +267,18 @@
 
     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
       <button
-        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+
+        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+
         :disabled="loading"
         @click="handleSubmit"
       >
         Update Item
       </button>
       <button
-        class="inline-flex flex-1 items-center justify-center rounded-full border border-primary-100 bg-white/80 px-6 py-3 text-sm font-semibold text-primary-700 shadow-md shadow-primary-900/10 transition hover:bg-white disabled:opacity-60"
+
+        class="inline-flex flex-1 items-center justify-center rounded-full border border-primary-100 bg-white/90 px-6 py-3 text-sm font-semibold text-primary-700 shadow-md shadow-primary-900/10 transition hover:bg-primary-50/80 disabled:opacity-60"
+
         :disabled="loading"
         @click="$emit('cancel')"
       >

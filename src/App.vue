@@ -1,5 +1,4 @@
 <template>
-
   <div class="min-h-screen pb-16 font-sans">
     <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 py-12 sm:px-8 lg:px-12">
       <span
@@ -13,10 +12,9 @@
       <div class="relative overflow-visible rounded-[36px] bg-white/80 p-8 shadow-[0_45px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-xl">
         <span class="pointer-events-none absolute -right-24 -top-32 h-[19rem] w-[19rem] rounded-full bg-primary-300/35 blur-[140px]" />
         <span class="pointer-events-none absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-secondary-200/40 blur-[120px]" />
-        <div class="relative z-[60] flex flex-wrap items-center justify-between gap-6">
+        <div class="relative z-[220] flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-1 items-center gap-4">
             <div class="flex size-16 items-center justify-center rounded-[30px] bg-white/80 shadow-[0_18px_40px_-28px_rgba(71,80,255,0.9)] backdrop-blur">
-
               <img
                 src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
                 alt="ConsignTracker logo"
@@ -35,12 +33,11 @@
           </div>
           <div
             ref="menuRef"
-            class="relative z-[120]"
+            class="relative z-[360]"
           >
             <button
               type="button"
               class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_20px_45px_-25px_rgba(67,74,255,0.9)] transition hover:translate-y-[1px] hover:shadow-[0_28px_60px_-30px_rgba(67,74,255,0.95)] backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
-
               @click="toggleMenu"
             >
               <svg
@@ -58,13 +55,13 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 top-full z-[120] mt-4 w-72 overflow-hidden rounded-[28px] bg-gradient-to-br from-white/95 via-primary-50/70 to-white/95 p-4 shadow-[0_34px_80px_-44px_rgba(70,74,255,0.45)] backdrop-blur-xl"
+              class="absolute right-0 top-full z-[380] mt-4 w-72 overflow-hidden rounded-[28px] bg-gradient-to-br from-white/98 via-primary-50/80 to-white/98 p-4 shadow-[0_34px_80px_-44px_rgba(70,74,255,0.5)] backdrop-blur-xl"
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
                 @click="openExport"
               >
                 <span>Export Data</span>
@@ -81,7 +78,8 @@
                 </svg>
               </button>
               <button
-                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
+                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="goTo('/notes')"
               >
                 <span>Notes</span>
@@ -102,7 +100,7 @@
                 Settings
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
                 @click="goTo('/settings')"
               >
                 <span>Settings</span>
@@ -123,7 +121,8 @@
                 Contact
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="reportIssue"
               >
                 <span>Report an Issue</span>
@@ -140,7 +139,8 @@
                 </svg>
               </button>
               <button
-                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
+                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
+
                 @click="requestFeature"
               >
                 <span>Request a Feature</span>
@@ -161,7 +161,7 @@
                 Sign Out
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-danger-600 transition hover:bg-danger-50/80"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-danger-600 transition hover:bg-danger-100/80"
                 @click="handleSignOut"
               >
                 <span>Sign Out</span>
@@ -196,7 +196,6 @@
           </div>
           <button
             type="button"
-
             class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_25px_60px_-35px_rgba(86,96,255,0.8)] transition hover:translate-y-[1px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
 
             @click="showSoldDetails = true"
@@ -247,7 +246,7 @@
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -258,7 +257,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
@@ -274,7 +273,8 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_28px_70px_-40px_rgba(76,81,255,0.8)] transition hover:translate-y-0.5 hover:shadow-[0_34px_90px_-40px_rgba(76,81,255,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_28px_70px_-40px_rgba(76,81,255,0.8)] drop-shadow-[0_10px_30px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-[0_34px_90px_-40px_rgba(76,81,255,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+
           @click="showForm = true"
         >
           <svg
@@ -302,7 +302,6 @@
             id="view"
             v-model="layout"
             class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
-
           >
             <option value="grid">
               Grid
@@ -320,7 +319,6 @@
               id="columns"
               v-model.number="columns"
               class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
-
             >
               <option :value="1">
                 1 column
@@ -338,17 +336,16 @@
 
       <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
 
+      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search"
-
           class="flex-1 rounded-btn bg-white/85 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
         >
         <button
           v-if="searchQuery"
-          class="inline-flex items-center gap-2 rounded-full bg-white/75 px-4 py-2 text-sm font-medium text-primary-600 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:bg-white"
-
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-50/90 via-primary-100/90 to-primary-50/90 px-4 py-2 text-sm font-medium text-primary-600 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:from-primary-100 hover:via-primary-200 hover:to-primary-100"
           @click="clearSearch"
         >
           Clear

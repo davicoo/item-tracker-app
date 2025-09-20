@@ -1,9 +1,9 @@
 <template>
 
   <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-    <div class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-white/95 via-primary-50/60 to-white/95 p-6 shadow-[0_32px_90px_-60px_rgba(86,97,255,0.58)] backdrop-blur">
+    <div class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-primary-50/95 via-white/98 to-secondary-50/90 p-6 shadow-[0_32px_90px_-60px_rgba(86,97,255,0.6)] backdrop-blur">
       <span class="pointer-events-none absolute -right-12 -top-16 h-36 w-36 rounded-full bg-primary-200/60 blur-3xl" />
-      <span class="pointer-events-none absolute -left-12 bottom-0 h-36 w-36 rounded-full bg-secondary-200/45 blur-3xl" />
+
       <div class="relative">
         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
           Inventory
@@ -18,7 +18,8 @@
     </div>
     <button
       type="button"
-      class="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-white/95 via-sky-100/60 to-white/95 p-6 text-left shadow-[0_32px_90px_-60px_rgba(86,97,255,0.58)] backdrop-blur transition hover:-translate-y-1 hover:shadow-[0_42px_110px_-60px_rgba(86,97,255,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+      class="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-sky-100/95 via-primary-50/80 to-white/95 p-6 text-left shadow-[0_32px_90px_-60px_rgba(86,97,255,0.6)] backdrop-blur transition hover:-translate-y-1 hover:shadow-[0_42px_110px_-60px_rgba(86,97,255,0.72)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
 
       @click="emit('show-sold-details')"
     >
@@ -56,8 +57,8 @@
         </span>
       </div>
     </button>
-    <div class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-success-50/80 via-white/90 to-success-50/75 p-6 shadow-[0_32px_90px_-60px_rgba(34,197,94,0.35)] backdrop-blur">
-      <span class="pointer-events-none absolute -right-16 top-10 h-32 w-32 rounded-full bg-success-200/50 blur-3xl" />
+    <div class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-success-50/95 via-white/98 to-emerald-50/90 p-6 shadow-[0_32px_90px_-60px_rgba(34,197,94,0.4)] backdrop-blur">
+      <span class="pointer-events-none absolute -right-16 top-10 h-32 w-32 rounded-full bg-success-200/60 blur-3xl" />
 
       <div class="relative">
         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-success-600">
@@ -81,29 +82,30 @@
     <button
       type="button"
 
-      class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-indigo-500 via-primary-600 to-secondary-500 p-6 text-left text-white shadow-[0_40px_120px_-60px_rgba(76,81,255,0.7)] transition hover:-translate-y-1 hover:shadow-[0_46px_140px_-60px_rgba(76,81,255,0.85)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
-
+      class="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-[#8d73ff] via-[#7488ff] to-[#b07bff] p-6 text-left text-white shadow-[0_40px_120px_-60px_rgba(76,81,255,0.78)] drop-shadow-[0_18px_40px_rgba(79,70,150,0.4)] transition hover:-translate-y-1 hover:shadow-[0_46px_140px_-60px_rgba(76,81,255,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
       :aria-pressed="showOutstanding"
       @click="toggleOutstanding"
     >
-      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.white/0.4),transparent_55%)] opacity-80" />
+      <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.white/0.45),transparent_55%)] opacity-80" />
       <div class="relative">
-        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/85">
           {{ displayTitle }}
         </p>
-        <p class="mt-4 text-3xl font-semibold drop-shadow-sm">
+        <p class="mt-4 text-3xl font-semibold drop-shadow-[0_6px_18px_rgba(35,30,75,0.45)]">
+
           ${{ displayValue.toFixed(2) }}
         </p>
-        <div class="mt-5 h-2 w-full rounded-full bg-white/30">
+        <div class="mt-5 h-2 w-full rounded-full bg-white/40">
           <div
-            class="h-2 rounded-full bg-white/90 transition-all duration-500"
+            class="h-2 rounded-full bg-white transition-all duration-500"
             :style="{ width: revenuePercent + '%' }"
           />
         </div>
-        <p class="mt-2 text-xs text-white/85">
+
+        <p class="mt-2 text-xs text-white/90">
           {{ revenuePercentLabel }}% collected
         </p>
-        <span class="mt-4 inline-flex items-center gap-2 text-sm font-medium">
+        <span class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/90">
           {{ toggleHint }}
           <svg
             class="size-4 transition-transform duration-300"
