@@ -1,12 +1,22 @@
 <template>
-  <div class="min-h-screen bg-[--ui-soft-bg] font-sans">
-    <div class="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-8 lg:px-12">
-      <div class="relative overflow-hidden rounded-3xl border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-6 shadow-xl shadow-primary-500/10">
-        <span class="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary-300/30 blur-3xl" />
-        <span class="pointer-events-none absolute -left-16 bottom-0 h-52 w-52 rounded-full bg-secondary-300/25 blur-[120px]" />
-        <div class="relative z-10 flex flex-wrap items-center justify-between gap-6">
+
+  <div class="min-h-screen pb-16 font-sans">
+    <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 py-12 sm:px-8 lg:px-12">
+      <span
+        class="pointer-events-none absolute -left-28 top-20 hidden h-[22rem] w-[22rem] rounded-full bg-primary-300/30 blur-[140px] lg:block"
+        aria-hidden="true"
+      />
+      <span
+        class="pointer-events-none absolute -right-32 bottom-24 hidden h-[20rem] w-[20rem] rounded-full bg-secondary-300/25 blur-[140px] xl:block"
+        aria-hidden="true"
+      />
+      <div class="relative overflow-visible rounded-[36px] bg-white/80 p-8 shadow-[0_45px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-xl">
+        <span class="pointer-events-none absolute -right-24 -top-32 h-[19rem] w-[19rem] rounded-full bg-primary-300/35 blur-[140px]" />
+        <span class="pointer-events-none absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-secondary-200/40 blur-[120px]" />
+        <div class="relative z-[60] flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-1 items-center gap-4">
-            <div class="flex size-14 items-center justify-center rounded-2xl bg-white/70 shadow-inner shadow-primary-900/10 backdrop-blur">
+            <div class="flex size-16 items-center justify-center rounded-[30px] bg-white/80 shadow-[0_18px_40px_-28px_rgba(71,80,255,0.9)] backdrop-blur">
+
               <img
                 src="https://ielukqallxtceqmobmvp.supabase.co/storage/v1/object/public/images//uglysmall.png"
                 alt="ConsignTracker logo"
@@ -25,11 +35,12 @@
           </div>
           <div
             ref="menuRef"
-            class="relative z-50"
+            class="relative z-[120]"
           >
             <button
               type="button"
-              class="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-semibold text-primary-700 shadow-lg shadow-primary-900/10 backdrop-blur transition hover:border-primary-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_20px_45px_-25px_rgba(67,74,255,0.9)] transition hover:translate-y-[1px] hover:shadow-[0_28px_60px_-30px_rgba(67,74,255,0.95)] backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+
               @click="toggleMenu"
             >
               <svg
@@ -47,13 +58,13 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 z-50 mt-3 w-72 overflow-hidden rounded-2xl border border-primary-100 bg-[--ui-bg] p-3 shadow-2xl shadow-primary-900/20"
+              class="absolute right-0 top-full z-[120] mt-4 w-72 overflow-hidden rounded-[28px] bg-gradient-to-br from-white/95 via-primary-50/70 to-white/95 p-4 shadow-[0_34px_80px_-44px_rgba(70,74,255,0.45)] backdrop-blur-xl"
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
                 @click="openExport"
               >
                 <span>Export Data</span>
@@ -70,7 +81,7 @@
                 </svg>
               </button>
               <button
-                class="mt-1 flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
                 @click="goTo('/notes')"
               >
                 <span>Notes</span>
@@ -86,12 +97,12 @@
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </button>
-              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="my-3 h-px bg-white/60" />
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Settings
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
                 @click="goTo('/settings')"
               >
                 <span>Settings</span>
@@ -107,12 +118,12 @@
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </button>
-              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="my-3 h-px bg-white/60" />
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Contact
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
                 @click="reportIssue"
               >
                 <span>Report an Issue</span>
@@ -129,7 +140,7 @@
                 </svg>
               </button>
               <button
-                class="mt-1 flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-[--body-text-color] transition hover:bg-[--ui-soft-bg]"
+                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-white/70"
                 @click="requestFeature"
               >
                 <span>Request a Feature</span>
@@ -145,12 +156,12 @@
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </button>
-              <div class="my-2 h-px bg-[--ui-border-color]" />
+              <div class="my-3 h-px bg-white/60" />
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-danger-500">
                 Sign Out
               </div>
               <button
-                class="flex w-full items-center justify-between rounded-card px-3 py-2 text-sm font-medium text-danger-600 transition hover:bg-danger-50"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-danger-600 transition hover:bg-danger-50/80"
                 @click="handleSignOut"
               >
                 <span>Sign Out</span>
@@ -171,8 +182,10 @@
         </div>
       </div>
 
-      <section class="rounded-3xl border border-primary-100 bg-gradient-to-br from-white via-primary-50/40 to-white p-6 shadow-lg shadow-primary-500/10">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <section class="relative overflow-hidden rounded-[32px] bg-white/80 p-8 shadow-[0_38px_110px_-60px_rgba(88,100,255,0.55)] backdrop-blur-xl">
+        <span class="pointer-events-none absolute -left-24 top-0 h-60 w-60 rounded-full bg-primary-200/40 blur-[140px]" />
+        <span class="pointer-events-none absolute -right-16 bottom-0 h-56 w-56 rounded-full bg-secondary-200/35 blur-[130px]" />
+        <div class="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-2xl font-semibold text-title text-primary-900">
               Dashboard Snapshot
@@ -183,7 +196,9 @@
           </div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-primary-600 shadow-sm shadow-primary-900/10 transition hover:bg-white"
+
+            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_25px_60px_-35px_rgba(86,96,255,0.8)] transition hover:translate-y-[1px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+
             @click="showSoldDetails = true"
           >
             View sold breakdown
@@ -200,7 +215,7 @@
             </svg>
           </button>
         </div>
-        <div class="mt-6">
+        <div class="relative mt-6">
           <StatsDisplay
             :stats="currentStats"
             @show-sold-details="showSoldDetails = true"
@@ -216,7 +231,7 @@
 
       <div
         v-if="lowStockItems.length"
-        class="mb-4 flex items-center gap-3 rounded-card border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 shadow-sm shadow-warning-500/10"
+        class="mb-4 flex items-center gap-3 rounded-card bg-warning-100/80 px-4 py-3 text-sm text-warning-800 shadow-[0_12px_30px_-18px_rgba(217,119,6,0.5)]"
       >
         ⚠️ {{ lowStockItems.length }} item(s) need restocking
       </div>
@@ -225,7 +240,7 @@
       <!-- Show server error if any -->
       <div
         v-if="serverError"
-        class="mb-4 flex items-center gap-3 rounded-card border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700 shadow-sm shadow-danger-500/10"
+        class="mb-4 flex items-center gap-3 rounded-card bg-danger-100/80 px-4 py-3 text-sm text-danger-800 shadow-[0_12px_30px_-18px_rgba(220,38,38,0.45)]"
       >
         {{ serverError }}
       </div>
@@ -259,7 +274,7 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 ring-1 ring-inset ring-white/20 transition hover:translate-y-0.5 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_28px_70px_-40px_rgba(76,81,255,0.8)] transition hover:translate-y-0.5 hover:shadow-[0_34px_90px_-40px_rgba(76,81,255,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
           @click="showForm = true"
         >
           <svg
@@ -277,7 +292,7 @@
         </button>
       </div>
     
-      <div class="flex flex-col flex-wrap items-center gap-3 rounded-3xl border border-primary-100 bg-gradient-to-r from-white via-primary-50/60 to-white p-4 shadow-lg shadow-primary-500/10 sm:flex-row sm:justify-between">
+      <div class="flex flex-col flex-wrap items-center gap-3 rounded-[28px] bg-white/75 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:justify-between">
         <div class="flex flex-wrap items-center gap-3">
           <label
             for="view"
@@ -286,7 +301,8 @@
           <select
             id="view"
             v-model="layout"
-            class="rounded-btn border border-primary-100 bg-white/70 px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+            class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+
           >
             <option value="grid">
               Grid
@@ -303,7 +319,8 @@
             <select
               id="columns"
               v-model.number="columns"
-              class="rounded-btn border border-primary-100 bg-white/70 px-3 py-2 text-sm text-[--body-text-color] shadow-sm shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+
             >
               <option :value="1">
                 1 column
@@ -319,17 +336,19 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
 
-      <div class="flex flex-col gap-3 rounded-3xl border border-primary-100 bg-white/80 p-4 shadow-lg shadow-primary-500/10 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search"
-          class="flex-1 rounded-btn border border-primary-100 bg-white/70 px-4 py-2 text-sm text-[--body-text-color] shadow-inner shadow-primary-900/10 focus:border-primary-300 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+
+          class="flex-1 rounded-btn bg-white/85 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
         >
         <button
           v-if="searchQuery"
-          class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/80 px-4 py-2 text-sm font-medium text-primary-600 shadow-sm shadow-primary-500/10 transition hover:bg-white"
+          class="inline-flex items-center gap-2 rounded-full bg-white/75 px-4 py-2 text-sm font-medium text-primary-600 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:bg-white"
+
           @click="clearSearch"
         >
           Clear
@@ -338,7 +357,7 @@
 
       <div
         v-if="isLoading"
-        class="rounded-3xl border border-primary-100 bg-white/70 py-12 text-center text-sm text-primary-600 shadow-inner shadow-primary-900/10"
+        class="rounded-[28px] bg-white/75 py-12 text-center text-sm text-primary-600 shadow-[inset_0_0_0_1px_rgba(120,133,255,0.12)]"
       >
         Loading items...
       </div>
@@ -472,7 +491,6 @@ function reportIssue() {
 
 function requestFeature() {
   openContact('Feature Request');
-
 }
 
 async function handleSignOut() {
