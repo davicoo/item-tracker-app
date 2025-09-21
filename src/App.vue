@@ -245,7 +245,7 @@
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[1600] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -256,7 +256,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[1600] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
@@ -291,63 +291,62 @@
         </button>
       </div>
    
-      <div class="flex flex-col flex-wrap items-center gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:justify-between">
-        <div class="flex flex-wrap items-center gap-3">
-          <label
-            for="view"
-            class="text-sm font-medium text-primary-600"
-          >View</label>
-          <select
-            id="view"
-            v-model="layout"
-            class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
-          >
-            <option value="grid">
-              Grid
-            </option>
-            <option value="table">
-              Table
-            </option>
-          </select>
-          <template v-if="layout === 'grid'">
+      <div class="space-y-6 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl">
+        <div class="flex flex-col flex-wrap gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-wrap items-center gap-3">
             <label
-              for="columns"
+              for="view"
               class="text-sm font-medium text-primary-600"
-            >Columns</label>
+            >View</label>
             <select
-              id="columns"
-              v-model.number="columns"
+              id="view"
+              v-model="layout"
               class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
             >
-              <option :value="1">
-                1 column
+              <option value="grid">
+                Grid
               </option>
-              <option :value="2">
-                2 columns
-              </option>
-              <option :value="3">
-                3 columns
+              <option value="table">
+                Table
               </option>
             </select>
-          </template>
-        </div>
-      </div>
-
-      <div class="space-y-6 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl">
-        <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search"
-            class="flex-1 rounded-btn bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
-          >
-          <button
-            v-if="searchQuery"
-            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100/90 via-primary-200/90 to-primary-100/90 px-4 py-2 text-sm font-medium text-primary-700 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_55px_-32px_rgba(86,96,255,0.75)]"
-            @click="clearSearch"
-          >
-            Clear
-          </button>
+            <template v-if="layout === 'grid'">
+              <label
+                for="columns"
+                class="text-sm font-medium text-primary-600"
+              >Columns</label>
+              <select
+                id="columns"
+                v-model.number="columns"
+                class="rounded-btn bg-white/80 px-3 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.16)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+              >
+                <option :value="1">
+                  1 column
+                </option>
+                <option :value="2">
+                  2 columns
+                </option>
+                <option :value="3">
+                  3 columns
+                </option>
+              </select>
+            </template>
+          </div>
+          <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search"
+              class="w-full rounded-btn bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400 sm:w-72"
+            >
+            <button
+              v-if="searchQuery"
+              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100/90 via-primary-200/90 to-primary-100/90 px-4 py-2 text-sm font-medium text-primary-700 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_55px_-32px_rgba(86,96,255,0.75)]"
+              @click="clearSearch"
+            >
+              Clear
+            </button>
+          </div>
         </div>
 
         <div
@@ -379,7 +378,6 @@
             @duplicate-item="duplicateItem"
             @reset-item="resetItemForNewVersion"
           />
-
         </div>
       </div>
 
