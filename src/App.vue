@@ -9,7 +9,7 @@
         class="pointer-events-none absolute -right-40 bottom-28 hidden h-[22rem] w-[22rem] rounded-full bg-secondary-200/35 blur-[160px] xl:block"
         aria-hidden="true"
       />
-      <div class="relative overflow-visible rounded-[38px] bg-gradient-to-br from-white/92 via-white/85 to-white/92 p-9 shadow-[0_48px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-2xl ring-1 ring-white/60">
+      <div class="relative z-[1200] overflow-visible rounded-[38px] bg-gradient-to-br from-white/92 via-white/85 to-white/92 p-9 shadow-[0_48px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-2xl ring-1 ring-white/60">
         <span class="pointer-events-none absolute -right-28 -top-36 h-[20rem] w-[20rem] rounded-full bg-primary-200/40 blur-[150px]" />
         <span class="pointer-events-none absolute -left-28 bottom-2 h-72 w-72 rounded-full bg-secondary-200/45 blur-[130px]" />
         <div class="relative z-[950] flex flex-wrap items-center justify-between gap-6">
@@ -33,7 +33,7 @@
           </div>
           <div
             ref="menuRef"
-            class="relative z-[980]"
+            class="relative z-[1250]"
           >
             <button
               type="button"
@@ -55,7 +55,7 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 top-full z-[1050] mt-4 w-72 overflow-hidden rounded-[30px] bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 p-4 shadow-[0_36px_90px_-40px_rgba(70,74,255,0.55)] ring-1 ring-white/70 backdrop-blur-2xl"
+              class="absolute right-0 top-full z-[1300] mt-4 w-72 overflow-hidden rounded-[30px] bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 p-4 shadow-[0_36px_90px_-40px_rgba(70,74,255,0.55)] ring-1 ring-white/70 backdrop-blur-2xl"
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
@@ -333,7 +333,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+      <div class="space-y-6 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl">
         <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
           <input
             v-model="searchQuery"
@@ -357,7 +357,7 @@
           Loading items...
         </div>
 
-        <template v-else>
+        <div v-else>
           <ItemGrid
             v-if="layout === 'grid'"
             :items="filteredItems"
@@ -379,7 +379,8 @@
             @duplicate-item="duplicateItem"
             @reset-item="resetItemForNewVersion"
           />
-        </template>
+
+        </div>
       </div>
 
       <ImageViewer
