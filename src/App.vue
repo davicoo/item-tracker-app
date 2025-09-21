@@ -379,6 +379,7 @@
             @duplicate-item="duplicateItem"
             @reset-item="resetItemForNewVersion"
           />
+
         </div>
       </div>
 
