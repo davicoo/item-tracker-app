@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="visible"
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+    class="fixed inset-0 z-[1600] flex items-center justify-center bg-black bg-opacity-75"
   >
     <div class="bg-white p-4 rounded shadow-lg">
       <VueCropper

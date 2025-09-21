@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 z-[720] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+    class="fixed inset-0 z-[1600] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
     @click.self="emit('close')"
   >
     <div class="relative mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-primary-100 bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 shadow-2xl shadow-primary-900/20 backdrop-blur-2xl ring-1 ring-white/70">
@@ -105,7 +105,6 @@
           <div class="max-h-[320px] overflow-auto bg-white/85">
             <table class="min-w-full divide-y divide-primary-100">
               <thead class="bg-white/95">
-
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-[0.2em] text-primary-600">
                     Item

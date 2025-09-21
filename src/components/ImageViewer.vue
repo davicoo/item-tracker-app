@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+    class="fixed inset-0 z-[1600] flex items-center justify-center bg-black bg-opacity-75"
     @click.self="emit('close')"
   >
     <div class="relative">
