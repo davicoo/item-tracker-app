@@ -1,18 +1,19 @@
 <template>
-  <div class="min-h-screen pb-16 font-sans">
-    <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 py-12 sm:px-8 lg:px-12">
+  <div class="min-h-screen bg-gradient-to-br from-[#eef2ff] via-white to-[#fdf4ff] pb-16 font-sans">
+    <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 py-14 sm:px-8 lg:px-14">
       <span
-        class="pointer-events-none absolute -left-28 top-20 hidden h-[22rem] w-[22rem] rounded-full bg-primary-300/30 blur-[140px] lg:block"
+        class="pointer-events-none absolute -left-40 top-24 hidden h-[26rem] w-[26rem] rounded-full bg-primary-200/30 blur-[160px] lg:block"
         aria-hidden="true"
       />
       <span
-        class="pointer-events-none absolute -right-32 bottom-24 hidden h-[20rem] w-[20rem] rounded-full bg-secondary-300/25 blur-[140px] xl:block"
+        class="pointer-events-none absolute -right-40 bottom-28 hidden h-[22rem] w-[22rem] rounded-full bg-secondary-200/35 blur-[160px] xl:block"
         aria-hidden="true"
       />
-      <div class="relative overflow-visible rounded-[36px] bg-white/80 p-8 shadow-[0_45px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-xl">
-        <span class="pointer-events-none absolute -right-24 -top-32 h-[19rem] w-[19rem] rounded-full bg-primary-300/35 blur-[140px]" />
-        <span class="pointer-events-none absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-secondary-200/40 blur-[120px]" />
-        <div class="relative z-[220] flex flex-wrap items-center justify-between gap-6">
+      <div class="relative overflow-visible rounded-[38px] bg-gradient-to-br from-white/92 via-white/85 to-white/92 p-9 shadow-[0_48px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-2xl ring-1 ring-white/60">
+        <span class="pointer-events-none absolute -right-28 -top-36 h-[20rem] w-[20rem] rounded-full bg-primary-200/40 blur-[150px]" />
+        <span class="pointer-events-none absolute -left-28 bottom-2 h-72 w-72 rounded-full bg-secondary-200/45 blur-[130px]" />
+        <div class="relative z-[460] flex flex-wrap items-center justify-between gap-6">
+
           <div class="flex flex-1 items-center gap-4">
             <div class="flex size-16 items-center justify-center rounded-[30px] bg-white/80 shadow-[0_18px_40px_-28px_rgba(71,80,255,0.9)] backdrop-blur">
               <img
@@ -33,11 +34,11 @@
           </div>
           <div
             ref="menuRef"
-            class="relative z-[360]"
+            class="relative z-[560]"
           >
             <button
               type="button"
-              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_20px_45px_-25px_rgba(67,74,255,0.9)] transition hover:translate-y-[1px] hover:shadow-[0_28px_60px_-30px_rgba(67,74,255,0.95)] backdrop-blur focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.9)] transition hover:-translate-y-0.5 hover:shadow-[0_32px_75px_-34px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
               @click="toggleMenu"
             >
               <svg
@@ -55,7 +56,7 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 top-full z-[380] mt-4 w-72 overflow-hidden rounded-[28px] bg-gradient-to-br from-white/98 via-primary-50/80 to-white/98 p-4 shadow-[0_34px_80px_-44px_rgba(70,74,255,0.5)] backdrop-blur-xl"
+              class="absolute right-0 top-full z-[620] mt-4 w-72 overflow-hidden rounded-[30px] bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 p-4 shadow-[0_36px_90px_-40px_rgba(70,74,255,0.55)] ring-1 ring-white/70 backdrop-blur-2xl"
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
@@ -79,7 +80,6 @@
               </button>
               <button
                 class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
-
                 @click="goTo('/notes')"
               >
                 <span>Notes</span>
@@ -122,7 +122,6 @@
               </div>
               <button
                 class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
-
                 @click="reportIssue"
               >
                 <span>Report an Issue</span>
@@ -182,9 +181,10 @@
         </div>
       </div>
 
-      <section class="relative overflow-hidden rounded-[32px] bg-white/80 p-8 shadow-[0_38px_110px_-60px_rgba(88,100,255,0.55)] backdrop-blur-xl">
-        <span class="pointer-events-none absolute -left-24 top-0 h-60 w-60 rounded-full bg-primary-200/40 blur-[140px]" />
-        <span class="pointer-events-none absolute -right-16 bottom-0 h-56 w-56 rounded-full bg-secondary-200/35 blur-[130px]" />
+      <section class="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-white/92 via-primary-50/55 to-white/90 p-9 shadow-[0_42px_120px_-64px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl">
+        <span class="pointer-events-none absolute -left-28 top-0 h-64 w-64 rounded-full bg-primary-200/45 blur-[150px]" />
+        <span class="pointer-events-none absolute -right-20 bottom-6 h-60 w-60 rounded-full bg-secondary-200/40 blur-[140px]" />
+
         <div class="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="text-2xl font-semibold text-title text-primary-900">
@@ -196,7 +196,7 @@
           </div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500/90 via-indigo-500/90 to-secondary-500/90 px-5 py-2 text-sm font-semibold text-white shadow-[0_25px_60px_-35px_rgba(86,96,255,0.8)] transition hover:translate-y-[1px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.85)] transition hover:-translate-y-0.5 hover:shadow-[0_34px_80px_-36px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
 
             @click="showSoldDetails = true"
           >
@@ -246,7 +246,7 @@
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -257,7 +257,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
@@ -273,12 +273,12 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 via-indigo-500 to-secondary-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_28px_70px_-40px_rgba(76,81,255,0.8)] drop-shadow-[0_10px_30px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-[0_34px_90px_-40px_rgba(76,81,255,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+          class="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-8 py-3.5 text-base font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
 
           @click="showForm = true"
         >
           <svg
-            class="size-4"
+            class="size-5"
             fill="none"
             stroke="currentColor"
             stroke-linecap="round"
@@ -291,8 +291,8 @@
           Add New Item
         </button>
       </div>
-    
-      <div class="flex flex-col flex-wrap items-center gap-3 rounded-[28px] bg-white/75 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:justify-between">
+   
+      <div class="flex flex-col flex-wrap items-center gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:justify-between">
         <div class="flex flex-wrap items-center gap-3">
           <label
             for="view"
@@ -336,16 +336,17 @@
 
       <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
 
-      <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search"
-          class="flex-1 rounded-btn bg-white/85 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+          class="flex-1 rounded-btn bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
         >
         <button
           v-if="searchQuery"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-50/90 via-primary-100/90 to-primary-50/90 px-4 py-2 text-sm font-medium text-primary-600 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:from-primary-100 hover:via-primary-200 hover:to-primary-100"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100/90 via-primary-200/90 to-primary-100/90 px-4 py-2 text-sm font-medium text-primary-700 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_55px_-32px_rgba(86,96,255,0.75)]"
           @click="clearSearch"
         >
           Clear
@@ -450,6 +451,21 @@ const blockingOverlayActive = computed(
     Boolean(selectedImage.value)
 );
 
+function togglePageScrollLock(locked: boolean) {
+  if (typeof document === 'undefined') return;
+  const targets: HTMLElement[] = [document.body, document.documentElement];
+  targets.forEach(target => {
+    target.classList.toggle('overflow-hidden', locked);
+    if (locked) {
+      target.style.setProperty('overscroll-behavior', 'contain');
+      target.style.setProperty('touch-action', 'none');
+    } else {
+      target.style.removeProperty('overscroll-behavior');
+      target.style.removeProperty('touch-action');
+    }
+  });
+}
+
 function clearSearch() {
   searchQuery.value = '';
 }
@@ -508,13 +524,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside);
-  document.body.classList.remove('overflow-hidden');
+  togglePageScrollLock(false);
 });
 
 watch(
   blockingOverlayActive,
   value => {
-    document.body.classList.toggle('overflow-hidden', value);
+    togglePageScrollLock(value);
   },
   { immediate: true }
 );
