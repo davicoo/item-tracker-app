@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 z-[420] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+    class="fixed inset-0 z-[720] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
     @click.self="emit('close')"
   >
     <form
