@@ -12,8 +12,7 @@
       <div class="relative overflow-visible rounded-[38px] bg-gradient-to-br from-white/92 via-white/85 to-white/92 p-9 shadow-[0_48px_120px_-60px_rgba(90,104,255,0.55)] backdrop-blur-2xl ring-1 ring-white/60">
         <span class="pointer-events-none absolute -right-28 -top-36 h-[20rem] w-[20rem] rounded-full bg-primary-200/40 blur-[150px]" />
         <span class="pointer-events-none absolute -left-28 bottom-2 h-72 w-72 rounded-full bg-secondary-200/45 blur-[130px]" />
-        <div class="relative z-[460] flex flex-wrap items-center justify-between gap-6">
-
+        <div class="relative z-[950] flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-1 items-center gap-4">
             <div class="flex size-16 items-center justify-center rounded-[30px] bg-white/80 shadow-[0_18px_40px_-28px_rgba(71,80,255,0.9)] backdrop-blur">
               <img
@@ -34,7 +33,7 @@
           </div>
           <div
             ref="menuRef"
-            class="relative z-[560]"
+            class="relative z-[980]"
           >
             <button
               type="button"
@@ -56,7 +55,7 @@
             </button>
             <div
               v-if="showMenu"
-              class="absolute right-0 top-full z-[620] mt-4 w-72 overflow-hidden rounded-[30px] bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 p-4 shadow-[0_36px_90px_-40px_rgba(70,74,255,0.55)] ring-1 ring-white/70 backdrop-blur-2xl"
+              class="absolute right-0 top-full z-[1050] mt-4 w-72 overflow-hidden rounded-[30px] bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 p-4 shadow-[0_36px_90px_-40px_rgba(70,74,255,0.55)] ring-1 ring-white/70 backdrop-blur-2xl"
             >
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Tools
@@ -335,54 +334,54 @@
       </div>
 
       <div class="flex flex-col gap-3 rounded-[28px] bg-white/80 p-4 shadow-[0_30px_85px_-55px_rgba(88,100,255,0.55)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search"
+            class="flex-1 rounded-btn bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
+          >
+          <button
+            v-if="searchQuery"
+            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100/90 via-primary-200/90 to-primary-100/90 px-4 py-2 text-sm font-medium text-primary-700 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_55px_-32px_rgba(86,96,255,0.75)]"
+            @click="clearSearch"
+          >
+            Clear
+          </button>
+        </div>
 
-      <div class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-r from-white/88 via-primary-50/60 to-white/88 p-4 shadow-[0_32px_95px_-58px_rgba(88,100,255,0.6)] ring-1 ring-white/60 backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+        <div
+          v-if="isLoading"
+          class="rounded-[28px] bg-white/75 py-12 text-center text-sm text-primary-600 shadow-[inset_0_0_0_1px_rgba(120,133,255,0.12)]"
+        >
+          Loading items...
+        </div>
 
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search"
-          class="flex-1 rounded-btn bg-white/90 px-4 py-2 text-sm text-[--body-text-color] shadow-[inset_0_0_0_1px_rgba(120,133,255,0.18)] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-400"
-        >
-        <button
-          v-if="searchQuery"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100/90 via-primary-200/90 to-primary-100/90 px-4 py-2 text-sm font-medium text-primary-700 shadow-[0_18px_40px_-28px_rgba(86,96,255,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_55px_-32px_rgba(86,96,255,0.75)]"
-          @click="clearSearch"
-        >
-          Clear
-        </button>
+        <template v-else>
+          <ItemGrid
+            v-if="layout === 'grid'"
+            :items="filteredItems"
+            :columns="columns"
+            @update-status="updateItemStatus"
+            @delete-item="deleteItem"
+            @edit-item="startEdit"
+            @view-image="openImageViewer"
+            @duplicate-item="duplicateItem"
+            @reset-item="resetItemForNewVersion"
+          />
+          <ItemTable
+            v-else
+            :items="filteredItems"
+            @update-status="updateItemStatus"
+            @delete-item="deleteItem"
+            @edit-item="startEdit"
+            @view-image="openImageViewer"
+            @duplicate-item="duplicateItem"
+            @reset-item="resetItemForNewVersion"
+          />
+        </template>
       </div>
 
-      <div
-        v-if="isLoading"
-        class="rounded-[28px] bg-white/75 py-12 text-center text-sm text-primary-600 shadow-[inset_0_0_0_1px_rgba(120,133,255,0.12)]"
-      >
-        Loading items...
-      </div>
-    
-      <template v-else>
-        <ItemGrid
-          v-if="layout === 'grid'"
-          :items="filteredItems"
-          :columns="columns"
-          @update-status="updateItemStatus"
-          @delete-item="deleteItem"
-          @edit-item="startEdit"
-          @view-image="openImageViewer"
-          @duplicate-item="duplicateItem"
-          @reset-item="resetItemForNewVersion"
-        />
-        <ItemTable
-          v-else
-          :items="filteredItems"
-          @update-status="updateItemStatus"
-          @delete-item="deleteItem"
-          @edit-item="startEdit"
-          @view-image="openImageViewer"
-          @duplicate-item="duplicateItem"
-          @reset-item="resetItemForNewVersion"
-        />
-      </template>
       <ImageViewer
         v-if="selectedImage"
         :src="selectedImage"
@@ -399,7 +398,6 @@
         @close="showContact = false"
       />
     </div>
-  </div>
   </div>
 </template>
 

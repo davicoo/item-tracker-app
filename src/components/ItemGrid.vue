@@ -10,6 +10,7 @@
     v-else
     class="grid gap-6"
     :class="columnsClass"
+    :style="gridStyle"
   >
     <ItemCard
       v-for="item in items"
@@ -47,6 +48,10 @@ const columnsClass = computed(() => {
       return 'grid-cols-2';
   }
 });
+
+const gridStyle = computed(() => ({
+  gridTemplateColumns: `repeat(${Math.max(1, props.columns)}, minmax(0, 1fr))`,
+}));
 
 defineEmits<{
   'update-status': [string, 'not_sold' | 'sold' | 'sold_paid']
