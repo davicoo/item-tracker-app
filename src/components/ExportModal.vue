@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 z-[420] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+    class="fixed inset-0 z-[720] overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
     @click.self="emit('close')"
   >
     <div class="relative mx-auto w-full max-w-sm overflow-hidden overflow-y-auto rounded-3xl border border-primary-100 bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 px-6 py-6 shadow-2xl shadow-primary-900/20 backdrop-blur-2xl ring-1 ring-white/70 sm:px-8 max-h-[calc(100vh-4rem)]">

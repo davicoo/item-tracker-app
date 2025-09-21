@@ -246,7 +246,7 @@
     
       <div
         v-if="showForm && !editingItem"
-        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="showForm = false"
       >
         <ItemForm
@@ -257,7 +257,7 @@
 
       <div
         v-if="editingItem"
-        class="fixed inset-0 z-[420] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-[720] flex items-center justify-center overflow-y-auto bg-[--overlay-bg] px-4 py-8 backdrop-blur-sm"
         @click.self="editingItem = null"
       >
         <EditItemForm
