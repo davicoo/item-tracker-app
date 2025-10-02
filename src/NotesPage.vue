@@ -193,12 +193,19 @@ const NOTES_STORAGE_KEY = 'notes'
 const LAST_USER_STORAGE_KEY = 'notes:last-user'
 const GUEST_MARKER = 'guest'
 
+const MAX_IMAGE_WIDTH = 960
+const MIN_IMAGE_WIDTH = 320
+const MAX_DATA_URL_LENGTH = 180_000
+const JPEG_QUALITY_STEPS = [0.72, 0.64, 0.56]
+const WIDTH_REDUCTION_RATIO = 0.85
+
 type SaveAction =
   | { type: 'upsert'; note: Note }
   | { type: 'delete'; noteId: string }
 
 onMounted(() => {
   hydrateNotesFromCache()
+  void optimizeCachedNotes()
   loadNotes().then(() => {
     checkReminders()
   })
@@ -338,8 +345,7 @@ async function fetchNotesFromServer(userId: string) {
   return (data ?? []).map(mapRecordToNote)
 }
 
-async function upsertNoteToServer(note: Note) {
-  const userId = currentUserId.value
+async function upsertNoteToServer(note: Note, userId: string | null = currentUserId.value) {
   if (!userId) return
 
   const payload = mapNoteToRecord(note, userId)
@@ -352,8 +358,7 @@ async function upsertNoteToServer(note: Note) {
   }
 }
 
-async function deleteNoteFromServer(noteId: string) {
-  const userId = currentUserId.value
+async function deleteNoteFromServer(noteId: string, userId: string | null = currentUserId.value) {
   if (!userId) return
 
   const { error } = await supabase
@@ -424,7 +429,11 @@ async function loadNotes() {
     }
 
     const remoteNotes = await fetchNotesFromServer(user.id)
-    notes.value = remoteNotes
+    const { notes: optimizedRemoteNotes } = await optimizeNotesForStorage(remoteNotes, {
+      syncToServer: true,
+      userId: user.id,
+    })
+    notes.value = optimizedRemoteNotes
     saveNotesToCacheOnly()
   } catch (error) {
     console.error('Unexpected error while loading notes:', error)
@@ -526,29 +535,8 @@ async function saveNote() {
 async function optimizeImageFile(file: File): Promise<string> {
   const sourceDataUrl = await readFileAsDataUrl(file)
   const image = await loadImageElement(sourceDataUrl)
-  const maxWidth = 1200
-  const originalWidth = image.naturalWidth || image.width
-  const originalHeight = image.naturalHeight || image.height
-  const scale = originalWidth > maxWidth ? maxWidth / originalWidth : 1
-
-  const targetWidth = Math.round(originalWidth * scale)
-  const targetHeight = Math.round(originalHeight * scale)
-
-  const canvas = document.createElement('canvas')
-  canvas.width = targetWidth
-  canvas.height = targetHeight
-  const context = canvas.getContext('2d')
-  if (!context) {
-    throw new Error('Canvas rendering is not supported in this browser')
-  }
-
-  context.drawImage(image, 0, 0, targetWidth, targetHeight)
-
-  const prefersPng = file.type === 'image/png'
-  const mimeType = prefersPng ? 'image/png' : 'image/jpeg'
-  const quality = mimeType === 'image/jpeg' ? 0.82 : undefined
-
-  return canvas.toDataURL(mimeType, quality)
+  const preferLossless = file.type === 'image/png'
+  return produceOptimizedDataUrl(image, preferLossless)
 }
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -571,6 +559,165 @@ function loadImageElement(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(new Error('Failed to load image for optimization'))
     img.src = src
   })
+}
+
+async function optimizeCachedNotes() {
+  if (!notes.value.length) return
+
+  try {
+    const { notes: optimizedNotes, changed } = await optimizeNotesForStorage(notes.value)
+    if (changed) {
+      notes.value = optimizedNotes
+      saveNotesToCacheOnly()
+    }
+  } catch (error) {
+    console.warn('Failed to optimize cached notes:', error)
+  }
+}
+
+async function optimizeNotesForStorage(
+  noteList: Note[],
+  options: { syncToServer?: boolean; userId?: string } = {},
+): Promise<{ notes: Note[]; changed: boolean }> {
+  const optimizedNotes: Note[] = []
+  const notesToSync: Note[] = []
+  let changed = false
+
+  for (const note of noteList) {
+    if (!note.imageUrl || !note.imageUrl.startsWith('data:image')) {
+      optimizedNotes.push(note)
+      continue
+    }
+
+    try {
+      const { dataUrl, changed: imageChanged } = await optimizeStoredImage(note.imageUrl)
+      if (imageChanged) {
+        const updatedNote: Note = {
+          ...note,
+          imageUrl: dataUrl,
+        }
+        optimizedNotes.push(updatedNote)
+        changed = true
+        if (options.syncToServer && options.userId) {
+          notesToSync.push(updatedNote)
+        }
+      } else {
+        optimizedNotes.push(note)
+      }
+    } catch (error) {
+      console.warn('Failed to optimize note image:', error)
+      optimizedNotes.push(note)
+    }
+  }
+
+  if (options.syncToServer && options.userId && notesToSync.length) {
+    try {
+      await Promise.all(notesToSync.map(note => upsertNoteToServer(note, options.userId)))
+    } catch (error) {
+      console.warn('Failed to sync optimized note images to server:', error)
+    }
+  }
+
+  return {
+    notes: optimizedNotes,
+    changed,
+  }
+}
+
+async function optimizeStoredImage(imageUrl: string) {
+  const image = await loadImageElement(imageUrl)
+  const mimeType = parseDataUrlMimeType(imageUrl)
+  const originalWidth = image.naturalWidth || image.width
+  const shouldResize = originalWidth > MAX_IMAGE_WIDTH
+  const shouldShrink = imageUrl.length > MAX_DATA_URL_LENGTH
+
+  if (!shouldResize && !shouldShrink) {
+    return { dataUrl: imageUrl, changed: false }
+  }
+
+  const optimizedUrl = await produceOptimizedDataUrl(image, mimeType === 'image/png')
+  return {
+    dataUrl: optimizedUrl,
+    changed: optimizedUrl !== imageUrl,
+  }
+}
+
+function parseDataUrlMimeType(dataUrl: string) {
+  const match = dataUrl.match(/^data:(.*?);/)
+  return match ? match[1] : null
+}
+
+async function produceOptimizedDataUrl(image: HTMLImageElement, preferLossless: boolean) {
+  const originalWidth = Math.max(image.naturalWidth || image.width || MAX_IMAGE_WIDTH, 1)
+  let targetWidth = Math.min(originalWidth, MAX_IMAGE_WIDTH)
+  const minWidth = Math.min(MIN_IMAGE_WIDTH, targetWidth)
+  let bestCandidate: string | null = null
+  let losslessAttempted = false
+
+  while (targetWidth >= minWidth) {
+    if (preferLossless && !losslessAttempted) {
+      const losslessCandidate = renderImageToDataUrl(image, targetWidth, 'image/png')
+      losslessAttempted = true
+      bestCandidate = losslessCandidate
+      if (losslessCandidate.length <= MAX_DATA_URL_LENGTH) {
+        return losslessCandidate
+      }
+    }
+
+    for (const quality of JPEG_QUALITY_STEPS) {
+      const lossyCandidate = renderImageToDataUrl(image, targetWidth, 'image/jpeg', quality)
+      bestCandidate = lossyCandidate
+      if (lossyCandidate.length <= MAX_DATA_URL_LENGTH || targetWidth === minWidth) {
+        return lossyCandidate
+      }
+    }
+
+    if (targetWidth === minWidth) {
+      break
+    }
+
+    const nextWidth = Math.max(Math.round(targetWidth * WIDTH_REDUCTION_RATIO), minWidth)
+    if (nextWidth === targetWidth) {
+      break
+    }
+    targetWidth = nextWidth
+    preferLossless = false
+  }
+
+  if (bestCandidate) {
+    return bestCandidate
+  }
+
+  return renderImageToDataUrl(image, targetWidth, 'image/jpeg', JPEG_QUALITY_STEPS[JPEG_QUALITY_STEPS.length - 1])
+}
+
+function renderImageToDataUrl(
+  image: HTMLImageElement,
+  width: number,
+  mimeType: 'image/png' | 'image/jpeg',
+  quality?: number,
+) {
+  const originalWidth = image.naturalWidth || image.width
+  const originalHeight = image.naturalHeight || image.height
+  const scale = originalWidth ? width / originalWidth : 1
+  const targetHeight = Math.max(Math.round(originalHeight * scale), 1)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(Math.round(width), 1)
+  canvas.height = targetHeight
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('Canvas rendering is not supported in this browser')
+  }
+
+  if (mimeType === 'image/jpeg') {
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+  }
+
+  context.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+  return canvas.toDataURL(mimeType, mimeType === 'image/jpeg' ? quality : undefined)
 }
 
 const sortedNotes = computed(() =>
