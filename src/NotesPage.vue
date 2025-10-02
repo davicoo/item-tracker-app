@@ -172,7 +172,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { supabase } from './supabaseClient'
-import { type Note } from './types/note'
+import { type Note, mapRecordToNote } from './types/note'
 
 const form = ref({
   text: '',
@@ -192,9 +192,10 @@ const currentUserId = ref<string | null>(null)
 const NOTES_STORAGE_KEY = 'notes'
 const LAST_USER_STORAGE_KEY = 'notes:last-user'
 const GUEST_MARKER = 'guest'
-const NOTES_API_ENDPOINT = '/.netlify/functions/notes'
 
-let ongoingSync: Promise<void> | null = null
+type SaveAction =
+  | { type: 'upsert'; note: Note }
+  | { type: 'delete'; noteId: string }
 
 onMounted(() => {
   hydrateNotesFromCache()
@@ -207,7 +208,7 @@ function hydrateNotesFromCache() {
   try {
     const cachedUserId = resolveStoredUserId(localStorage.getItem(LAST_USER_STORAGE_KEY))
     currentUserId.value = cachedUserId
-    isAuthenticated.value = !!cachedUserId
+    isAuthenticated.value = false
     notes.value = loadNotesFromCache(cachedUserId)
   } catch (error) {
     console.warn('Failed to hydrate cached notes:', error)
@@ -312,76 +313,79 @@ function saveNotesToCacheOnly(noteList: Note[] = notes.value) {
   }
 }
 
-function serializeNotesForTransfer(noteList: Note[]) {
-  return noteList.map(toStoredNote)
+function mapNoteToRecord(note: Note, userId: string) {
+  return {
+    id: note.id,
+    user_id: userId,
+    text: note.text,
+    image_url: note.imageUrl ?? null,
+    date: note.date ?? null,
+    created_at: note.createdAt,
+  }
 }
 
 async function fetchNotesFromServer(userId: string) {
-  const response = await fetch(`${NOTES_API_ENDPOINT}?userId=${encodeURIComponent(userId)}`)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch notes: ${response.status}`)
+  const { data, error } = await supabase
+    .from('notes')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
   }
-  const payload = await response.json()
-  if (!Array.isArray(payload)) {
-    return []
-  }
-  return payload
-    .map(normalizeCachedNote)
-    .filter((note): note is Note => note !== null)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  return (data ?? []).map(mapRecordToNote)
 }
 
-async function syncNotesToServer(userId: string, noteList: Note[]) {
-  const response = await fetch(NOTES_API_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId, notes: serializeNotesForTransfer(noteList) }),
-  })
+async function upsertNoteToServer(note: Note) {
+  const userId = currentUserId.value
+  if (!userId) return
 
-  if (!response.ok) {
-    throw new Error(`Failed to sync notes: ${response.status}`)
+  const payload = mapNoteToRecord(note, userId)
+  const { error } = await supabase
+    .from('notes')
+    .upsert(payload, { onConflict: 'id' })
+
+  if (error) {
+    throw error
   }
 }
 
-async function syncNotesIfNeeded(noteList: Note[] = notes.value) {
+async function deleteNoteFromServer(noteId: string) {
+  const userId = currentUserId.value
+  if (!userId) return
+
+  const { error } = await supabase
+    .from('notes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('id', noteId)
+
+  if (error) {
+    throw error
+  }
+}
+
+async function saveNotes(action: SaveAction) {
+  saveNotesToCacheOnly()
+
   if (!isAuthenticated.value || !currentUserId.value) {
     return
   }
 
-  if (ongoingSync) {
-    try {
-      await ongoingSync
-    } catch (error) {
-      console.warn('Previous notes sync failed:', error)
-    }
-  }
-
-  const performSync = async () => {
-    try {
-      isSyncing.value = true
-      await syncNotesToServer(currentUserId.value as string, noteList)
-    } catch (error) {
-      console.error('Failed to sync notes to the server:', error)
-    } finally {
-      isSyncing.value = false
-    }
-  }
-
-  ongoingSync = performSync()
   try {
-    await ongoingSync
+    isSyncing.value = true
+    if (action.type === 'upsert') {
+      await upsertNoteToServer(action.note)
+    } else {
+      await deleteNoteFromServer(action.noteId)
+    }
+  } catch (error) {
+    console.error('Failed to sync notes to the server:', error)
+    alert('We could not sync your notes to the server. They will stay saved on this device until the connection is restored.')
   } finally {
-    ongoingSync = null
-  }
-}
-
-async function saveNotes(options: { sync?: boolean } = {}) {
-  const { sync = true } = options
-  saveNotesToCacheOnly()
-  if (sync) {
-    await syncNotesIfNeeded()
+    isSyncing.value = false
   }
 }
 
@@ -468,7 +472,7 @@ function cancelForm() {
 
 async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
-  await saveNotes()
+  await saveNotes({ type: 'delete', noteId: id })
 }
 
 async function saveNote() {
@@ -498,6 +502,7 @@ async function saveNote() {
       updatedNote.imageUrl = optimizedImage
     }
     notes.value.splice(index, 1, updatedNote)
+    await saveNotes({ type: 'upsert', note: notes.value[index] })
   } else {
     const createdAt = new Date().toISOString()
     const note: Note = {
@@ -512,9 +517,9 @@ async function saveNote() {
       note.date = reminderDate
     }
     notes.value = [note, ...notes.value]
+    await saveNotes({ type: 'upsert', note })
   }
 
-  await saveNotes()
   cancelForm()
 }
 

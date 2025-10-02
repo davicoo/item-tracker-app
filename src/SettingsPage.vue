@@ -152,6 +152,28 @@
       </div>
       <div class="bg-white rounded shadow p-4">
         <h2 class="text-xl font-semibold mb-2">
+          Need help?
+        </h2>
+        <p class="text-sm text-gray-600 mb-4">
+          Reach out to our team if you spot an issue or have an idea that would make ConsignTracker better.
+        </p>
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <button
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            @click="openContact('Issue Report')"
+          >
+            Report an Issue
+          </button>
+          <button
+            class="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-4 py-2 rounded hover:opacity-90 active:scale-95"
+            @click="openContact('Feature Request')"
+          >
+            Request a Feature
+          </button>
+        </div>
+      </div>
+      <div class="bg-white rounded shadow p-4">
+        <h2 class="text-xl font-semibold mb-2">
           Invite Store Owner
         </h2>
         <div class="mb-2">
@@ -186,12 +208,18 @@
         </p>
       </div>
     </div>
+    <ContactModal
+      v-if="showContact"
+      :default-subject="contactSubject"
+      @close="closeContact"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { supabase } from './supabaseClient'
+import ContactModal from './components/ContactModal.vue'
 
 interface Profile {
   id?: string
@@ -221,6 +249,8 @@ const newSku = ref('')
 const invite = ref({ name: '', email: '' })
 const inviting = ref(false)
 const inviteResult = ref<{ ok: boolean; message: string } | null>(null)
+const showContact = ref(false)
+const contactSubject = ref('Support Request')
 
 async function fetchProfile() {
   const { data: userData } = await supabase.auth.getUser()
@@ -256,6 +286,14 @@ async function fetchProfile() {
 }
 
 onMounted(fetchProfile)
+
+function toggleContactScrollLock(locked: boolean) {
+  if (typeof document === 'undefined') return
+  const targets: HTMLElement[] = [document.body, document.documentElement]
+  for (const target of targets) {
+    target.classList.toggle('overflow-hidden', locked)
+  }
+}
 
 function startEditInfo() {
   editingInfo.value = true
@@ -358,6 +396,23 @@ async function sendInvite() {
     inviting.value = false
   }
 }
+
+function openContact(subject: string) {
+  contactSubject.value = subject
+  showContact.value = true
+}
+
+function closeContact() {
+  showContact.value = false
+}
+
+watch(showContact, value => {
+  toggleContactScrollLock(value)
+})
+
+onUnmounted(() => {
+  toggleContactScrollLock(false)
+})
 </script>
 
 <style scoped>
