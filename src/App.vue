@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-[#eef2ff] via-white to-[#fdf4ff] pb-16 font-sans">
+  <div class="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#eef2ff] via-white to-[#fdf4ff] pb-16 font-sans">
     <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-10 px-4 py-14 sm:px-8 lg:px-14">
       <span
         class="pointer-events-none absolute -left-40 top-24 hidden h-[26rem] w-[26rem] rounded-full bg-primary-200/30 blur-[160px] lg:block"
@@ -103,45 +103,6 @@
                 @click="goTo('/settings')"
               >
                 <span>Settings</span>
-                <svg
-                  class="size-4 text-caption"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </button>
-              <div class="my-3 h-px bg-white/60" />
-              <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
-                Contact
-              </div>
-              <button
-                class="flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
-                @click="reportIssue"
-              >
-                <span>Report an Issue</span>
-                <svg
-                  class="size-4 text-caption"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </button>
-              <button
-                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
-
-                @click="requestFeature"
-              >
-                <span>Request a Feature</span>
                 <svg
                   class="size-4 text-caption"
                   fill="none"
@@ -391,11 +352,6 @@
         :items="items"
         @close="showExportModal = false"
       />
-      <ContactModal
-        v-if="showContact"
-        :default-subject="contactSubject"
-        @close="showContact = false"
-      />
     </div>
   </div>
 </template>
@@ -410,7 +366,6 @@ import StatsDisplay from './components/StatsDisplay.vue';
 import SoldDetailsModal from './components/SoldDetailsModal.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
-import ContactModal from './components/ContactModal.vue';
 import type { Item } from './types/item';
 import { mapRecordToItem, availableQuantity, NO_SKU_KEY } from './types/item';
 import { supabase } from './supabaseClient';
@@ -434,8 +389,6 @@ const searchQuery = ref('');
 const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
-const showContact = ref(false);
-const contactSubject = ref('');
 const menuRef = ref<HTMLElement | null>(null);
 const showSoldDetails = ref(false);
 
@@ -445,7 +398,6 @@ const blockingOverlayActive = computed(
     Boolean(editingItem.value) ||
     showSoldDetails.value ||
     showExportModal.value ||
-    showContact.value ||
     Boolean(selectedImage.value)
 );
 
@@ -488,20 +440,6 @@ function openExport() {
 function goTo(path: string) {
   router.push(path);
   closeMenu();
-}
-
-function openContact(subject: string) {
-  contactSubject.value = subject;
-  showContact.value = true;
-  closeMenu();
-}
-
-function reportIssue() {
-  openContact('Issue Report');
-}
-
-function requestFeature() {
-  openContact('Feature Request');
 }
 
 async function handleSignOut() {
