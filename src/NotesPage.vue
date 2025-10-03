@@ -172,7 +172,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { supabase } from './supabaseClient'
-import { type Note } from './types/note'
+import { type Note, mapRecordToNote } from './types/note'
 
 const form = ref({
   text: '',
@@ -192,12 +192,35 @@ const currentUserId = ref<string | null>(null)
 const NOTES_STORAGE_KEY = 'notes'
 const LAST_USER_STORAGE_KEY = 'notes:last-user'
 const GUEST_MARKER = 'guest'
-const NOTES_API_ENDPOINT = '/.netlify/functions/notes'
 
-let ongoingSync: Promise<void> | null = null
+const MAX_IMAGE_WIDTH = 960
+const MIN_IMAGE_WIDTH = 320
+const MAX_DATA_URL_LENGTH = 180_000
+const JPEG_QUALITY_STEPS = [0.72, 0.64, 0.56]
+const WIDTH_REDUCTION_RATIO = 0.85
+const NUMERIC_ID_PATTERN = /^\d+$/
+const NOTE_ID_RANDOM_MAX = 1_000
+
+function parseNumericNoteId(id: string) {
+  if (!NUMERIC_ID_PATTERN.test(id)) {
+    return null
+  }
+
+  const parsed = Number.parseInt(id, 10)
+  if (!Number.isSafeInteger(parsed)) {
+    throw new Error(`Note id ${id} exceeds the safe integer range`)
+  }
+
+  return parsed
+}
+
+type SaveAction =
+  | { type: 'upsert'; note: Note; previousId?: string }
+  | { type: 'delete'; noteId: string }
 
 onMounted(() => {
   hydrateNotesFromCache()
+  void optimizeCachedNotes()
   loadNotes().then(() => {
     checkReminders()
   })
@@ -207,7 +230,7 @@ function hydrateNotesFromCache() {
   try {
     const cachedUserId = resolveStoredUserId(localStorage.getItem(LAST_USER_STORAGE_KEY))
     currentUserId.value = cachedUserId
-    isAuthenticated.value = !!cachedUserId
+    isAuthenticated.value = false
     notes.value = loadNotesFromCache(cachedUserId)
   } catch (error) {
     console.warn('Failed to hydrate cached notes:', error)
@@ -226,6 +249,40 @@ function resolveStoredUserId(raw: string | null): string | null {
 
 function cacheKeyForUser(userId: string | null) {
   return userId ? `${NOTES_STORAGE_KEY}:${userId}` : NOTES_STORAGE_KEY
+}
+
+function generateNumericNoteId() {
+  const timestamp = Date.now()
+  const random = Math.floor(Math.random() * NOTE_ID_RANDOM_MAX)
+  return String(timestamp * NOTE_ID_RANDOM_MAX + random)
+}
+
+function ensureNumericNoteId(note: Note, usedIds: Set<string>) {
+  let candidate = note.id
+  let idChanged = false
+  const previousId = note.id
+
+  if (!candidate || !NUMERIC_ID_PATTERN.test(candidate) || usedIds.has(candidate)) {
+    idChanged = true
+    do {
+      candidate = generateNumericNoteId()
+    } while (usedIds.has(candidate))
+  }
+
+  usedIds.add(candidate)
+
+  if (!idChanged) {
+    return { note, idChanged: false, previousId }
+  }
+
+  return {
+    note: {
+      ...note,
+      id: candidate,
+    },
+    idChanged: true,
+    previousId,
+  }
 }
 
 function toStoredNote(note: Note): Note {
@@ -312,77 +369,120 @@ function saveNotesToCacheOnly(noteList: Note[] = notes.value) {
   }
 }
 
-function serializeNotesForTransfer(noteList: Note[]) {
-  return noteList.map(toStoredNote)
+function mapNoteToRecord(note: Note, userId: string) {
+  const numericId = parseNumericNoteId(note.id)
+  if (numericId === null) {
+    throw new Error(`Cannot sync non-numeric note id ${note.id} to Supabase`)
+  }
+
+  return {
+    id: numericId,
+    user_id: userId,
+    text: note.text,
+    image_url: note.imageUrl ?? null,
+    date: note.date ?? null,
+    created_at: note.createdAt,
+  }
 }
 
 async function fetchNotesFromServer(userId: string) {
-  const response = await fetch(`${NOTES_API_ENDPOINT}?userId=${encodeURIComponent(userId)}`)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch notes: ${response.status}`)
+  const { data, error } = await supabase
+    .from('notes')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw error
   }
-  const payload = await response.json()
-  if (!Array.isArray(payload)) {
-    return []
-  }
-  return payload
-    .map(normalizeCachedNote)
-    .filter((note): note is Note => note !== null)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  return (data ?? []).map(mapRecordToNote)
 }
 
-async function syncNotesToServer(userId: string, noteList: Note[]) {
-  const response = await fetch(NOTES_API_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId, notes: serializeNotesForTransfer(noteList) }),
-  })
+async function upsertNoteToServer(note: Note, userId: string | null = currentUserId.value) {
+  if (!userId) return
 
-  if (!response.ok) {
-    throw new Error(`Failed to sync notes: ${response.status}`)
+  const payload = mapNoteToRecord(note, userId)
+  const { error } = await supabase
+    .from('notes')
+    .upsert(payload, { onConflict: 'id' })
+
+  if (error) {
+    throw error
   }
 }
 
-async function syncNotesIfNeeded(noteList: Note[] = notes.value) {
+async function deleteNoteFromServer(noteId: string, userId: string | null = currentUserId.value) {
+  if (!userId) return
+
+  const numericId = parseNumericNoteId(noteId)
+  const query = supabase.from('notes').delete().eq('user_id', userId)
+  if (numericId === null) {
+    query.filter('id::text', 'eq', noteId)
+  } else {
+    query.eq('id', numericId)
+  }
+
+  const { error } = await query
+
+  if (error) {
+    throw error
+  }
+}
+
+async function saveNotes(action: SaveAction) {
+  let actionable = action
+
+  if (action.type === 'upsert') {
+    const { note: normalized, previousId } = enforceNumericNoteId(action.note)
+    actionable = { type: 'upsert', note: normalized, previousId }
+  }
+
+  saveNotesToCacheOnly()
+
   if (!isAuthenticated.value || !currentUserId.value) {
     return
   }
 
-  if (ongoingSync) {
-    try {
-      await ongoingSync
-    } catch (error) {
-      console.warn('Previous notes sync failed:', error)
-    }
-  }
-
-  const performSync = async () => {
-    try {
-      isSyncing.value = true
-      await syncNotesToServer(currentUserId.value as string, noteList)
-    } catch (error) {
-      console.error('Failed to sync notes to the server:', error)
-    } finally {
-      isSyncing.value = false
-    }
-  }
-
-  ongoingSync = performSync()
   try {
-    await ongoingSync
+    isSyncing.value = true
+    if (actionable.type === 'upsert') {
+      await upsertNoteToServer(actionable.note)
+      if (actionable.previousId && actionable.previousId !== actionable.note.id) {
+        await deleteNoteFromServer(actionable.previousId)
+      }
+    } else {
+      await deleteNoteFromServer(actionable.noteId)
+    }
+  } catch (error) {
+    console.error('Failed to sync notes to the server:', error)
+    alert('We could not sync your notes to the server. They will stay saved on this device until the connection is restored.')
   } finally {
-    ongoingSync = null
+    isSyncing.value = false
   }
 }
 
-async function saveNotes(options: { sync?: boolean } = {}) {
-  const { sync = true } = options
-  saveNotesToCacheOnly()
-  if (sync) {
-    await syncNotesIfNeeded()
+function enforceNumericNoteId(note: Note): { note: Note; previousId?: string } {
+  const index = notes.value.findIndex(candidate => candidate.id === note.id)
+  const usedIds = new Set(
+    notes.value
+      .filter((_, idx) => idx !== index)
+      .map(candidate => candidate.id)
+  )
+
+  const { note: normalized, idChanged, previousId } = ensureNumericNoteId(note, usedIds)
+
+  if (idChanged) {
+    if (index !== -1) {
+      notes.value.splice(index, 1, normalized)
+    } else {
+      notes.value = notes.value.map(candidate =>
+        candidate.id === note.id ? normalized : candidate
+      )
+    }
   }
+
+  return { note: normalized, previousId: idChanged ? previousId : undefined }
 }
 
 function updateLastUserCache(userId: string | null) {
@@ -420,7 +520,11 @@ async function loadNotes() {
     }
 
     const remoteNotes = await fetchNotesFromServer(user.id)
-    notes.value = remoteNotes
+    const { notes: optimizedRemoteNotes } = await optimizeNotesForStorage(remoteNotes, {
+      syncToServer: true,
+      userId: user.id,
+    })
+    notes.value = optimizedRemoteNotes
     saveNotesToCacheOnly()
   } catch (error) {
     console.error('Unexpected error while loading notes:', error)
@@ -468,7 +572,7 @@ function cancelForm() {
 
 async function deleteNote(id: string) {
   notes.value = notes.value.filter(n => n.id !== id)
-  await saveNotes()
+  await saveNotes({ type: 'delete', noteId: id })
 }
 
 async function saveNote() {
@@ -489,8 +593,10 @@ async function saveNote() {
     const index = notes.value.findIndex(n => n.id === editingNoteId.value)
     if (index === -1) return
     const existing = notes.value[index]
+    const otherIds = new Set(notes.value.filter((_, idx) => idx !== index).map(n => n.id))
+    const { note: normalizedExisting } = ensureNumericNoteId(existing, otherIds)
     const updatedNote: Note = {
-      ...existing,
+      ...normalizedExisting,
       text: form.value.text,
       date: reminderDate,
     }
@@ -498,10 +604,16 @@ async function saveNote() {
       updatedNote.imageUrl = optimizedImage
     }
     notes.value.splice(index, 1, updatedNote)
+    await saveNotes({ type: 'upsert', note: notes.value[index] })
   } else {
     const createdAt = new Date().toISOString()
+    const usedIds = new Set(notes.value.map(n => n.id))
+    let id = generateNumericNoteId()
+    while (usedIds.has(id)) {
+      id = generateNumericNoteId()
+    }
     const note: Note = {
-      id: crypto.randomUUID(),
+      id,
       text: form.value.text,
       createdAt,
     }
@@ -512,38 +624,17 @@ async function saveNote() {
       note.date = reminderDate
     }
     notes.value = [note, ...notes.value]
+    await saveNotes({ type: 'upsert', note })
   }
 
-  await saveNotes()
   cancelForm()
 }
 
 async function optimizeImageFile(file: File): Promise<string> {
   const sourceDataUrl = await readFileAsDataUrl(file)
   const image = await loadImageElement(sourceDataUrl)
-  const maxWidth = 1200
-  const originalWidth = image.naturalWidth || image.width
-  const originalHeight = image.naturalHeight || image.height
-  const scale = originalWidth > maxWidth ? maxWidth / originalWidth : 1
-
-  const targetWidth = Math.round(originalWidth * scale)
-  const targetHeight = Math.round(originalHeight * scale)
-
-  const canvas = document.createElement('canvas')
-  canvas.width = targetWidth
-  canvas.height = targetHeight
-  const context = canvas.getContext('2d')
-  if (!context) {
-    throw new Error('Canvas rendering is not supported in this browser')
-  }
-
-  context.drawImage(image, 0, 0, targetWidth, targetHeight)
-
-  const prefersPng = file.type === 'image/png'
-  const mimeType = prefersPng ? 'image/png' : 'image/jpeg'
-  const quality = mimeType === 'image/jpeg' ? 0.82 : undefined
-
-  return canvas.toDataURL(mimeType, quality)
+  const preferLossless = file.type === 'image/png'
+  return produceOptimizedDataUrl(image, preferLossless)
 }
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -566,6 +657,209 @@ function loadImageElement(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(new Error('Failed to load image for optimization'))
     img.src = src
   })
+}
+
+async function optimizeCachedNotes() {
+  if (!notes.value.length) return
+
+  try {
+    const { notes: optimizedNotes, changed } = await optimizeNotesForStorage(notes.value)
+    if (changed) {
+      notes.value = optimizedNotes
+      saveNotesToCacheOnly()
+    }
+  } catch (error) {
+    console.warn('Failed to optimize cached notes:', error)
+  }
+}
+
+async function optimizeNotesForStorage(
+  noteList: Note[],
+  options: { syncToServer?: boolean; userId?: string } = {}
+): Promise<{ notes: Note[]; changed: boolean }> {
+  const optimizedNotes: Note[] = []
+  const notesToSync = new Map<string, { note: Note; previousIds: Set<string> }>()
+  const usedIds = new Set<string>()
+  let changed = false
+
+  for (const originalNote of noteList) {
+    const { note, idChanged, previousId } = ensureNumericNoteId(originalNote, usedIds)
+    let workingNote = note
+    const previousIds: string[] = []
+    let imageChanged = false
+
+    if (idChanged) {
+      changed = true
+      if (previousId) {
+        previousIds.push(previousId)
+      }
+    }
+
+    if (!note.imageUrl || !note.imageUrl.startsWith('data:image')) {
+      optimizedNotes.push(workingNote)
+      if (options.syncToServer && options.userId && (idChanged || previousIds.length)) {
+        queueNoteForSync(notesToSync, workingNote, previousIds)
+      }
+      continue
+    }
+
+    try {
+      const { dataUrl, changed: optimizedImageChanged } = await optimizeStoredImage(note.imageUrl)
+      if (optimizedImageChanged) {
+        workingNote = {
+          ...note,
+          imageUrl: dataUrl,
+        }
+        optimizedNotes.push(workingNote)
+        changed = true
+        imageChanged = true
+      } else {
+        optimizedNotes.push(workingNote)
+      }
+    } catch (error) {
+      console.warn('Failed to optimize note image:', error)
+      optimizedNotes.push(workingNote)
+    }
+
+    if (options.syncToServer && options.userId && (idChanged || imageChanged || previousIds.length)) {
+      queueNoteForSync(notesToSync, workingNote, previousIds)
+    }
+  }
+
+  const userId = options.userId
+  if (options.syncToServer && userId && notesToSync.size) {
+    try {
+      await Promise.all(
+        Array.from(notesToSync.values()).map(async ({ note, previousIds }) => {
+          await upsertNoteToServer(note, userId)
+          const idsToRemove = Array.from(previousIds).filter(id => id && id !== note.id)
+          if (idsToRemove.length) {
+            await Promise.all(idsToRemove.map(id => deleteNoteFromServer(id, userId)))
+          }
+        })
+      )
+    } catch (error) {
+      console.warn('Failed to sync optimized note images to server:', error)
+    }
+  }
+
+  return {
+    notes: optimizedNotes,
+    changed,
+  }
+}
+
+function queueNoteForSync(
+  queue: Map<string, { note: Note; previousIds: Set<string> }>,
+  note: Note,
+  previousIds: string[]
+) {
+  const entry = queue.get(note.id)
+  if (entry) {
+    entry.note = note
+    previousIds.forEach(id => entry.previousIds.add(id))
+  } else {
+    queue.set(note.id, {
+      note,
+      previousIds: new Set(previousIds.filter(Boolean)),
+    })
+  }
+}
+
+async function optimizeStoredImage(imageUrl: string) {
+  const image = await loadImageElement(imageUrl)
+  const mimeType = parseDataUrlMimeType(imageUrl)
+  const originalWidth = image.naturalWidth || image.width
+  const shouldResize = originalWidth > MAX_IMAGE_WIDTH
+  const shouldShrink = imageUrl.length > MAX_DATA_URL_LENGTH
+
+  if (!shouldResize && !shouldShrink) {
+    return { dataUrl: imageUrl, changed: false }
+  }
+
+  const optimizedUrl = await produceOptimizedDataUrl(image, mimeType === 'image/png')
+  return {
+    dataUrl: optimizedUrl,
+    changed: optimizedUrl !== imageUrl,
+  }
+}
+
+function parseDataUrlMimeType(dataUrl: string) {
+  const match = dataUrl.match(/^data:(.*?);/)
+  return match ? match[1] : null
+}
+
+async function produceOptimizedDataUrl(image: HTMLImageElement, preferLossless: boolean) {
+  const originalWidth = Math.max(image.naturalWidth || image.width || MAX_IMAGE_WIDTH, 1)
+  let targetWidth = Math.min(originalWidth, MAX_IMAGE_WIDTH)
+  const minWidth = Math.min(MIN_IMAGE_WIDTH, targetWidth)
+  let bestCandidate: string | null = null
+  let losslessAttempted = false
+
+  while (targetWidth >= minWidth) {
+    if (preferLossless && !losslessAttempted) {
+      const losslessCandidate = renderImageToDataUrl(image, targetWidth, 'image/png')
+      losslessAttempted = true
+      bestCandidate = losslessCandidate
+      if (losslessCandidate.length <= MAX_DATA_URL_LENGTH) {
+        return losslessCandidate
+      }
+    }
+
+    for (const quality of JPEG_QUALITY_STEPS) {
+      const lossyCandidate = renderImageToDataUrl(image, targetWidth, 'image/jpeg', quality)
+      bestCandidate = lossyCandidate
+      if (lossyCandidate.length <= MAX_DATA_URL_LENGTH || targetWidth === minWidth) {
+        return lossyCandidate
+      }
+    }
+
+    if (targetWidth === minWidth) {
+      break
+    }
+
+    const nextWidth = Math.max(Math.round(targetWidth * WIDTH_REDUCTION_RATIO), minWidth)
+    if (nextWidth === targetWidth) {
+      break
+    }
+    targetWidth = nextWidth
+    preferLossless = false
+  }
+
+  if (bestCandidate) {
+    return bestCandidate
+  }
+
+  return renderImageToDataUrl(image, targetWidth, 'image/jpeg', JPEG_QUALITY_STEPS[JPEG_QUALITY_STEPS.length - 1])
+}
+
+function renderImageToDataUrl(
+  image: HTMLImageElement,
+  width: number,
+  mimeType: 'image/png' | 'image/jpeg',
+  quality?: number,
+) {
+  const originalWidth = image.naturalWidth || image.width
+  const originalHeight = image.naturalHeight || image.height
+  const scale = originalWidth ? width / originalWidth : 1
+  const targetHeight = Math.max(Math.round(originalHeight * scale), 1)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(Math.round(width), 1)
+  canvas.height = targetHeight
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('Canvas rendering is not supported in this browser')
+  }
+
+  if (mimeType === 'image/jpeg') {
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+  }
+
+  context.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+  return canvas.toDataURL(mimeType, mimeType === 'image/jpeg' ? quality : undefined)
 }
 
 const sortedNotes = computed(() =>

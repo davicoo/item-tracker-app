@@ -8,7 +8,7 @@ export interface Note {
 }
 
 export interface NoteRecord {
-  id: string;
+  id: string | number;
   user_id?: string;
   text: string;
   image_url?: string | null;
