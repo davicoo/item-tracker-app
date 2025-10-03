@@ -198,24 +198,9 @@ const MIN_IMAGE_WIDTH = 320
 const MAX_DATA_URL_LENGTH = 180_000
 const JPEG_QUALITY_STEPS = [0.72, 0.64, 0.56]
 const WIDTH_REDUCTION_RATIO = 0.85
-const NUMERIC_ID_PATTERN = /^\d+$/
-const NOTE_ID_RANDOM_MAX = 1_000
-
-function parseNumericNoteId(id: string) {
-  if (!NUMERIC_ID_PATTERN.test(id)) {
-    return null
-  }
-
-  const parsed = Number.parseInt(id, 10)
-  if (!Number.isSafeInteger(parsed)) {
-    throw new Error(`Note id ${id} exceeds the safe integer range`)
-  }
-
-  return parsed
-}
 
 type SaveAction =
-  | { type: 'upsert'; note: Note; previousId?: string }
+  | { type: 'upsert'; note: Note }
   | { type: 'delete'; noteId: string }
 
 onMounted(() => {
@@ -252,15 +237,16 @@ function cacheKeyForUser(userId: string | null) {
 }
 
 function generateNumericNoteId() {
-  const timestamp = Date.now()
+  const timestamp = Date.now().toString()
   const random = Math.floor(Math.random() * NOTE_ID_RANDOM_MAX)
-  return String(timestamp * NOTE_ID_RANDOM_MAX + random)
+    .toString()
+    .padStart(6, '0')
+  return `${timestamp}${random}`
 }
 
 function ensureNumericNoteId(note: Note, usedIds: Set<string>) {
   let candidate = note.id
   let idChanged = false
-  const previousId = note.id
 
   if (!candidate || !NUMERIC_ID_PATTERN.test(candidate) || usedIds.has(candidate)) {
     idChanged = true
@@ -272,7 +258,7 @@ function ensureNumericNoteId(note: Note, usedIds: Set<string>) {
   usedIds.add(candidate)
 
   if (!idChanged) {
-    return { note, idChanged: false, previousId }
+    return { note, idChanged: false }
   }
 
   return {
@@ -281,7 +267,6 @@ function ensureNumericNoteId(note: Note, usedIds: Set<string>) {
       id: candidate,
     },
     idChanged: true,
-    previousId,
   }
 }
 
@@ -370,13 +355,8 @@ function saveNotesToCacheOnly(noteList: Note[] = notes.value) {
 }
 
 function mapNoteToRecord(note: Note, userId: string) {
-  const numericId = parseNumericNoteId(note.id)
-  if (numericId === null) {
-    throw new Error(`Cannot sync non-numeric note id ${note.id} to Supabase`)
-  }
-
   return {
-    id: numericId,
+    id: note.id,
     user_id: userId,
     text: note.text,
     image_url: note.imageUrl ?? null,
@@ -415,15 +395,11 @@ async function upsertNoteToServer(note: Note, userId: string | null = currentUse
 async function deleteNoteFromServer(noteId: string, userId: string | null = currentUserId.value) {
   if (!userId) return
 
-  const numericId = parseNumericNoteId(noteId)
-  const query = supabase.from('notes').delete().eq('user_id', userId)
-  if (numericId === null) {
-    query.filter('id::text', 'eq', noteId)
-  } else {
-    query.eq('id', numericId)
-  }
-
-  const { error } = await query
+  const { error } = await supabase
+    .from('notes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('id', noteId)
 
   if (error) {
     throw error
@@ -431,13 +407,6 @@ async function deleteNoteFromServer(noteId: string, userId: string | null = curr
 }
 
 async function saveNotes(action: SaveAction) {
-  let actionable = action
-
-  if (action.type === 'upsert') {
-    const { note: normalized, previousId } = enforceNumericNoteId(action.note)
-    actionable = { type: 'upsert', note: normalized, previousId }
-  }
-
   saveNotesToCacheOnly()
 
   if (!isAuthenticated.value || !currentUserId.value) {
@@ -446,40 +415,16 @@ async function saveNotes(action: SaveAction) {
 
   try {
     isSyncing.value = true
-    if (actionable.type === 'upsert') {
-      await upsertNoteToServer(actionable.note)
-      if (actionable.previousId && actionable.previousId !== actionable.note.id) {
-        await deleteNoteFromServer(actionable.previousId)
-      }
+    if (action.type === 'upsert') {
+      await upsertNoteToServer(action.note)
     } else {
-      await deleteNoteFromServer(actionable.noteId)
+      await deleteNoteFromServer(action.noteId)
     }
   } catch (error) {
     console.error('Failed to sync notes to the server:', error)
     alert('We could not sync your notes to the server. They will stay saved on this device until the connection is restored.')
   } finally {
     isSyncing.value = false
-  }
-}
-
-function enforceNumericNoteId(note: Note): { note: Note; previousId?: string } {
-  const index = notes.value.findIndex(candidate => candidate.id === note.id)
-  const usedIds = new Set(
-    notes.value
-      .filter((_, idx) => idx !== index)
-      .map(candidate => candidate.id),
-  )
-
-  const { note: normalized, idChanged, previousId } = ensureNumericNoteId(note, usedIds)
-
-  if (idChanged) {
-    if (index !== -1) {
-      notes.value.splice(index, 1, normalized)
-    } else {
-      notes.value = notes.value.map(candidate =>
-        candidate.id === note.id ? normalized : candidate,
-      )
-    }
   }
 
   return { note: normalized, previousId: idChanged ? previousId : undefined }
@@ -678,66 +623,52 @@ async function optimizeNotesForStorage(
   options: { syncToServer?: boolean; userId?: string } = {},
 ): Promise<{ notes: Note[]; changed: boolean }> {
   const optimizedNotes: Note[] = []
-  const notesToSync = new Map<string, { note: Note; previousIds: Set<string> }>()
+  const notesToSync = new Map<string, Note>()
   const usedIds = new Set<string>()
   let changed = false
 
   for (const originalNote of noteList) {
-    const { note, idChanged, previousId } = ensureNumericNoteId(originalNote, usedIds)
-    let workingNote = note
-    const previousIds: string[] = []
-    let imageChanged = false
-
+    const { note, idChanged } = ensureNumericNoteId(originalNote, usedIds)
+    if (idChanged && options.syncToServer && options.userId) {
+      notesToSync.set(note.id, note)
+    }
     if (idChanged) {
       changed = true
-      if (previousId) {
-        previousIds.push(previousId)
-      }
     }
 
+  const notesToSync: Note[] = []
+  let changed = false
+
+  for (const note of noteList) {
     if (!note.imageUrl || !note.imageUrl.startsWith('data:image')) {
-      optimizedNotes.push(workingNote)
-      if (options.syncToServer && options.userId && (idChanged || previousIds.length)) {
-        queueNoteForSync(notesToSync, workingNote, previousIds)
-      }
+      optimizedNotes.push(note)
       continue
     }
 
     try {
-      const { dataUrl, changed: optimizedImageChanged } = await optimizeStoredImage(note.imageUrl)
-      if (optimizedImageChanged) {
-        workingNote = {
+      const { dataUrl, changed: imageChanged } = await optimizeStoredImage(note.imageUrl)
+      if (imageChanged) {
+        const updatedNote: Note = {
           ...note,
           imageUrl: dataUrl,
         }
-        optimizedNotes.push(workingNote)
+        optimizedNotes.push(updatedNote)
         changed = true
-        imageChanged = true
+        if (options.syncToServer && options.userId) {
+          notesToSync.push(updatedNote)
+        }
       } else {
-        optimizedNotes.push(workingNote)
+        optimizedNotes.push(note)
       }
     } catch (error) {
       console.warn('Failed to optimize note image:', error)
-      optimizedNotes.push(workingNote)
-    }
-
-    if (options.syncToServer && options.userId && (idChanged || imageChanged || previousIds.length)) {
-      queueNoteForSync(notesToSync, workingNote, previousIds)
+      optimizedNotes.push(note)
     }
   }
 
-  const userId = options.userId
-  if (options.syncToServer && userId && notesToSync.size) {
+  if (options.syncToServer && options.userId && notesToSync.length) {
     try {
-      await Promise.all(
-        Array.from(notesToSync.values()).map(async ({ note, previousIds }) => {
-          await upsertNoteToServer(note, userId)
-          const idsToRemove = Array.from(previousIds).filter(id => id && id !== note.id)
-          if (idsToRemove.length) {
-            await Promise.all(idsToRemove.map(id => deleteNoteFromServer(id, userId)))
-          }
-        }),
-      )
+      await Promise.all(notesToSync.map(note => upsertNoteToServer(note, options.userId)))
     } catch (error) {
       console.warn('Failed to sync optimized note images to server:', error)
     }
@@ -746,23 +677,6 @@ async function optimizeNotesForStorage(
   return {
     notes: optimizedNotes,
     changed,
-  }
-}
-
-function queueNoteForSync(
-  queue: Map<string, { note: Note; previousIds: Set<string> }>,
-  note: Note,
-  previousIds: string[],
-) {
-  const entry = queue.get(note.id)
-  if (entry) {
-    entry.note = note
-    previousIds.forEach(id => entry.previousIds.add(id))
-  } else {
-    queue.set(note.id, {
-      note,
-      previousIds: new Set(previousIds.filter(Boolean)),
-    })
   }
 }
 
