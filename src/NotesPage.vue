@@ -236,6 +236,40 @@ function cacheKeyForUser(userId: string | null) {
   return userId ? `${NOTES_STORAGE_KEY}:${userId}` : NOTES_STORAGE_KEY
 }
 
+function generateNumericNoteId() {
+  const timestamp = Date.now().toString()
+  const random = Math.floor(Math.random() * NOTE_ID_RANDOM_MAX)
+    .toString()
+    .padStart(6, '0')
+  return `${timestamp}${random}`
+}
+
+function ensureNumericNoteId(note: Note, usedIds: Set<string>) {
+  let candidate = note.id
+  let idChanged = false
+
+  if (!candidate || !NUMERIC_ID_PATTERN.test(candidate) || usedIds.has(candidate)) {
+    idChanged = true
+    do {
+      candidate = generateNumericNoteId()
+    } while (usedIds.has(candidate))
+  }
+
+  usedIds.add(candidate)
+
+  if (!idChanged) {
+    return { note, idChanged: false }
+  }
+
+  return {
+    note: {
+      ...note,
+      id: candidate,
+    },
+    idChanged: true,
+  }
+}
+
 function toStoredNote(note: Note): Note {
   const stored: Note = {
     id: note.id,
@@ -502,8 +536,10 @@ async function saveNote() {
     const index = notes.value.findIndex(n => n.id === editingNoteId.value)
     if (index === -1) return
     const existing = notes.value[index]
+    const otherIds = new Set(notes.value.filter((_, idx) => idx !== index).map(n => n.id))
+    const { note: normalizedExisting } = ensureNumericNoteId(existing, otherIds)
     const updatedNote: Note = {
-      ...existing,
+      ...normalizedExisting,
       text: form.value.text,
       date: reminderDate,
     }
@@ -514,8 +550,13 @@ async function saveNote() {
     await saveNotes({ type: 'upsert', note: notes.value[index] })
   } else {
     const createdAt = new Date().toISOString()
+    const usedIds = new Set(notes.value.map(n => n.id))
+    let id = generateNumericNoteId()
+    while (usedIds.has(id)) {
+      id = generateNumericNoteId()
+    }
     const note: Note = {
-      id: crypto.randomUUID(),
+      id,
       text: form.value.text,
       createdAt,
     }
@@ -580,6 +621,19 @@ async function optimizeNotesForStorage(
   options: { syncToServer?: boolean; userId?: string } = {},
 ): Promise<{ notes: Note[]; changed: boolean }> {
   const optimizedNotes: Note[] = []
+  const notesToSync = new Map<string, Note>()
+  const usedIds = new Set<string>()
+  let changed = false
+
+  for (const originalNote of noteList) {
+    const { note, idChanged } = ensureNumericNoteId(originalNote, usedIds)
+    if (idChanged && options.syncToServer && options.userId) {
+      notesToSync.set(note.id, note)
+    }
+    if (idChanged) {
+      changed = true
+    }
+
   const notesToSync: Note[] = []
   let changed = false
 
