@@ -198,8 +198,6 @@ const MIN_IMAGE_WIDTH = 320
 const MAX_DATA_URL_LENGTH = 180_000
 const JPEG_QUALITY_STEPS = [0.72, 0.64, 0.56]
 const WIDTH_REDUCTION_RATIO = 0.85
-const NUMERIC_ID_PATTERN = /^\d+$/
-const NOTE_ID_RANDOM_MAX = 1_000_000
 
 type SaveAction =
   | { type: 'upsert'; note: Note }
@@ -636,6 +634,10 @@ async function optimizeNotesForStorage(
       changed = true
     }
 
+  const notesToSync: Note[] = []
+  let changed = false
+
+  for (const note of noteList) {
     if (!note.imageUrl || !note.imageUrl.startsWith('data:image')) {
       optimizedNotes.push(note)
       continue
@@ -651,7 +653,7 @@ async function optimizeNotesForStorage(
         optimizedNotes.push(updatedNote)
         changed = true
         if (options.syncToServer && options.userId) {
-          notesToSync.set(updatedNote.id, updatedNote)
+          notesToSync.push(updatedNote)
         }
       } else {
         optimizedNotes.push(note)
@@ -662,12 +664,9 @@ async function optimizeNotesForStorage(
     }
   }
 
-  const userId = options.userId
-  if (options.syncToServer && userId && notesToSync.size) {
+  if (options.syncToServer && options.userId && notesToSync.length) {
     try {
-      await Promise.all(
-        Array.from(notesToSync.values()).map(note => upsertNoteToServer(note, userId)),
-      )
+      await Promise.all(notesToSync.map(note => upsertNoteToServer(note, options.userId)))
     } catch (error) {
       console.warn('Failed to sync optimized note images to server:', error)
     }
