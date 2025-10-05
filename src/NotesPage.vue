@@ -355,7 +355,7 @@ function saveNotesToCacheOnly(noteList: Note[] = notes.value) {
 }
 
 function mapNoteToRecord(note: Note, userId: string) {
-  return {
+w  return {
     id: note.id,
     user_id: userId,
     text: note.text,
