@@ -429,8 +429,6 @@ async function saveNotes(action: SaveAction) {
   } finally {
     isSyncing.value = false
   }
-
-  return { note: normalized, previousId: idChanged ? previousId : undefined }
 }
 
 function updateLastUserCache(userId: string | null) {
