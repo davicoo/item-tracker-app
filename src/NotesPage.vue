@@ -355,7 +355,7 @@ function saveNotesToCacheOnly(noteList: Note[] = notes.value) {
 }
 
 function mapNoteToRecord(note: Note, userId: string) {
-w  return {
+  return {
     id: note.id,
     user_id: userId,
     text: note.text,
@@ -622,24 +622,24 @@ async function optimizeNotesForStorage(
   noteList: Note[],
   options: { syncToServer?: boolean; userId?: string } = {},
 ): Promise<{ notes: Note[]; changed: boolean }> {
+  const normalizedNotes: Note[] = []
   const optimizedNotes: Note[] = []
-  const notesToSync = new Map<string, Note>()
+  const notesToSync: Note[] = []
   const usedIds = new Set<string>()
   let changed = false
 
   for (const originalNote of noteList) {
     const { note, idChanged } = ensureNumericNoteId(originalNote, usedIds)
-    if (idChanged && options.syncToServer && options.userId) {
-      notesToSync.set(note.id, note)
-    }
     if (idChanged) {
       changed = true
+      if (options.syncToServer && options.userId) {
+        notesToSync.push(note)
+      }
     }
+    normalizedNotes.push(note)
+  }
 
-  const notesToSync: Note[] = []
-  let changed = false
-
-  for (const note of noteList) {
+  for (const note of normalizedNotes) {
     if (!note.imageUrl || !note.imageUrl.startsWith('data:image')) {
       optimizedNotes.push(note)
       continue
