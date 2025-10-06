@@ -236,6 +236,9 @@ function cacheKeyForUser(userId: string | null) {
   return userId ? `${NOTES_STORAGE_KEY}:${userId}` : NOTES_STORAGE_KEY
 }
 
+const NOTE_ID_RANDOM_MAX = 1_000_000
+const NUMERIC_ID_PATTERN = /^\d+$/
+
 function generateNumericNoteId() {
   const timestamp = Date.now().toString()
   const random = Math.floor(Math.random() * NOTE_ID_RANDOM_MAX)
