@@ -199,6 +199,8 @@ const MAX_DATA_URL_LENGTH = 180_000
 const JPEG_QUALITY_STEPS = [0.72, 0.64, 0.56]
 const WIDTH_REDUCTION_RATIO = 0.85
 
+const NOTE_ID_RANDOM_MAX = 1_000_000
+
 type SaveAction =
   | { type: 'upsert'; note: Note }
   | { type: 'delete'; noteId: string }
