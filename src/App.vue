@@ -77,23 +77,6 @@
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </button>
-              <button
-                class="mt-1 flex w-full items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-medium text-[--body-text-color] transition hover:bg-primary-50/80"
-                @click="goTo('/notes')"
-              >
-                <span>Notes</span>
-                <svg
-                  class="size-4 text-caption"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </button>
               <div class="my-3 h-px bg-white/60" />
               <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">
                 Settings
