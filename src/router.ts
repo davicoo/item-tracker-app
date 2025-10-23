@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppPage from './App.vue';
 import SettingsPage from './SettingsPage.vue';
-import NotesPage from './NotesPage.vue';
 import { supabase } from './supabaseClient';
 
 const routes = [
@@ -37,7 +36,11 @@ const routes = [
   },
   { path: '/app', name: 'App', component: AppPage },
   { path: '/settings', name: 'Settings', component: SettingsPage },
-  { path: '/notes', name: 'Notes', component: NotesPage },
+  {
+    path: '/sold-details',
+    name: 'SoldDetails',
+    component: () => import('@/pages/SoldDetailsPage.vue'),
+  },
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -60,7 +63,7 @@ router.beforeEach(async (to, _from, next) => {
     } else {
       next();
     }
-  } else if (!isAuthenticated && (to.path === '/app' || to.path === '/settings')) {
+  } else if (!isAuthenticated && ['/app', '/settings', '/sold-details'].includes(to.path)) {
     next('/login');
   } else if (isAuthenticated && (to.path === '/login' || to.path === '/signup')) {
     next('/app');

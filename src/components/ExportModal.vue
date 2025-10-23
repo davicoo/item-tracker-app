@@ -6,8 +6,8 @@
     <div class="relative mx-auto w-full max-w-sm overflow-hidden overflow-y-auto rounded-3xl border border-primary-100 bg-gradient-to-br from-white/98 via-primary-50/85 to-white/98 px-6 py-6 shadow-2xl shadow-primary-900/20 backdrop-blur-2xl ring-1 ring-white/70 sm:px-8 max-h-[calc(100vh-4rem)]">
       <span class="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full bg-primary-200/30 blur-3xl" />
       <button
+        type="button"
         class="absolute right-5 top-5 inline-flex size-9 items-center justify-center rounded-full border border-white/60 bg-white/85 text-primary-600 shadow-sm shadow-primary-900/10 backdrop-blur transition hover:bg-primary-50/80 hover:text-primary-700"
-
         @click="emit('close')"
       >
         <span class="sr-only">Close</span>
