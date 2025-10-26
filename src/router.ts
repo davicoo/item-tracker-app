@@ -58,7 +58,7 @@ router.beforeEach(async (to, _from, next) => {
     } else {
       next();
     }
-  } else if (!isAuthenticated && (to.path === '/app' || to.path === '/settings')) {
+  } else if (!isAuthenticated && ['/app', '/settings', '/sold-details'].includes(to.path)) {
     next('/login');
   } else if (isAuthenticated && (to.path === '/login' || to.path === '/signup')) {
     next('/app');

@@ -140,8 +140,7 @@
           <button
             type="button"
             class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.85)] transition hover:-translate-y-0.5 hover:shadow-[0_34px_80px_-36px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
-
-            @click="showSoldDetails = true"
+            @click="goTo('/sold-details')"
           >
             View sold breakdown
             <svg
@@ -160,16 +159,10 @@
         <div class="relative mt-6">
           <StatsDisplay
             :stats="currentStats"
-            @show-sold-details="showSoldDetails = true"
+            @show-sold-details="goTo('/sold-details')"
           />
         </div>
       </section>
-
-      <SoldDetailsModal
-        v-if="showSoldDetails"
-        :items="items"
-        @close="showSoldDetails = false"
-      />
 
       <div
         v-if="lowStockItems.length"
@@ -346,7 +339,6 @@ import EditItemForm from './components/EditItemForm.vue';
 import ItemGrid from './components/ItemGrid.vue';
 import ItemTable from './components/ItemTable.vue';
 import StatsDisplay from './components/StatsDisplay.vue';
-import SoldDetailsModal from './components/SoldDetailsModal.vue';
 import ImageViewer from './components/ImageViewer.vue';
 import ExportModal from './components/ExportModal.vue';
 import type { Item } from './types/item';
@@ -373,13 +365,11 @@ const selectedImage = ref<string | null>(null);
 const showMenu = ref(false);
 const showExportModal = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
-const showSoldDetails = ref(false);
 
 const blockingOverlayActive = computed(
   () =>
     showForm.value ||
     Boolean(editingItem.value) ||
-    showSoldDetails.value ||
     showExportModal.value ||
     Boolean(selectedImage.value)
 );
