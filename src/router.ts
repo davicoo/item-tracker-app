@@ -37,11 +37,6 @@ const routes = [
   { path: '/app', name: 'App', component: AppPage },
   { path: '/settings', name: 'Settings', component: SettingsPage },
   {
-    path: '/sold-details',
-    name: 'SoldDetails',
-    component: () => import('@/pages/SoldDetailsPage.vue'),
-  },
-  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/pages/DashboardPage.vue'),
