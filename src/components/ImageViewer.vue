@@ -5,6 +5,7 @@
   >
     <div class="relative">
       <button
+        type="button"
         class="absolute top-0 right-0 m-2 text-white text-2xl"
         @click="emit('close')"
       >
