@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppPage from './App.vue';
 import SettingsPage from './SettingsPage.vue';
-import SoldDetailsPage from './pages/SoldDetailsPage.vue';
 import { supabase } from './supabaseClient';
 
 const routes = [
@@ -37,11 +36,6 @@ const routes = [
   },
   { path: '/app', name: 'App', component: AppPage },
   { path: '/settings', name: 'Settings', component: SettingsPage },
-  {
-    path: '/sold-details',
-    name: 'SoldDetails',
-    component: SoldDetailsPage,
-  },
   {
     path: '/dashboard',
     name: 'Dashboard',
