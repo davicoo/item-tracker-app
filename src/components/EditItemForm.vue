@@ -165,7 +165,7 @@
             class="max-h-48 w-full rounded-card object-contain"
           >
           <button
-            class="mt-3 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-4 py-2 text-sm font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+            class="mt-3 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-primary-500 via-primary-400 to-primary-300 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary-900/20 transition hover:from-primary-500 hover:via-primary-400 hover:to-primary-300"
             @click="editImage"
           >
             Edit Image
@@ -237,7 +237,7 @@
 
     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
       <button
-        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-3 text-sm font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80 disabled:opacity-60"
+        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
         :disabled="loading"
         @click="handleSubmit"
       >
