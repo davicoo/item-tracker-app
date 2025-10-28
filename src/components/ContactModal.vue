@@ -56,7 +56,7 @@
         />
       </label>
       <button
-        class="mt-2 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+        class="mt-2 w-full cta-gradient cta-gradient-md"
         :disabled="sending"
       >
         <svg
