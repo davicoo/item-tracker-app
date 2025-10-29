@@ -7,27 +7,7 @@
 
 @layer components {
   .cta-gradient {
-    @apply inline-flex items-center justify-center rounded-full font-semibold text-white transition disabled:pointer-events-none;
-    background-image: linear-gradient(90deg, #4f46e5 0%, #7c3aed 48%, #ec4899 100%);
-    box-shadow: 0 30px 80px -38px rgba(68, 64, 200, 0.85);
-    filter: drop-shadow(0 14px 32px rgba(76, 81, 255, 0.45));
-    outline: none;
-    transform: translateY(0);
-  }
-
-  .cta-gradient:hover:not(:disabled) {
-    box-shadow: 0 38px 110px -42px rgba(68, 64, 200, 0.95);
-    filter: drop-shadow(0 16px 40px rgba(76, 81, 255, 0.45));
-    transform: translateY(-0.125rem);
-  }
-
-  .cta-gradient:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 2px;
-  }
-
-  .cta-gradient:disabled {
-    opacity: 0.8;
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80 disabled:pointer-events-none disabled:opacity-80;
   }
 
   .cta-gradient-sm {
