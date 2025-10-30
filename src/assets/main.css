@@ -5,7 +5,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --ui-bg: rgba(255, 255, 255, 0.985);
   --ui-soft-bg: #e7e7ff;
