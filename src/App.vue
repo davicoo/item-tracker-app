@@ -37,7 +37,7 @@
           >
             <button
               type="button"
-              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.9)] transition hover:-translate-y-0.5 hover:shadow-[0_32px_75px_-34px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+              class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.9)] transition hover:-translate-y-0.5 hover:shadow-[0_32px_75px_-34px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
               @click="toggleMenu"
             >
               <svg
@@ -139,7 +139,7 @@
           </div>
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4f46e5] via-[#7c3aed] to-[#ec4899] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.85)] transition hover:-translate-y-0.5 hover:shadow-[0_34px_80px_-36px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
+            class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_26px_60px_-32px_rgba(68,64,200,0.85)] transition hover:-translate-y-0.5 hover:shadow-[0_34px_80px_-36px_rgba(68,64,200,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80"
             @click="goTo('/sold-details')"
           >
             View sold breakdown
