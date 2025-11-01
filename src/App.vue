@@ -209,7 +209,7 @@
       >
         <button
           type="button"
-          class="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 px-8 py-3.5 text-base font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80 disabled:opacity-60"
+          class="cta-gradient cta-gradient-lg"
           @click="showForm = true"
         >
           <svg
