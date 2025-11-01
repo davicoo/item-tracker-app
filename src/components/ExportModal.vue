@@ -47,7 +47,7 @@
         </option>
       </select>
       <button
-        class="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-indigo-500 to-secondary-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-primary-950/30 drop-shadow-[0_12px_32px_rgba(76,81,255,0.45)] transition hover:translate-y-0.5 hover:shadow-2xl disabled:opacity-60"
+        class="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 px-6 py-3 text-sm font-semibold text-white shadow-[0_30px_80px_-38px_rgba(68,64,200,0.85)] drop-shadow-[0_14px_32px_rgba(76,81,255,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_38px_110px_-42px_rgba(68,64,200,0.95)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/80 disabled:opacity-60"
         :disabled="exporting"
         @click="handleExport"
       >
