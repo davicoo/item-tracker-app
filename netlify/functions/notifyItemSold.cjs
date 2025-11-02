@@ -16,7 +16,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 405,
       headers: baseHeaders,
-      body: JSON.stringify({ error: 'Method not allowed' }),
+      body: JSON.stringify({ ok: false, error: 'Method not allowed' }),
     };
   }
 
@@ -26,35 +26,38 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing required fields' }),
+        body: JSON.stringify({ ok: false, error: 'Missing required fields' }),
       };
     }
 
     const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const serviceKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_SERVICE_KEY ||
-      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+
+      process.env.SUPABASE_SERVICE_KEY;
+
     if (!supabaseUrl || !serviceKey) {
+      console.error('Missing Supabase service configuration');
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing Supabase service role key' }),
+
+        body: JSON.stringify({ ok: false, error: 'Server misconfigured' }),
+
       };
     }
 
     const supabase = createClient(supabaseUrl, serviceKey);
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ error: 'Unauthorized' }) };
+      return { statusCode: 401, headers: baseHeaders, body: JSON.stringify({ ok: false, error: 'Unauthorized' }) };
     }
     const accessToken = authHeader.split(' ')[1];
     const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
     const caller = userData?.user;
     const roles = require('./_auth.cjs').getRoles(caller);
     if (userError || !caller || !roles.includes('store')) {
-      
-      return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ error: 'Forbidden' }) };
+      return { statusCode: 403, headers: baseHeaders, body: JSON.stringify({ ok: false, error: 'Forbidden' }) };
     }
 
     const region = process.env.AWS_REGION || process.env.SES_REGION;
@@ -63,7 +66,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing mail server configuration' }),
+        body: JSON.stringify({ ok: false, error: 'Missing mail server configuration' }),
       };
     }
 

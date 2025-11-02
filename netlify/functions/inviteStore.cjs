@@ -14,7 +14,11 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers: baseHeaders, body: '' };
   }
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: baseHeaders, body: JSON.stringify({ error: 'Method not allowed' }) };
+    return {
+      statusCode: 405,
+      headers: baseHeaders,
+      body: JSON.stringify({ ok: false, error: 'Method not allowed' }),
+    };
   }
 
   try {
@@ -23,7 +27,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 400,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing required fields' }),
+        body: JSON.stringify({ ok: false, error: 'Missing required fields' }),
       };
     }
 
@@ -42,14 +46,14 @@ exports.handler = async (event) => {
     const serviceKey =
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
 
-      process.env.SUPABASE_SERVICE_KEY ||
-      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+      process.env.SUPABASE_SERVICE_KEY;
 
     if (!supabaseUrl || !serviceKey) {
+      console.error('Missing Supabase service configuration');
       return {
         statusCode: 500,
         headers: baseHeaders,
-        body: JSON.stringify({ error: 'Missing Supabase service role key' }),
+        body: JSON.stringify({ ok: false, error: 'Server misconfigured' }),
 
       };
     }
